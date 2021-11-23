@@ -6,6 +6,8 @@ from enum import Enum
 
 app = FastAPI()
 
+row_limit = 20
+
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
 
@@ -69,5 +71,5 @@ class CategoricalFilter(BaseModel):
     values: List[str]
 
 @app.post("/table")
-def table_view(filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None, attributes: List[AttributeNames] = standard_attributes, sort_by: AttributeNames = Body(AttributeNames.id), limit: int = Body(20), offset: int = Body(0)):
+def table_view(filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None, attributes: List[AttributeNames] = standard_attributes, sort_by: AttributeNames = Body(AttributeNames.id), limit: int = Body(row_limit), offset: int = Body(0)):
     return attributes
