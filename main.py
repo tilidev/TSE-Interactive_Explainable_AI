@@ -1,12 +1,14 @@
-from typing import Optional, List
+from typing import Any, Optional, List, Union
 from fastapi import FastAPI
-from fastapi.params import Query
+from fastapi.params import Body, Query
 from pydantic import BaseModel
 from enum import Enum
 
 app = FastAPI()
 
 class AttributeNames(str, Enum):
+    '''This class is used to have a central definition of how the attributes are referenced'''
+
     balance = "balance"
     duration = "duration"
     history = "history"
@@ -28,10 +30,6 @@ class AttributeNames(str, Enum):
     other_debtors = "other_debtors"
     people_liable = "people_liable"
     id = "id"
-
-class Filter(BaseModel):
-    attribute_name: AttributeNames
-
 
 category_mapping = {
     "financial" : [AttributeNames.history, AttributeNames.savings, AttributeNames.balance, AttributeNames.available_income, AttributeNames.assets, AttributeNames.other_loans, AttributeNames.other_debtors, AttributeNames.previous_loans],
@@ -61,8 +59,15 @@ standard_attributes = [
     AttributeNames.employment
 ]
 
+class ContinuousFilter(BaseModel):
+    attribute_name: AttributeNames
+    lower_bound: float
+    upper_bound: float
 
-@app.get("/table")
-def table_view(filter: Optional[List[str]] = Query(None), limit: int = 20, offset: int = 0, attributes: List[AttributeNames] = Query(standard_attributes), sort_by: AttributeNames = AttributeNames.id):
-    # TODO: filter zur Query machen
-    pass
+class CategoricalFilter(BaseModel):
+    attribute_name: AttributeNames
+    values: List[str]
+
+@app.post("/table")
+def table_view(filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None, attributes: List[AttributeNames] = standard_attributes, sort_by: AttributeNames = Body(AttributeNames.id), limit: int = Body(20), offset: int = Body(0)):
+    return attributes
