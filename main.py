@@ -2,15 +2,26 @@ from typing import Any, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from pydantic import BaseModel
+from pydantic.fields import Field
+from pydantic.schema import schema
 from enum import Enum
 
 app = FastAPI()
 
+# string and number definitions to re-use through the entire code
 row_limit = 20
+
+attr_type = "type"
+attr_values = "values"
+cat_type = "categorical"
+cont_type = "continuous"
+lower_b = "lower_bound"
+upper_b = "upper_bound"
+
 
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
-
+    
     balance = "balance"
     duration = "duration"
     history = "history"
@@ -40,16 +51,67 @@ category_mapping = {
 }
 
 attribute_constraints = {
+    # TODO: can all of this be done with Field() or schema() ??
     AttributeNames.balance : {
-        "type" : "categorical",
-        "values" : [] #List[str]
+        attr_type : cat_type,
+        attr_values : [] #List[str]
     },
     AttributeNames.duration : {
-        "type" : "continuous",
-        "lower_bound" : 0, #float
-        "upper_bound" : 1 #float
+        attr_type : cont_type,
+        lower_b : 0, #float
+        upper_b : 1 #float
+    },
+    AttributeNames.history : {
+        attr_type : cat_type,
+        attr_values : [] 
+    },
+    AttributeNames.purpose : {
+        attr_type : cat_type,
+        attr_values : []
+    },
+    AttributeNames.amount : {
+        attr_type : cont_type,
+        lower_b : 0,
+        upper_b : 1
+    },
+    AttributeNames.savings : {
+
+    },
+    AttributeNames.employment : {
+
+    },
+    AttributeNames.available_income : {
+
+    },
+    AttributeNames.residence : {
+
+    },
+    AttributeNames.assets :{
+
+    },
+    AttributeNames.age : {
+
+    },
+    AttributeNames.other_loans : {
+
+    },
+    AttributeNames.housing : {
+
+    },
+    AttributeNames.previous_loans : {
+
+    },
+    AttributeNames.job : {
+
+    },
+    AttributeNames.other_debtors : {
+
+    },
+    AttributeNames.people_liable : {
+
     }
-    # hier noch Rest einfügen
+    # TODO: fill in the rest of the constraints
+    # TODO: use smart lower and upper bounds as they will be important for filtering
 }
 
 # standard configuration for table view
@@ -62,14 +124,41 @@ standard_attributes = [
 ]
 
 class ContinuousFilter(BaseModel):
+    '''Defines the format for a continuous filter request body'''
     attribute_name: AttributeNames
     lower_bound: float
     upper_bound: float
 
 class CategoricalFilter(BaseModel):
+    '''Defines the format for a categorical filter request body'''
     attribute_name: AttributeNames
     values: List[str]
 
-@app.post("/table")
+class InstanceInfo(BaseModel):
+    '''Defines how a JSON response for an instance information should look like.
+    Maps the predefined names for attributes as the alias of the pydantic class keys.'''
+    # TODO: change the types (most are strings now)
+    # TODO: add stuff like ai recommendation and confidence level
+    id : Optional[int] = Field(None ,alias=AttributeNames.id.value)
+    balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
+    duration : Optional[str] = Field(None, alias=AttributeNames.duration.value)
+    history : Optional[str] = Field(None, alias=AttributeNames.history.value)
+    purpose : Optional[str] = Field(None, alias=AttributeNames.purpose.value)
+    amount : Optional[str] = Field(None, alias=AttributeNames.amount.value)
+    savings : Optional[str] = Field(None, alias=AttributeNames.savings.value)
+    employment : Optional[str] = Field(None, alias=AttributeNames.employment.value)
+    available_income : Optional[str] = Field(None, alias=AttributeNames.available_income.value)
+    residence : Optional[str] = Field(None, alias=AttributeNames.residence.value)
+    assets : Optional[str] = Field(None, alias=AttributeNames.assets.value)
+    age : Optional[str] = Field(None, alias=AttributeNames.age.value)
+    other_loans : Optional[str] = Field(None, alias=AttributeNames.other_loans.value)
+    housing : Optional[str] = Field(None, alias=AttributeNames.housing.value)
+    previous_loans : Optional[str] = Field(None, alias=AttributeNames.previous_loans.value)
+    job : Optional[str] = Field(None, alias=AttributeNames.job.value)
+    other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
+    people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
+
+
+@app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 def table_view(filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None, attributes: List[AttributeNames] = standard_attributes, sort_by: AttributeNames = Body(AttributeNames.id), limit: int = Body(row_limit), offset: int = Body(0)):
-    return attributes
+    return [{"id" : 1}]
