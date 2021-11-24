@@ -11,17 +11,18 @@ app = FastAPI()
 # string and number definitions to re-use through the entire code
 row_limit = 20
 
-attr_type = "type"
-attr_values = "values"
-cat_type = "categorical"
-cont_type = "continuous"
-lower_b = "lower_bound"
-upper_b = "upper_bound"
+type = "type"
+values = "values"
+categorical = "categorical"
+continuous = "continuous"
+lower_bound = "lower_bound"
+upper_bound = "upper_bound"
 
 
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
-    
+
+    # attributes in the dataset
     balance = "balance"
     duration = "duration"
     history = "history"
@@ -42,7 +43,11 @@ class AttributeNames(str, Enum):
     #foreign_worker = "foreign_worker"
     other_debtors = "other_debtors"
     people_liable = "people_liable"
+
+    # meta-attributes
     id = "id"
+    NN_recommendation = "NN_recommendation"
+    NN_confidence = "NN_confidence"
 
 category_mapping = {
     "financial" : [AttributeNames.history, AttributeNames.savings, AttributeNames.balance, AttributeNames.available_income, AttributeNames.assets, AttributeNames.other_loans, AttributeNames.other_debtors, AttributeNames.previous_loans],
@@ -53,62 +58,75 @@ category_mapping = {
 attribute_constraints = {
     # TODO: can all of this be done with Field() or schema() ??
     AttributeNames.balance : {
-        attr_type : cat_type,
-        attr_values : [] #List[str]
+        type : categorical,
+        values : [] #List[str]
     },
     AttributeNames.duration : {
-        attr_type : cont_type,
-        lower_b : 0, #float
-        upper_b : 1 #float
+        type : continuous,
+        lower_bound : 0, #float
+        upper_bound : 1 #float
     },
     AttributeNames.history : {
-        attr_type : cat_type,
-        attr_values : [] 
+        type : categorical,
+        values : [] 
     },
     AttributeNames.purpose : {
-        attr_type : cat_type,
-        attr_values : []
+        type : categorical,
+        values : []
     },
     AttributeNames.amount : {
-        attr_type : cont_type,
-        lower_b : 0,
-        upper_b : 1
+        type : continuous,
+        lower_bound : 0,
+        upper_bound : 1
     },
     AttributeNames.savings : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.employment : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.available_income : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.residence : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.assets :{
-
+        type : categorical,
+        values : []
     },
     AttributeNames.age : {
-
+        type : continuous,
+        lower_bound : 16,
+        upper_bound : 100
     },
     AttributeNames.other_loans : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.housing : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.previous_loans : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.job : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.other_debtors : {
-
+        type : categorical,
+        values : []
     },
     AttributeNames.people_liable : {
-
+        type : categorical,
+        values : []
     }
     # TODO: fill in the rest of the constraints
     # TODO: use smart lower and upper bounds as they will be important for filtering
@@ -137,6 +155,7 @@ class CategoricalFilter(BaseModel):
 class InstanceInfo(BaseModel):
     '''Defines how a JSON response for an instance information should look like.
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
+    
     # TODO: change the types (most are strings now)
     # TODO: add stuff like ai recommendation and confidence level
     id : Optional[int] = Field(None ,alias=AttributeNames.id.value)
@@ -157,8 +176,36 @@ class InstanceInfo(BaseModel):
     job : Optional[str] = Field(None, alias=AttributeNames.job.value)
     other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
     people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
+    NN_recommendation : Optional[bool] = Field(None, alias=AttributeNames.NN_recommendation.value)
+    NN_confidence : Optional[float] = Field(None, le=1, ge=0, alias=AttributeNames.NN_confidence.value)
 
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
-def table_view(filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None, attributes: List[AttributeNames] = standard_attributes, sort_by: AttributeNames = Body(AttributeNames.id), limit: int = Body(row_limit), offset: int = Body(0)):
-    return [{"id" : 1}]
+def table_view(
+    filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None,
+    attributes: List[AttributeNames] = standard_attributes,
+    sort_by: AttributeNames = Body(AttributeNames.id),
+    limit: int = Body(row_limit),
+    offset: int = Body(0)
+):
+    example_result = [
+        {
+            AttributeNames.amount : 3200,
+            AttributeNames.duration : 24,
+            AttributeNames.id : 1,
+            AttributeNames.age : 23,
+            AttributeNames.employment : "between 1 and 4 years",
+            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_confidence : 0.78
+        },
+        {
+            AttributeNames.amount : 8000,
+            AttributeNames.duration : 12,
+            AttributeNames.id : 2,
+            AttributeNames.age : 47,
+            AttributeNames.employment : "more than 7 years",
+            AttributeNames.NN_recommendation : True,
+            AttributeNames.NN_confidence : 0.93
+        }
+    ]
+    return example_result
