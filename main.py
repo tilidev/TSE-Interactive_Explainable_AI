@@ -180,6 +180,7 @@ class InstanceInfo(BaseModel):
     NN_confidence : Optional[float] = Field(None, le=1, ge=0, alias=AttributeNames.NN_confidence.value)
 
 
+# return a list of instance infos for the table view in lvl 1
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 def table_view(
     filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None,
@@ -209,3 +210,19 @@ def table_view(
         }
     ]
     return example_result
+
+
+@app.get("/instance/{id}", response_model=InstanceInfo)
+def get_entire_instance_by_id(id: int):
+    example_output = {
+        AttributeNames.amount : 8000,
+        AttributeNames.duration : 12,
+        AttributeNames.assets : "example_value",
+        AttributeNames.available_income : "example_value" ,
+        AttributeNames.id : 2,
+        AttributeNames.age : 47,
+        AttributeNames.employment : "more than 7 years",
+        AttributeNames.NN_recommendation : True,
+        AttributeNames.NN_confidence : 0.93
+    }
+    return example_output
