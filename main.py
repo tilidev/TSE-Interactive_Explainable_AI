@@ -237,6 +237,8 @@ def get_entire_instance_by_id(id: int):
     }
     return example_output
 
+# TODO: Add response model for api calls related to attributes (?)
+
 # Returns all attribute categories and for each category a list of all attributes in it
 @app.get("/attributes/categories")
 def attribute_categories():
@@ -246,3 +248,29 @@ def attribute_categories():
 @app.get("/attributes/constraints")
 def attribute_constraints():
     return attribute_constraints
+
+# Returns short descriptions for all attributes
+@app.get("/attributes/descriptions")
+def attribute_descriptions():
+    example_output = {
+        AttributeNames.balance : "The current balance of the applicant's checking account (in Euro)",
+        AttributeNames.duration : "The duration of the loan (in months)",
+        AttributeNames.history : "...",
+        AttributeNames.purpose : "...",
+        AttributeNames.amount : "...",
+        AttributeNames.savings : "...",
+        AttributeNames.employment : "...",
+        AttributeNames.available_income : "...",
+        AttributeNames.other_debtors : "...",
+        AttributeNames.residence : "...",
+        AttributeNames.assets : "...",
+        AttributeNames.age : "...",
+        AttributeNames.other_loans : "...",
+        AttributeNames.housing : "...",
+        AttributeNames.previous_loans : "...",
+        AttributeNames.job : "...",
+        AttributeNames.people_liable : "...",
+        AttributeNames.NN_recommendation : "The AI's recommendation whether the loan application should be approved or rejected",
+        AttributeNames.NN_confidence : "Indicates how confident the AI is in it's decision",
+    }
+
