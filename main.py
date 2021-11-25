@@ -1,8 +1,6 @@
 from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
-from pydantic import BaseModel
-from pydantic.fields import Field
 from constants import *
 from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousConstraint, CategoricalConstraint
 
@@ -172,25 +170,86 @@ def get_attribute_constraints():
 
 @app.get("attributes/descriptions", response_model=List[AttributeDescription])
 def get_attribute_descriptions():
-    example_output = {
-        AttributeNames.balance : "The current balance of the applicant's checking account (in Euro)",
-        AttributeNames.duration : "The duration of the loan (in months)",
-        AttributeNames.history : "...",
-        AttributeNames.purpose : "...",
-        AttributeNames.amount : "...",
-        AttributeNames.savings : "...",
-        AttributeNames.employment : "...",
-        AttributeNames.available_income : "...",
-        AttributeNames.other_debtors : "...",
-        AttributeNames.residence : "...",
-        AttributeNames.assets : "...",
-        AttributeNames.age : "...",
-        AttributeNames.other_loans : "...",
-        AttributeNames.housing : "...",
-        AttributeNames.previous_loans : "...",
-        AttributeNames.job : "...",
-        AttributeNames.people_liable : "...",
-        AttributeNames.NN_recommendation : "The AI's recommendation whether the loan application should be approved or rejected",
-        AttributeNames.NN_confidence : "Indicates how confident the AI is in it's decision",
-    }
+    example_output = [
+        {
+            attr_name : AttributeNames.balance,
+            description : "The current balance of the applicant's checking account (in Euro)"
+        },
+        {
+            attr_name : AttributeNames.duration,
+            description : "The duration of the loan (in months)"
+        },
+        {
+            attr_name : AttributeNames.history,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.purpose,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.amount,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.savings,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.employment,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.available_income,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.other_debtors,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.other_debtors,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.residence,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.assets,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.age,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.other_loans,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.housing,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.previous_loans,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.job,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.people_liable,
+            description : "..."
+        },
+        {
+            attr_name : AttributeNames.NN_recommendation,
+            description : "The AI's recommendation whether the loan application should be approved or rejected"
+        },
+        {
+            attr_name : AttributeNames.NN_confidence,
+            description : "Indicates how confident the AI is in it's decision"
+        }
+    ]
     return example_output

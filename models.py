@@ -8,7 +8,6 @@ class InstanceInfo(BaseModel):
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
     
     # TODO: change the types (most are strings now)
-    # TODO: add stuff like ai recommendation and confidence level
     ident : Optional[int] = Field(None ,alias=AttributeNames.ident.value)
     balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
     duration : Optional[str] = Field(None, alias=AttributeNames.duration.value)
@@ -31,27 +30,30 @@ class InstanceInfo(BaseModel):
     NN_confidence : Optional[float] = Field(None, le=1, ge=0, alias=AttributeNames.NN_confidence.value)
 
 class ContinuousFilter(BaseModel):
-    '''Defines the format for a continuous filter request body'''
+    '''Defines the JSON format for a continuous filter request body'''
     attr_name: AttributeNames = Field(alias=attr_name)
     lower_bound: float = Field(alias=lower_bound)
     upper_bound: float = Field(alias=upper_bound)
 
 class CategoricalFilter(BaseModel):
-    '''Defines the format for a categorical filter request body'''
+    '''Defines the JSON format for a categorical filter request body'''
     attr_name: AttributeNames = Field(alias=attr_name)
     values: List[str] = Field(alias=values)
 
 class CategoricalConstraint(BaseModel):
+    '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     type: str = Field(const=categorical, alias=type)
     values: List[str]
 
 class ContinuousConstraint(BaseModel):
+    '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     type: str = Field(const=continuous, alias=type)
     lower_bound: float = Field(alias=lower_bound)
     upper_bound: float = Field(alias=upper_bound)
 
 class AttributeDescription(BaseModel):
-    attr_name: str = Field(attr_name)
+    '''Defines the JSON format for the attribute's description'''
+    attr_name: str = Field(alias=attr_name)
     description: str = Field(alias=description)
