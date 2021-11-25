@@ -253,3 +253,32 @@ def get_attribute_descriptions():
         }
     ]
     return example_output
+
+@app.get("explanations/lvl2/lime", response_model=None)
+def lime_explanation_lvl_2():
+    pass
+
+@app.get("explanations/lvl2/shap", response_model=None)
+def shap_explanation_lvl_2():
+    pass
+
+@app.get("explanations/lvl2/dice", response_model=None)
+def dice_explanation_lvl_2():
+    pass
+
+@app.get("explanations/lvl3/lime", response_model=None)
+def lime_explanation_lvl_3():
+    pass
+
+@app.get("explanations/lvl3/shap", response_model=None)
+def shap_explanation_lvl_3():
+    pass
+
+@app.get("explanations/lvl3/dice", response_model=None)
+def dice_explanation_lvl_3():
+    pass
+
+# use session ids or something like that --> don't compute everything twice!!
+@app.post("explanations/modify")
+def modify_instance():
+    pass
