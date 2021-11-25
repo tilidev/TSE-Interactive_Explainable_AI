@@ -226,3 +226,13 @@ def get_entire_instance_by_id(id: int):
         AttributeNames.NN_confidence : 0.93
     }
     return example_output
+
+# Returns all attribute categories and for each category a list of all attributes in it
+@app.get("/attributes/categories")
+def attribute_categories():
+    return category_mapping
+
+# Returns the type and constraints for all attributes
+@app.get("/attributes/constraints")
+def attribute_constraints():
+    return attribute_constraints
