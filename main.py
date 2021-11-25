@@ -55,7 +55,7 @@ category_mapping = {
     "loan" : [AttributeNames.amount, AttributeNames.duration, AttributeNames.purpose, AttributeNames.people_liable]
 }
 
-attribute_constraints = {
+attribute_constraints_example = {
     # TODO: can all of this be done with Field() or schema() ??
     AttributeNames.balance : {
         type : categorical,
@@ -247,7 +247,8 @@ def attribute_categories():
 # Returns the type and constraints for all attributes
 @app.get("/attributes/constraints")
 def attribute_constraints():
-    return attribute_constraints
+    print(attribute_constraints)
+    return attribute_constraints_example
 
 # Returns short descriptions for all attributes
 @app.get("/attributes/descriptions")
@@ -273,4 +274,5 @@ def attribute_descriptions():
         AttributeNames.NN_recommendation : "The AI's recommendation whether the loan application should be approved or rejected",
         AttributeNames.NN_confidence : "Indicates how confident the AI is in it's decision",
     }
+    return example_output
 
