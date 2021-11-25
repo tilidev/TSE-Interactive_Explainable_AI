@@ -215,15 +215,25 @@ def table_view(
 @app.get("/instance/{id}", response_model=InstanceInfo)
 def get_entire_instance_by_id(id: int):
     example_output = {
-        AttributeNames.amount : 8000,
+        AttributeNames.balance : "no account",
         AttributeNames.duration : 12,
-        AttributeNames.assets : "example_value",
-        AttributeNames.available_income : "example_value" ,
-        AttributeNames.id : 2,
-        AttributeNames.age : 47,
+        AttributeNames.history : "paid back all previous loans",
+        AttributeNames.purpose : "new car",
+        AttributeNames.amount : 5000,
+        AttributeNames.savings : "above 1000 EUR" ,
         AttributeNames.employment : "more than 7 years",
+        AttributeNames.available_income : "between 20 and 25%",
+        AttributeNames.other_debtors : "none",
+        AttributeNames.residence : "more than 7 years",
+        AttributeNames.assets : "none",
+        AttributeNames.age : 47,
+        AttributeNames.other_loans : "no additional loans" ,
+        AttributeNames.housing : "for free",
+        AttributeNames.previous_loans : 1,
+        AttributeNames.job : "skilled",
+        AttributeNames.people_liable : "0 to 2",
         AttributeNames.NN_recommendation : True,
-        AttributeNames.NN_confidence : 0.93
+        AttributeNames.NN_confidence : 0.93,
     }
     return example_output
 
