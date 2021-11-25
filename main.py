@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 from pydantic.schema import schema
 from enum import Enum
+from enums import AttributeNames
+import models
 
 app = FastAPI()
 
@@ -17,37 +19,6 @@ categorical = "categorical"
 continuous = "continuous"
 lower_bound = "lower_bound"
 upper_bound = "upper_bound"
-
-
-class AttributeNames(str, Enum):
-    '''This class is used to have a central definition of how the attributes are referenced'''
-
-    # attributes in the dataset
-    balance = "balance"
-    duration = "duration"
-    history = "history"
-    purpose = "purpose"
-    amount = "amount"
-    savings = "savings"
-    employment = "employment"
-    available_income = "available_income"
-    #status_sex = "status_sex"
-    residence = "residence"
-    assets = "assets"
-    age = "age"
-    other_loans = "other_loans"
-    housing = "housing"
-    previous_loans = "previous_loans"
-    job = "job"
-    #telephone = "telephone"
-    #foreign_worker = "foreign_worker"
-    other_debtors = "other_debtors"
-    people_liable = "people_liable"
-
-    # meta-attributes
-    id = "id"
-    NN_recommendation = "NN_recommendation"
-    NN_confidence = "NN_confidence"
 
 category_mapping = {
     "financial" : [AttributeNames.history, AttributeNames.savings, AttributeNames.balance, AttributeNames.available_income, AttributeNames.assets, AttributeNames.other_loans, AttributeNames.other_debtors, AttributeNames.previous_loans],
@@ -251,7 +222,7 @@ def attribute_constraints():
     return attribute_constraints_example
 
 # Returns short descriptions for all attributes
-@app.get("/attributes/descriptions")
+@app.get("/attributes/descriptions", response_model = models.AttributeDescriptionModel)
 def attribute_descriptions():
     example_output = {
         AttributeNames.balance : "The current balance of the applicant's checking account (in Euro)",
