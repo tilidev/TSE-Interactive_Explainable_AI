@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousConstraint, CategoricalConstraint, LimeAttribute
+from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute
 
 app = FastAPI()
 
@@ -192,7 +192,7 @@ def get_entire_instance_by_id(id: int):
     }
     return example_output 
 
-@app.get("/attributes/information", response_model=List[Union[CategoricalConstraint, ContinuousConstraint]])
+@app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
 def get_attribute_constraints():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
