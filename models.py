@@ -40,18 +40,22 @@ class CategoricalFilter(BaseModel):
     attr_name: AttributeNames = Field(alias=attr_name)
     values: List[str] = Field(alias=values)
 
-class CategoricalConstraint(BaseModel):
+class CategoricalInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     type: str = Field(const=categorical, alias=type)
+    category: str = Field(alias=category)
     values: List[str]
+    description: str = Field(alias=description)
 
-class ContinuousConstraint(BaseModel):
+class ContinuousInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     type: str = Field(const=continuous, alias=type)
+    category: str = Field(alias=category)
     lower_bound: float = Field(alias=lower_bound)
     upper_bound: float = Field(alias=upper_bound)
+    description: str = Field(alias=description)
 
 class AttributeDescription(BaseModel):
     '''Defines the JSON format for the attribute's description'''

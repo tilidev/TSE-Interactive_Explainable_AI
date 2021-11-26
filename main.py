@@ -12,106 +12,123 @@ attribute_constraints = [
         attr_name : AttributeNames.balance,
         type : categorical,
         category : financial_cat,
-        values : [] #List[str]
+        values : [], #List[str]
+        description : "The current balance of the applicant's checking account (in Euro)"
     },
     {
         attr_name : AttributeNames.duration,
         type : continuous,
         category : loan_cat,
         lower_bound : 0, #float
-        upper_bound : 1 #float
+        upper_bound : 1, #float
+        description : "The duration of the loan (in months)"
     },
     {
         attr_name : AttributeNames.history,
         type : categorical,
         category : financial_cat,
-        values : [] 
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.purpose,
         type : categorical,
         category : loan_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.amount,
         type : continuous,
         category : loan_cat,
         lower_bound : 0,
-        upper_bound : 1
+        upper_bound : 1,
+        description : "..."
     },
     {
         attr_name : AttributeNames.savings,
         type : categorical,
         category : financial_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.employment,
         type : categorical,
         category : personal_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.available_income,
         type : categorical,
         category : financial_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.assets,
         type : categorical,
         category : financial_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.age,
         type : continuous,
         category : personal_cat,
         lower_bound : 16,
-        upper_bound : 100
+        upper_bound : 100,
+        description : "..."
     },
     {
         attr_name : AttributeNames.other_loans,
         type : categorical,
         category : financial_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.housing,
         type : categorical,
         category : personal_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.previous_loans,
         type : categorical,
         category : financial_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.job,
         type : categorical,
         category : personal_cat,
-        values : []
+        values : [],
+        description : "..."
     },
     {
         attr_name : AttributeNames.other_debtors,
         type : categorical,
         category : loan_cat,
-        values : []
+        values : [],
+        description : "The AI's recommendation whether the loan application should be approved or rejected"
     },
     {
         attr_name : AttributeNames.people_liable,
         type : categorical,
         category : loan_cat,
-        values : []
+        values : [],
+        description : "Indicates how confident the AI is in it's decision"
     }
     # TODO: fill in the rest of the constraints
     # TODO: use smart lower and upper bounds as they will be important for filtering
@@ -175,96 +192,10 @@ def get_entire_instance_by_id(id: int):
     }
     return example_output 
 
-@app.get("/attribute/constraints", response_model=List[Union[CategoricalConstraint, ContinuousConstraint]])
+@app.get("/attributes/information", response_model=List[Union[CategoricalConstraint, ContinuousConstraint]])
 def get_attribute_constraints():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
-
-@app.get("attributes/descriptions", response_model=List[AttributeDescription])
-def get_attribute_descriptions():
-    example_output = [
-        {
-            attr_name : AttributeNames.balance,
-            description : "The current balance of the applicant's checking account (in Euro)"
-        },
-        {
-            attr_name : AttributeNames.duration,
-            description : "The duration of the loan (in months)"
-        },
-        {
-            attr_name : AttributeNames.history,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.purpose,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.amount,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.savings,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.employment,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.available_income,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.other_debtors,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.other_debtors,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.residence,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.assets,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.age,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.other_loans,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.housing,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.previous_loans,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.job,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.people_liable,
-            description : "..."
-        },
-        {
-            attr_name : AttributeNames.NN_recommendation,
-            description : "The AI's recommendation whether the loan application should be approved or rejected"
-        },
-        {
-            attr_name : AttributeNames.NN_confidence,
-            description : "Indicates how confident the AI is in it's decision"
-        }
-    ]
-    return example_output
 
 @app.get("explanations/lvl2/lime", response_model=List[LimeAttribute])
 def lime_explanation_lvl_2():
