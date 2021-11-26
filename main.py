@@ -199,8 +199,16 @@ async def attribute_constraints():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
 
-@app.get("/explanations/lvl2/lime", response_model=List[LimeAttribute])
-async def lime_explanation_lvl_2():
+@app.post("/explanations/lvl2/lime", response_model=List[LimeAttribute])
+async def lime_explanation_lvl_2(instance: InstanceInfo):
+    '''Defines how the request and response for a <b>LIME</b> explanation call should look like.
+    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
+    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
+    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request) 
+    ___
+    Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
+    In that case, the server can handle the explanation generation using the values of the sent attributes.
+    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>).'''
     pass
 
 @app.get("/explanations/lvl2/shap", response_model=None)
@@ -223,7 +231,7 @@ async def shap_explanation_lvl_3():
 async def dice_explanation_lvl_3():
     pass
 
-# use store modified explanation in front-end
+# store modified explanation in front-end
 @app.post("/explanations/modify")
 async def modify_instance():
     pass
