@@ -29,6 +29,15 @@ class AttributeNames(str, Enum):
     NN_recommendation = "NN_recommendation"
     NN_confidence = "NN_confidence"
 
+# standard configuration for table view
+standard_attributes = [
+    AttributeNames.amount,
+    AttributeNames.duration,
+    AttributeNames.balance,
+    AttributeNames.age,
+    AttributeNames.employment
+]
+
 # number definitions to re-use through the entire code
 row_limit = 20
 
@@ -40,11 +49,15 @@ categorical = "categorical"
 continuous = "continuous"
 lower_bound = "lower_bound"
 upper_bound = "upper_bound"
-description = "description"
+attr_description = "description"
 influence = "influence"
 positive_influence = "positive_influence"
 category = "category"
-
 financial_cat = "financial"
 personal_cat = "personal"
 loan_cat = "loan"
+filter = "filter"
+attributes = "attributes"
+sort_by = "sort_by"
+limit = "limit"
+offset = "offset"

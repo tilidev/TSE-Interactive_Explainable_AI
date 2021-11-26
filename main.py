@@ -6,7 +6,16 @@ from fastapi.params import Body, Query
 from constants import *
 from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute
 
-app = FastAPI()
+API_description = '''
+___
+### API: JSON key naming
+To change the key names, go to the file `constants.py`. This API uses the defined strings in
+`constants.py` as key aliases. All the `pydantic` models conform to using `pydantic.Field` with the constant strings
+as the public aliases. This leads to a better separation between the python naming norms and the API key names.
+'''
+
+app = FastAPI(description=API_description)
+
 
 # central definition of constraints, attribute type, category and values/bounds
 attribute_constraints = [
@@ -15,7 +24,7 @@ attribute_constraints = [
         type : categorical,
         category : financial_cat,
         values : [], #List[str]
-        description : "The current balance of the applicant's checking account (in Euro)"
+        attr_description : "The current balance of the applicant's checking account (in Euro)"
     },
     {
         attr_name : AttributeNames.duration,
@@ -23,21 +32,21 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 0, #float
         upper_bound : 1, #float
-        description : "The duration of the loan (in months)"
+        attr_description : "The duration of the loan (in months)"
     },
     {
         attr_name : AttributeNames.history,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.purpose,
         type : categorical,
         category : loan_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.amount,
@@ -45,42 +54,42 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 0,
         upper_bound : 1,
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.savings,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.employment,
         type : categorical,
         category : personal_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.available_income,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.assets,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.age,
@@ -88,61 +97,52 @@ attribute_constraints = [
         category : personal_cat,
         lower_bound : 16,
         upper_bound : 100,
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.other_loans,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.housing,
         type : categorical,
         category : personal_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.previous_loans,
         type : categorical,
         category : financial_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.job,
         type : categorical,
         category : personal_cat,
         values : [],
-        description : "..."
+        attr_description : "..."
     },
     {
         attr_name : AttributeNames.other_debtors,
         type : categorical,
         category : loan_cat,
         values : [],
-        description : "The AI's recommendation whether the loan application should be approved or rejected"
+        attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     },
     {
         attr_name : AttributeNames.people_liable,
         type : categorical,
         category : loan_cat,
         values : [],
-        description : "Indicates how confident the AI is in it's decision"
+        attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
     }
     # TODO: fill in the rest of the constraints
     # TODO: use smart lower and upper bounds as they will be important for filtering
-]
-
-# standard configuration for table view
-standard_attributes = [
-    AttributeNames.amount,
-    AttributeNames.duration,
-    AttributeNames.balance,
-    AttributeNames.age,
-    AttributeNames.employment
 ]
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
