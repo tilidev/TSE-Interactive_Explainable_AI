@@ -1,3 +1,4 @@
+from fastapi.params import Body
 from pydantic import BaseModel, Field
 from typing import Optional, List, Union
 
@@ -41,10 +42,10 @@ class CategoricalFilter(BaseModel):
     values: List[str] = Field(alias=values)
 
 class TableRequest(BaseModel):
-    filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = Field(None, alias=filter),
-    attributes: List[AttributeNames] = Field(standard_attributes, alias=attributes),
-    sort_by: AttributeNames = Field(AttributeNames.ident, alias=sort_by),
-    limit: int = Field(row_limit, alias=limit),
+    filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = Field(None, alias=filter)
+    attributes: List[AttributeNames] = Field(standard_attributes, alias=attributes)
+    sort_by: AttributeNames = Field(AttributeNames.ident, alias=sort_by)
+    limit: int = Field(row_limit, alias=limit)
     offset: int = Field(0, alias=offset)
 
 class CategoricalInformation(BaseModel):

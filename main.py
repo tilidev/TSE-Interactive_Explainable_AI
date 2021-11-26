@@ -4,9 +4,10 @@ from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute
+from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, TableRequest
 
 API_description = '''
+
 ___
 ### API: JSON key naming
 To change the key names, go to the file `constants.py`. This API uses the defined strings in
@@ -146,13 +147,7 @@ attribute_constraints = [
 ]
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
-async def table_view(
-    filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None,
-    attributes: List[AttributeNames] = standard_attributes,
-    sort_by: AttributeNames = Body(AttributeNames.ident),
-    limit: int = Body(row_limit),
-    offset: int = Body(0)
-):
+async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
     
     example_result = [
