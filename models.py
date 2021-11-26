@@ -51,7 +51,7 @@ class TableRequest(BaseModel):
 class CategoricalInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
-    type: str = Field(const=categorical, alias=type)
+    type: str = Field(categorical, const=True, alias=type)
     category: str = Field(alias=category)
     values: List[str]
     description: str = Field(alias=attr_description)
@@ -59,7 +59,7 @@ class CategoricalInformation(BaseModel):
 class ContinuousInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
-    type: str = Field(const=continuous, alias=type)
+    type: str = Field(continuous, const=True, alias=type)
     category: str = Field(alias=category)
     lower_bound: float = Field(alias=lower_bound)
     upper_bound: float = Field(alias=upper_bound)

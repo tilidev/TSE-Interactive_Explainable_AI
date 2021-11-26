@@ -190,16 +190,18 @@ async def entire_instance_by_id(id: int):
     return example_output 
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
-async def attribute_constraints():
+async def attribute_informations():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
 
-@app.post("/explanations/lvl2/lime", response_model=List[LimeAttribute])
+@app.post("/explanations/lime", response_model=List[LimeAttribute])
 async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[int] = None):
     '''Defines how the request and response for a <b>LIME</b> explanation call should look like.
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request) 
+    The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
+    It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
     ___
     Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
     In that case, the server can handle the explanation generation using the values of the sent attributes.
@@ -213,10 +215,6 @@ async def shap_explanation_lvl_2():
 
 @app.get("/explanations/lvl2/dice", response_model=None)
 async def dice_explanation_lvl_2():
-    pass
-
-@app.get("/explanations/lvl3/lime", response_model=None)
-async def lime_explanation_lvl_3():
     pass
 
 @app.get("/explanations/lvl3/shap", response_model=None)
