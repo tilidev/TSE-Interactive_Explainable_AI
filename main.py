@@ -1,8 +1,10 @@
+import uvicorn
+
 from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute
+from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute
 
 app = FastAPI()
 
@@ -144,7 +146,7 @@ standard_attributes = [
 ]
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
-def table_view(
+async def table_view(
     filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = None,
     attributes: List[AttributeNames] = standard_attributes,
     sort_by: AttributeNames = Body(AttributeNames.ident),
@@ -177,7 +179,7 @@ def table_view(
 
 
 @app.get("/instance/{id}", response_model=InstanceInfo)
-def get_entire_instance_by_id(id: int):
+async def entire_instance_by_id(id: int):
     '''Returns an entire instance information for the lvl2 view'''
     example_output = {
         AttributeNames.amount : 8000,
@@ -193,35 +195,39 @@ def get_entire_instance_by_id(id: int):
     return example_output 
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
-def get_attribute_constraints():
+async def attribute_constraints():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
 
-@app.get("explanations/lvl2/lime", response_model=List[LimeAttribute])
-def lime_explanation_lvl_2():
+@app.get("/explanations/lvl2/lime", response_model=List[LimeAttribute])
+async def lime_explanation_lvl_2():
     pass
 
-@app.get("explanations/lvl2/shap", response_model=None)
-def shap_explanation_lvl_2():
+@app.get("/explanations/lvl2/shap", response_model=None)
+async def shap_explanation_lvl_2():
     pass
 
-@app.get("explanations/lvl2/dice", response_model=None)
-def dice_explanation_lvl_2():
+@app.get("/explanations/lvl2/dice", response_model=None)
+async def dice_explanation_lvl_2():
     pass
 
-@app.get("explanations/lvl3/lime", response_model=None)
-def lime_explanation_lvl_3():
+@app.get("/explanations/lvl3/lime", response_model=None)
+async def lime_explanation_lvl_3():
     pass
 
-@app.get("explanations/lvl3/shap", response_model=None)
-def shap_explanation_lvl_3():
+@app.get("/explanations/lvl3/shap", response_model=None)
+async def shap_explanation_lvl_3():
     pass
 
-@app.get("explanations/lvl3/dice", response_model=None)
-def dice_explanation_lvl_3():
+@app.get("/explanations/lvl3/dice", response_model=None)
+async def dice_explanation_lvl_3():
     pass
 
-# use session ids or something like that --> don't compute everything twice!!
-@app.post("explanations/modify")
-def modify_instance():
+# use store modified explanation in front-end
+@app.post("/explanations/modify")
+async def modify_instance():
     pass
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -57,11 +57,6 @@ class ContinuousInformation(BaseModel):
     upper_bound: float = Field(alias=upper_bound)
     description: str = Field(alias=description)
 
-class AttributeDescription(BaseModel):
-    '''Defines the JSON format for the attribute's description'''
-    attr_name: AttributeNames = Field(alias=attr_name)
-    description: str = Field(alias=description)
-
 class LimeAttribute(BaseModel):
     '''Defines the JSON format for a lime explanation response'''
     attr_name : AttributeNames = Field(alias=attr_name)
