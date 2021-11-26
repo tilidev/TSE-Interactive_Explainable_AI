@@ -6,99 +6,111 @@ from models import AttributeDescription, InstanceInfo, ContinuousFilter, Categor
 
 app = FastAPI()
 
-category_mapping = {
-    "financial" : [AttributeNames.history, AttributeNames.savings, AttributeNames.balance, AttributeNames.available_income, AttributeNames.assets, AttributeNames.other_loans, AttributeNames.other_debtors, AttributeNames.previous_loans],
-    "personal" : [AttributeNames.age, AttributeNames.job, AttributeNames.housing, AttributeNames.residence, AttributeNames.employment],
-    "loan" : [AttributeNames.amount, AttributeNames.duration, AttributeNames.purpose, AttributeNames.people_liable]
-}
-
+# central definition of constraints, attribute type, category and values/bounds
 attribute_constraints = [
     {
         attr_name : AttributeNames.balance,
         type : categorical,
+        category : financial_cat,
         values : [] #List[str]
     },
     {
         attr_name : AttributeNames.duration,
         type : continuous,
+        category : loan_cat,
         lower_bound : 0, #float
         upper_bound : 1 #float
     },
     {
         attr_name : AttributeNames.history,
         type : categorical,
+        category : financial_cat,
         values : [] 
     },
     {
         attr_name : AttributeNames.purpose,
         type : categorical,
+        category : loan_cat,
         values : []
     },
     {
         attr_name : AttributeNames.amount,
         type : continuous,
+        category : loan_cat,
         lower_bound : 0,
         upper_bound : 1
     },
     {
         attr_name : AttributeNames.savings,
         type : categorical,
+        category : financial_cat,
         values : []
     },
     {
         attr_name : AttributeNames.employment,
         type : categorical,
+        category : personal_cat,
         values : []
     },
     {
         attr_name : AttributeNames.available_income,
         type : categorical,
+        category : financial_cat,
         values : []
     },
     {
         attr_name : AttributeNames.residence,
         type : categorical,
+        category : personal_cat,
         values : []
     },
     {
         attr_name : AttributeNames.assets,
         type : categorical,
+        category : financial_cat,
         values : []
     },
     {
         attr_name : AttributeNames.age,
         type : continuous,
+        category : personal_cat,
         lower_bound : 16,
         upper_bound : 100
     },
     {
         attr_name : AttributeNames.other_loans,
         type : categorical,
+        category : financial_cat,
         values : []
     },
     {
         attr_name : AttributeNames.housing,
         type : categorical,
+        category : personal_cat,
         values : []
     },
     {
         attr_name : AttributeNames.previous_loans,
         type : categorical,
+        category : financial_cat,
         values : []
     },
     {
         attr_name : AttributeNames.job,
         type : categorical,
+        category : personal_cat,
         values : []
     },
     {
         attr_name : AttributeNames.other_debtors,
         type : categorical,
+        category : loan_cat,
         values : []
     },
     {
         attr_name : AttributeNames.people_liable,
         type : categorical,
+        category : loan_cat,
         values : []
     }
     # TODO: fill in the rest of the constraints

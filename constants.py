@@ -43,3 +43,8 @@ upper_bound = "upper_bound"
 description = "description"
 influence = "influence"
 positive_influence = "positive_influence"
+category = "category"
+
+financial_cat = "financial"
+personal_cat = "personal"
+loan_cat = "loan"
