@@ -5,7 +5,7 @@ from typing import Optional, List, Union
 from constants import * 
 
 class InstanceInfo(BaseModel):
-    '''Defines how a JSON response for an instance information should look like.
+    '''Defines how a JSON model for an instance information should look like.
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
     
     # TODO: change the types (most are strings now)

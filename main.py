@@ -195,7 +195,7 @@ async def attribute_constraints():
     return attribute_constraints
 
 @app.post("/explanations/lvl2/lime", response_model=List[LimeAttribute])
-async def lime_explanation_lvl_2(instance: InstanceInfo):
+async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[int] = None):
     '''Defines how the request and response for a <b>LIME</b> explanation call should look like.
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
@@ -204,6 +204,7 @@ async def lime_explanation_lvl_2(instance: InstanceInfo):
     Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
     In that case, the server can handle the explanation generation using the values of the sent attributes.
     If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>).'''
+    
     pass
 
 @app.get("/explanations/lvl2/shap", response_model=None)
@@ -233,4 +234,4 @@ async def modify_instance():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=4000)
