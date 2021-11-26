@@ -8,7 +8,7 @@ class InstanceInfo(BaseModel):
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
     
     # TODO: change the types (most are strings now)
-    ident : Optional[int] = Field(None ,alias=AttributeNames.ident.value)
+    ident : int = Field(alias=AttributeNames.ident.value)
     balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
     duration : Optional[str] = Field(None, alias=AttributeNames.duration.value)
     history : Optional[str] = Field(None, alias=AttributeNames.history.value)
