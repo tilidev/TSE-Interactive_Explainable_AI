@@ -55,5 +55,11 @@ class ContinuousConstraint(BaseModel):
 
 class AttributeDescription(BaseModel):
     '''Defines the JSON format for the attribute's description'''
-    attr_name: str = Field(alias=attr_name)
+    attr_name: AttributeNames = Field(alias=attr_name)
     description: str = Field(alias=description)
+
+class LimeAttribute(BaseModel):
+    '''Defines the JSON format for a lime explanation response'''
+    attr_name : AttributeNames = Field(alias=attr_name)
+    influence : float = Field(alias=influence)
+    positive_influence: bool = Field(alias=positive_influence)

@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousConstraint, CategoricalConstraint
+from models import AttributeDescription, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousConstraint, CategoricalConstraint, LimeAttribute
 
 app = FastAPI()
 
@@ -254,7 +254,7 @@ def get_attribute_descriptions():
     ]
     return example_output
 
-@app.get("explanations/lvl2/lime", response_model=None)
+@app.get("explanations/lvl2/lime", response_model=List[LimeAttribute])
 def lime_explanation_lvl_2():
     pass
 
