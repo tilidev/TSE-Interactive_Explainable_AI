@@ -1,10 +1,11 @@
+from starlette.status import HTTP_202_ACCEPTED
 import uvicorn
 
 from typing import Any, Dict, Optional, List, Union
-from fastapi import FastAPI
-from fastapi.params import Body, Query
+from fastapi import FastAPI, status
+from fastapi.params import Body
 from constants import *
-from models import DiceCounterfactualResponse, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, ShapResponse, TableRequest
+from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 
 API_description = '''
 
@@ -194,9 +195,21 @@ async def attribute_informations():
     '''Returns a JSON with the constraints for each attribute.'''
     return attribute_constraints
 
-@app.post("/explanations/lime", response_model=List[LimeAttribute])
-async def lime_explanation(instance: InstanceInfo, num_features: Optional[int] = None):
-    '''Defines how the request and response for a <b>LIME</b> explanation call should look like.
+
+@app.post("explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
+async def schedule_explanation_generation(
+    instance: InstanceInfo,
+    exp_method: ExplanationMethod,
+    num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
+    is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
+    num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals"),
+):
+    '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
+    returns the information that the task has been started and returns a reference as well as a process id to check for & return the actual
+    explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
+    Only attributed specific to the explanation method (`exp_method`) will be considered.
+    ___
+    <h1>LIME</h1>
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
@@ -204,38 +217,47 @@ async def lime_explanation(instance: InstanceInfo, num_features: Optional[int] =
     The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
     It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
     ___
-    Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
-    In that case, the server can handle the explanation generation using the values of the sent attributes.
-    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>).'''
-    
-    pass
-
-@app.post("/explanations/shap", response_model=ShapResponse)
-async def shap_explanation(instance: InstanceInfo):
-    '''Defines how the request and response for a <b>SHAP</b> explanation call should look like.
+    <h1>SHAP</h1>
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
     Note that this method can thus be used for existing as well as modified instances.
     ___
-    Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
+    <h1>DICE</h1>
+    Only the modified attributes are set in the response items of the `counterfactuals` list.
+    Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
+    If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
+    As this computation process may take a lot of time, the process will be handled in a seperate background process.
+    The Front-End should implement some kind of information for the user, that a long computation should be expected. The number of counterfactuals
+    is limited to 15
+    ___
+    <b>Notice</b> that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
     In that case, the server can handle the explanation generation using the values of the sent attributes.
-    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>).'''
+    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
+    '''
+    # TODO implement background task generation, queue, etc.
+    pass
+
+@app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True)
+async def lime_explanation(process_id: int):
+    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
+    Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
+    
+    pass
+
+@app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
+async def shap_explanation(process_id: int):
+    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
+    Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
     pass
 
 @app.get("/explanations/lvl2/dice", response_model=None)
 async def dice_explanation_lvl_2():
     pass
 
-@app.post("/explanations/lvl3/dice", response_model=DiceCounterfactualResponse)
-async def dice_explanation_lvl_3(instance: InstanceInfo, is_modified: bool = Body(False), num_cfs: Optional[int] = Body(None, le=15)):
-    '''Returns the counterfactuals for the request. Only the modified attributes are set in the response items of the `counterfactuals` list.
-    
-    Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
-    If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
-    As this computation process may take a lot of time, the process will be handled in a seperate background process.
-    The Front-End should implement some kind of information for the user, that a long computation should be expected. The number of counterfactuals
-    is limited to 15'''
+@app.get("/explanations/lvl3/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
+async def dice_explanation_lvl_3(process_id: int):
+    '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
 
 

@@ -65,22 +65,38 @@ class ContinuousInformation(BaseModel):
     upper_bound: float = Field(alias=upper_bound)
     description: str = Field(alias=attr_description)
 
-class LimeAttribute(BaseModel):
-    '''Defines the JSON format for an element of the <b>LIME</b> explanation'''
-    attr_name : AttributeNames = Field(alias=attr_name)
-    influence : float = Field(alias=influence)
+class ExplanationTaskScheduler(BaseModel):
+    '''This class gives a response to monitor the status of the explanations which might take a long time in computation.
+    with the href and the process_id, the front-end can send requests to the api to get the explanation object back.'''
+    status: ResponseStatus = Field(alias=status)
+    process_id: int = Field(alias=process_id)
+    href: str = Field(alias=href)
+
+class LimeResponse(BaseModel):
+    '''JSON format for `LIME` model response.
+    The actual results are only returned if the process is terminated.'''
+    class LimeAttribute(BaseModel):
+        attr_name : AttributeNames = Field(alias=attr_name)
+        influence : float = Field(alias=influence)
+    status: ResponseStatus = Field(alias=status)
+    values: Optional[List[LimeAttribute]] = Field(None, alias=values, description="The <b>LIME</b> results.\n`None`, when process has not terminated.")
 
 class ShapResponse(BaseModel):
-    '''JSON format for `SHAP` model response'''
+    '''JSON format for `SHAP` model response. The actual results are only returned if the process is terminated.'''
     class ShapAttribute(BaseModel):
         '''Defines the JSON format for an element of the <b>SHAP</b> explanation'''
         attr_name: AttributeNames = Field(alias=attr_name)
         influence: float = Field(alias=influence)
-    base_value: float = Field(alias=base_value, description="The model's expected prediciton outcome")
-    values: List[ShapAttribute] = Field(alias=values)
+    status: ResponseStatus = Field(alias=status)
+    base_value: Optional[float] = Field(None, alias=base_value, description="The model's expected prediciton outcome which is used in the plot.\n`None`, when process has not terminated.")
+    values: Optional[List[ShapAttribute]] = Field(None, alias=values, description="The <b>SHAP</b> results.\n`None`, when process has not terminated.")
 
 class DiceCounterfactualResponse(BaseModel):
-    '''Will only set the modified attributes in the counterfactuals (`List[InstanceInfo]`)'''
-    counterfactuals: List[InstanceInfo] = Field(alias=counterfactuals)
-    
+    '''JSON format for `DICE` model response.
+    The actual results are only returned if the process is terminated.
+    Will only set the modified attributes in the counterfactuals (`List[InstanceInfo]`)
+    The `couterfactuals` are to be expected when the `status` is "terminated"'''
+    status: ResponseStatus = Field(alias=status)
+    counterfactuals: Optional[List[InstanceInfo]] = Field(None, alias=counterfactuals, description="The <b>DICE</b> results. \n`None`, when process has not terminated.")
+
 
