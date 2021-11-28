@@ -209,8 +209,8 @@ async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[
     
     pass
 
-@app.get("/explanations/shap", response_model=ShapResponse)
-async def shap_explanation_lvl_2():
+@app.post("/explanations/shap", response_model=ShapResponse)
+async def shap_explanation_lvl_2(instance: InstanceInfo):
     pass
 
 @app.get("/explanations/lvl2/dice", response_model=None)
