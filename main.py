@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, ShapResponse, TableRequest
+from models import DiceCounterfactualResponse, InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, ShapResponse, TableRequest
 
 API_description = '''
 
@@ -195,11 +195,12 @@ async def attribute_informations():
     return attribute_constraints
 
 @app.post("/explanations/lime", response_model=List[LimeAttribute])
-async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[int] = None):
+async def lime_explanation(instance: InstanceInfo, num_features: Optional[int] = None):
     '''Defines how the request and response for a <b>LIME</b> explanation call should look like.
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
-    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request) 
+    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
+    Note that this method can thus be used for existing as well as modified instances.
     The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
     It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
     ___
@@ -210,26 +211,33 @@ async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[
     pass
 
 @app.post("/explanations/shap", response_model=ShapResponse)
-async def shap_explanation_lvl_2(instance: InstanceInfo):
+async def shap_explanation(instance: InstanceInfo):
+    '''Defines how the request and response for a <b>SHAP</b> explanation call should look like.
+    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
+    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
+    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
+    Note that this method can thus be used for existing as well as modified instances.
+    ___
+    Notice that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
+    In that case, the server can handle the explanation generation using the values of the sent attributes.
+    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>).'''
     pass
 
 @app.get("/explanations/lvl2/dice", response_model=None)
 async def dice_explanation_lvl_2():
     pass
 
-@app.get("/explanations/lvl3/shap", response_model=None)
-async def shap_explanation_lvl_3():
-    pass
-
-@app.get("/explanations/lvl3/dice", response_model=None)
-async def dice_explanation_lvl_3():
-    pass
-
-# store modified explanation in front-end
-@app.post("/explanations/modify")
-async def modify_instance():
+@app.post("/explanations/lvl3/dice", response_model=DiceCounterfactualResponse)
+async def dice_explanation_lvl_3(instance: InstanceInfo, is_modified: bool = Body(False), num_cfs: Optional[int] = Body(None, le=15)):
+    '''Returns the counterfactuals for the request. Only the modified attributes are set in the response items of the `counterfactuals` list.
+    
+    Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
+    If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
+    As this computation process may take a lot of time, the process will be handled in a seperate background process.
+    The Front-End should implement some kind of information for the user, that a long computation should be expected. The number of counterfactuals
+    is limited to 15'''
     pass
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=4000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
