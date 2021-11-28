@@ -66,7 +66,16 @@ class ContinuousInformation(BaseModel):
     description: str = Field(alias=attr_description)
 
 class LimeAttribute(BaseModel):
-    '''Defines the JSON format for a lime explanation response'''
+    '''Defines the JSON format for an element of the `LIME` explanation'''
     attr_name : AttributeNames = Field(alias=attr_name)
     influence : float = Field(alias=influence)
-    positive_influence: bool = Field(alias=positive_influence)
+
+class ShapResponse(BaseModel):
+    '''JSON format for SHAP model response'''
+    class ShapAttribute(BaseModel):
+        '''Defines the JSON format for an element of the `SHAP` explanation'''
+        attr_name: AttributeNames = Field(alias=attr_name)
+        influence: float = Field(alias=influence)
+    base_value: float = Field(alias=base_value, description="The model's expected prediciton outcome")
+    values: List[ShapAttribute] = Field(alias=values)
+

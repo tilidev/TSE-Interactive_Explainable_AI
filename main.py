@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body, Query
 from constants import *
-from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, TableRequest
+from models import InstanceInfo, ContinuousFilter, CategoricalFilter, ContinuousInformation, CategoricalInformation, LimeAttribute, ShapResponse, TableRequest
 
 API_description = '''
 
@@ -209,7 +209,7 @@ async def lime_explanation_lvl_2(instance: InstanceInfo, num_features: Optional[
     
     pass
 
-@app.get("/explanations/lvl2/shap", response_model=None)
+@app.get("/explanations/shap", response_model=ShapResponse)
 async def shap_explanation_lvl_2():
     pass
 
