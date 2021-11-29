@@ -8,7 +8,8 @@ from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 
 API_description = '''
-
+# TSE: Explainable Artificial Intelligence - API
+## authors: Isabelle Konrad, Felix Hasse, Nicolas Kiefer, Tilio Schulze
 ___
 ### API: JSON key naming
 To change the key names, go to the file `constants.py`. This API uses the defined strings in
@@ -242,7 +243,6 @@ async def schedule_explanation_generation(
 async def lime_explanation(process_id: int):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
-    
     pass
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
