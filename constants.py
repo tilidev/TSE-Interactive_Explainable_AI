@@ -40,6 +40,7 @@ class ResponseStatus(str, Enum):
     scheduled = "scheduled"
     running = "running"
     terminated = "terminated"
+    timeout = "timeout"
 
 # standard configuration for table view
 standard_attributes = [

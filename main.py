@@ -251,12 +251,8 @@ async def shap_explanation(process_id: int):
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
     pass
 
-@app.get("/explanations/lvl2/dice", response_model=None)
-async def dice_explanation_lvl_2():
-    pass
-
-@app.get("/explanations/lvl3/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
-async def dice_explanation_lvl_3(process_id: int):
+@app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
+async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
 
