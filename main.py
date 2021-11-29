@@ -41,14 +41,14 @@ attribute_constraints = [
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "How reliably the applicant handled previous or current loans"
     },
     {
         attr_name : AttributeNames.purpose,
         type : categorical,
         category : loan_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "What the money from the loan will be used for"
     },
     {
         attr_name : AttributeNames.amount,
@@ -56,42 +56,42 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 0,
         upper_bound : 1,
-        attr_description : "..."
+        attr_description : "How much money the applicant wants to lend (in euros)"
     },
     {
         attr_name : AttributeNames.savings,
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Amount of savings at that bank (in euros)"
     },
     {
         attr_name : AttributeNames.employment,
         type : categorical,
         category : personal_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Duration of current applicant's current employment"
     },
     {
         attr_name : AttributeNames.available_income,
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Percentage of income that the applicant could use for repaying the loan"
     },
     {
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "How long the applicant has lived in current housing"
     },
     {
         attr_name : AttributeNames.assets,
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Other resources the applicant might have"
     },
     {
         attr_name : AttributeNames.age,
@@ -99,35 +99,35 @@ attribute_constraints = [
         category : personal_cat,
         lower_bound : 16,
         upper_bound : 100,
-        attr_description : "..."
+        attr_description : "The age of the loan applicant"
     },
     {
         attr_name : AttributeNames.other_loans,
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Other installment plans"
     },
     {
         attr_name : AttributeNames.housing,
         type : categorical,
         category : personal_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Whether the applicant pays rent for housing, owns or lives for free"
     },
     {
         attr_name : AttributeNames.previous_loans,
         type : categorical,
         category : financial_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Number of loans the applicant has already had"
     },
     {
         attr_name : AttributeNames.job,
         type : categorical,
         category : personal_cat,
         values : [],
-        attr_description : "..."
+        attr_description : "Type of profession"
     },
     {
         attr_name : AttributeNames.other_debtors,
