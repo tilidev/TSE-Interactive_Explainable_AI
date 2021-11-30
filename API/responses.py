@@ -1,5 +1,6 @@
 
 from constants import AttributeNames
+from constants import ResponseStatus
 
 table_Response = [
    {
@@ -29,7 +30,7 @@ table_Response = [
             AttributeNames.balance : "no account",
             AttributeNames.age : 48,
             AttributeNames.employment : "less than 1 year",
-            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_recommendation : True,
             AttributeNames.NN_confidence : 0.78
    },
       {
@@ -49,7 +50,7 @@ table_Response = [
             AttributeNames.balance : "no balance",
             AttributeNames.age : 23,
             AttributeNames.employment : "between 1 and 4 years",
-            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_recommendation : True,
             AttributeNames.NN_confidence : 0.78
    },
       {
@@ -129,7 +130,7 @@ table_Response = [
             AttributeNames.balance : "above 200 EUR",
             AttributeNames.age : 42,
             AttributeNames.employment : "more than 7 years",
-            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_recommendation : True,
             AttributeNames.NN_confidence : 0.78
    },
       {
@@ -149,7 +150,7 @@ table_Response = [
             AttributeNames.balance : "no account",
             AttributeNames.age : 24,
             AttributeNames.employment : "between 1 and 4 years",
-            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_recommendation : True,
             AttributeNames.NN_confidence : 0.78
    },
       {
@@ -159,7 +160,7 @@ table_Response = [
             AttributeNames.balance : "above 200 EUR",
             AttributeNames.age : 74,
             AttributeNames.employment : "between 1 and 4 years",
-            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_recommendation : True,
             AttributeNames.NN_confidence : 0.78
    },
       {
@@ -202,7 +203,45 @@ table_Response = [
             AttributeNames.NN_recommendation : False,
             AttributeNames.NN_confidence : 0.78
    }
-
-
-
 ]
+
+instance_by_Id_Response = {
+
+            AttributeNames.ident : 0,
+            AttributeNames.amount : 1913.0,
+            AttributeNames.duration : 18,
+            AttributeNames.balance : "no balance",
+            AttributeNames.age : 36,
+            AttributeNames.employment : "less than 1 year",
+            AttributeNames.history : "paid back all previous loans",
+            AttributeNames.purpose : "retraining",
+            AttributeNames.savings : "between 500 and 1000 EUR",
+            AttributeNames.available_income : "between 20 and 25%",
+            AttributeNames.residence : "between 4 and 7 years",
+            AttributeNames.assets : "real estate",
+            AttributeNames.other_loans : "at other banks",
+            AttributeNames.housing : "own",
+            AttributeNames.previous_loans : 1,
+            AttributeNames.job : "skilled",
+            AttributeNames.NN_recommendation : False,
+            AttributeNames.NN_confidence : 0.78
+}
+
+explanations_Response = {
+            ResponseStatus.accepted,
+            12,
+            "http://127.0.0.1:8000/explantion-href"
+}
+
+explanations_Lime_Response = {
+
+}
+
+explanations_Shap_Response = {
+    
+}
+
+explanations_Dice_Response = {
+    
+}
+
