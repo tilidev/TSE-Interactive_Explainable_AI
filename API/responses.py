@@ -1,4 +1,6 @@
 
+from pydantic.errors import DurationError
+from API.main import attribute_informations
 from constants import AttributeNames
 from constants import ResponseStatus
 
@@ -221,11 +223,84 @@ instance_by_Id_Response = {
             AttributeNames.assets : "real estate",
             AttributeNames.other_loans : "at other banks",
             AttributeNames.housing : "own",
-            AttributeNames.previous_loans : 1,
+            AttributeNames.previous_loans : "1",
             AttributeNames.job : "skilled",
             AttributeNames.NN_recommendation : False,
             AttributeNames.NN_confidence : 0.78
 }
+
+attributes_information_Response = [
+   { 
+           AttributeNames.ident,
+           0.0,
+           999.0
+   },
+   {
+           AttributeNames.amount,
+           0.0,
+           100000000.0
+   },
+   {
+           AttributeNames.duration,
+           0.0,
+           100000000.0
+   },
+   {
+           AttributeNames.balance,
+           [{"no balance"}, {"no account"}, {"above 200 EUR"}, {"below 200 EUR"}]
+   },
+   {
+           AttributeNames.age,
+           14.0,
+           100.0
+   },
+   {
+           AttributeNames.employment,
+           [{"unemployed"}, {"less than 1 year"}, {"between 1 and 4 years"}, {"between 4  and 7 years"}]
+   },
+      {
+           AttributeNames.history,
+           [{"paid back all previous loans"}, {"paid back previous loans at this bank"}, {"no problems with current loans"}, {"delay payment of previous loans"}, {"other loans exist at other banks"}]
+   },
+      {
+           AttributeNames.purpose,
+           [{"retraining"}, {"new car"}, {"furniture"}, {"used car"}, {"other"}, {"domestic appliances"}, {"vacation"}, {"business"}, {"television"}, {"repair"}]
+   },
+      {
+           AttributeNames.savings,
+           [{"no savings account at this bank"}, {"between 100 and 500 EUR"}, {"between 500 and 1000 EUR"}, {"above 1000 EUR"}]
+   },
+      {
+           AttributeNames.available_income,
+           [{"less than 20%"}, {"between 20 and 25%"}, {"between 25 and 35%"}, {"more than 35%"}]
+   },
+      {
+           AttributeNames.residence,
+           [{"less than 1 year"}, {"between 1 and 4 years"}, {"between 4 and 7 years"}, {"more than 7 years"}]
+   },
+      {
+           AttributeNames.assets,
+           [{"real estate"}, {"car"}, {"life insurance"}, {"none"}]
+   },
+      {
+           AttributeNames.other_loans,
+           [{"no additional loans"}, {"at other banks"}, {"at department store"}]
+   },
+      {
+           AttributeNames.housing,
+           [{"own"}, {"rent"}, {"for free"}]
+   },
+   {
+           AttributeNames.previous_loans,
+           [{"1"}, {"2 or 3"}, {"4 or more"}]
+   },
+   {
+           AttributeNames.job,
+           [{"skilled"}, {"executive or self-employed"}, {"unskilled (permanent resident)"}, {"unskilled (non-resident)"}]
+   }
+]
+
+
 
 explanations_Response = {
             ResponseStatus.accepted,
