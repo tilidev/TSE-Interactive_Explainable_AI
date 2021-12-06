@@ -6,11 +6,8 @@ from fastapi import FastAPI, status
 from fastapi.params import Body
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
-<<<<<<< HEAD
 from responses import table_Response
-=======
 from fastapi.middleware.cors import CORSMiddleware
->>>>>>> VueExperimentsFelix
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
