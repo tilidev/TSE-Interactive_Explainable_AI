@@ -6,6 +6,7 @@ from fastapi import FastAPI, status
 from fastapi.params import Body
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
+from responses import table_Response
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -152,27 +153,7 @@ attribute_constraints = [
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
     
-    example_result = [
-        {
-            AttributeNames.amount : 3200,
-            AttributeNames.duration : 24,
-            AttributeNames.ident : 1,
-            AttributeNames.age : 23,
-            AttributeNames.employment : "between 1 and 4 years",
-            AttributeNames.NN_recommendation : False,
-            AttributeNames.NN_confidence : 0.78
-        },
-        {
-            AttributeNames.amount : 8000,
-            AttributeNames.duration : 12,
-            AttributeNames.ident : 2,
-            AttributeNames.age : 47,
-            AttributeNames.employment : "more than 7 years",
-            AttributeNames.NN_recommendation : True,
-            AttributeNames.NN_confidence : 0.93
-        }
-    ]
-    return example_result
+    return table_Response
 
 
 @app.get("/instance/{id}", response_model=InstanceInfo)
