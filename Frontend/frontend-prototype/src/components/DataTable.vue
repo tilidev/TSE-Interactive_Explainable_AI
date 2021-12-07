@@ -1,6 +1,14 @@
 <template>
   <div class="q-pa-md">
-    <q-table title="Data Table" :rows="rows" :columns="columns" row-key="id" />
+    <q-table
+      title="Data Table"
+      :rows="rows"
+      :columns="columns"
+      row-key="index"
+      virtual-scroll
+      v-model:pagination="pagination"
+      :rows-per-page-options="[0]"
+    />
   </div>
 </template>
 
@@ -43,18 +51,17 @@ export default {
   },
   methods: {
     createColumnsAndRows() {
-        for (const key of Object.keys(this.apiResponse[0])) {
-            this.columns.push({
-                name: key,
-                label: key,
-                field: key,
-                sortable: true,
-            }
-            )
-        }
-        for (const row of this.apiResponse) {
-            this.rows.push(row)
-        }
+      for (const key of Object.keys(this.apiResponse[0])) {
+        this.columns.push({
+          name: key,
+          label: key,
+          field: key,
+          sortable: true,
+        });
+      }
+      for (const row of this.apiResponse) {
+        this.rows.push(row);
+      }
     },
   },
 };
