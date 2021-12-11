@@ -6,6 +6,7 @@ from fastapi import FastAPI, status
 from fastapi.params import Body
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
+from fastapi.middleware.cors import CORSMiddleware
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -18,6 +19,16 @@ as the public aliases. This leads to a better separation between the python nami
 '''
 
 app = FastAPI(description=API_description)
+
+# This is necessary for allowing access to the API from different origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 # central definition of constraints, attribute type, category and values/bounds

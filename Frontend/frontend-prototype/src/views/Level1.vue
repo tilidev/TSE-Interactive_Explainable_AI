@@ -1,5 +1,14 @@
 <template>
-  <div class="about">
-    <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus ratione dolorum sequi. Vitae id, molestiae, eos dolor dignissimos quo, velit sunt odio quos ut corporis sapiente officiis tenetur praesentium harum.</h1>
+  <div>
+    <data-table></data-table>
   </div>
 </template>
+
+<script>
+import DataTable from "../components/DataTable.vue";
+
+export default {
+  components: { DataTable },
+};
+</script>
+
