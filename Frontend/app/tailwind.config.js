@@ -3,6 +3,10 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Graphik', 'sans-serif'],
+        serif: ['Merriweather', 'serif'],
+      },
       colors: {
         'primary': '#1770F6', // Primary accent color, currently blue
         'positive': '#2B7D2B', // Green, used to communicate approval
@@ -24,4 +28,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
+};
