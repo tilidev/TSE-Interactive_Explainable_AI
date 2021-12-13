@@ -1,7 +1,12 @@
 import pandas as pd
 import pickle
+from pandas.core.frame import DataFrame
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+import numpy as np
 
-def data_loader(path='Data/german.csv', raw=False, remove_outliers=True):
+#had to change path because wasn't found otherwise
+def data_loader(path='interactive_xai\API\Data\german.csv', raw=False, remove_outliers=True):
     """
     Loads the german credit data
     :param raw: If true, reads the raw dataframe, else it removes columns unused for training
@@ -55,10 +60,58 @@ def data_preprocess_nn(df, raw=False, remove_outliers=True):
     X = df.drop(columns='label')
     y = df['label'].values
 
+    
     # Scaling of numerical features
-    with open('Preprocessor_ey.pickle', 'rb') as f:
+    with open('interactive_xai/API/Preprocessor_ey.pickle', 'rb') as f:
         preprocessor = pickle.load(f)
-
+    
+    
     X = preprocessor.transform(X)
 
     return X, y
+
+
+#preprocessing steps from German_Credit_NN_final_ey
+def preprocessX(df):
+    X = df.drop(columns='label')
+
+    from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+    from sklearn.compose import ColumnTransformer
+
+
+    cat_cols = X.select_dtypes(include=['object', 'category']).columns.to_list()
+    num_cols = X.select_dtypes(include=['int64', 'float64']).columns.to_list()
+
+
+    preprocessor = ColumnTransformer(
+                transformers=[('num', MinMaxScaler(), num_cols),
+                            ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols)]
+            )
+
+    preprocessor.fit_transform(X)
+    X = preprocessor.transform(X)
+    return X
+
+def createDataframeForDB(deleteLabel=True):
+    df = data_loader()
+    data = preprocessX(df)
+    model = load_model('interactive_xai\API\smote_ey.tf')
+    results = model.predict(data)
+    recommendation = []
+
+    for i in range(results.size):
+        if results[i] >= 0.5:
+            recommendation.append('Reject')
+        else:
+            results[i] = 1 - results[i]
+            recommendation.append('Approve')
+            
+    df['NN_recommendation']= np.array(recommendation)
+    df['NN_confidence'] = results
+    if (deleteLabel):
+        df.drop(columns='label', inplace=True)
+
+    return df
+
+
+
