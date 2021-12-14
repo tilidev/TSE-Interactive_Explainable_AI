@@ -5,8 +5,8 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
 
-#had to change path because wasn't found otherwise
-def data_loader(path='interactive_xai\API\Data\german.csv', raw=False, remove_outliers=True):
+
+def data_loader(path='Data/german.csv', raw=False, remove_outliers=True):
     """
     Loads the german credit data
     :param raw: If true, reads the raw dataframe, else it removes columns unused for training
@@ -62,7 +62,7 @@ def data_preprocess_nn(df, raw=False, remove_outliers=True):
 
     
     # Scaling of numerical features
-    with open('interactive_xai/API/Preprocessor_ey.pickle', 'rb') as f:
+    with open('Preprocessor_ey.pickle', 'rb') as f:
         preprocessor = pickle.load(f)
     
     
@@ -95,7 +95,7 @@ def preprocessX(df):
 def createDataframeForDB(deleteLabel=True):
     df = data_loader()
     data = preprocessX(df)
-    model = load_model('interactive_xai\API\smote_ey.tf')
+    model = load_model('smote_ey.tf')
     results = model.predict(data)
     recommendation = []
 
