@@ -59,7 +59,14 @@ export default {
           },
         ],
       },
-      requestBody: {},
+      requestBody: {
+        filter: [
+        ],
+        attributes: ["amount", "duration", "balance", "age", "employment"],
+        sort_by: "id",
+        limit: 100,
+        offset: 0,
+      },
     };
   },
   components: { DataTable },
