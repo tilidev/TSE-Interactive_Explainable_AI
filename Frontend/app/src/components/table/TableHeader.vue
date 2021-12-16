@@ -1,5 +1,7 @@
 <template>
-  <div>This is the table header</div>
+      <tr>
+  <th v-for="label in labels" :key=label>{{label}}</th>
+  </tr>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div>{{rowData}}</div>
+  <tr><td v-for="value in rowData" :key="value">{{value}}</td></tr>
 </template>
 
 <script>

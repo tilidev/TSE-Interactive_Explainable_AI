@@ -1,11 +1,17 @@
 <template>
   <div>
-    <table-header :labels="data.labels" :descriptions="data.descriptions" :sorting="data.sorting" />
-    <table-row
-      v-for="row in data.rows"
-      :key="row.id"
-      :rowData="row"
-    ></table-row>
+    <table>
+      <thead>
+        <table-header
+          :labels="data.labels"
+          :descriptions="data.descriptions"
+          :sorting="data.sorting"
+        />
+      </thead>
+      <tbody>
+        <table-row v-for="row in data.rows" :key="row.id" :rowData="row" />
+      </tbody>
+    </table>
   </div>
 </template>
 

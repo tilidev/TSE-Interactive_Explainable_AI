@@ -14,7 +14,7 @@ export default {
         sorting: {
           attribute: "id",
           desc: false
-        }
+        },
         labels: {
           id: "#",
           balance: "Balance",
