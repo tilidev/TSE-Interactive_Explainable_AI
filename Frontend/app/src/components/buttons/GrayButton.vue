@@ -1,0 +1,19 @@
+<template>
+  <div>
+    <button
+      class="
+        btn
+        bg-gray-light
+        text-primary-text
+        px-4
+        py-2
+        rounded-md
+        text-lg
+        font-bold
+        m-4
+      "
+    >
+      <slot />
+    </button>
+  </div>
+</template>

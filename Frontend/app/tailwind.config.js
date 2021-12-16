@@ -8,6 +8,7 @@ module.exports = {
         serif: ['Merriweather', 'serif'],
       },
       colors: {
+        'primary-text': '#333333', // Primary text color
         'primary': '#1770F6', // Primary accent color, currently blue
         'primary-dark' : '#0046c2', // Used for hovering over a button
         'positive': '#2B7D2B', // Green, used to communicate approval
