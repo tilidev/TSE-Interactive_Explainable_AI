@@ -1,11 +1,21 @@
 <template>
-  <div>{{data}}</div>
+  <div>
+    <table-header :labels="data.labels" :descriptions="data.descriptions" :sorting="data.sorting" />
+    <table-row
+      v-for="row in data.rows"
+      :key="row.id"
+      :rowData="row"
+    ></table-row>
+  </div>
 </template>
 
 <script>
+import TableHeader from "./TableHeader.vue";
+import TableRow from "./TableRow.vue";
 export default {
-    props: {
-        data: Object,
-    }
+  props: {
+    data: Object,
+  },
+  components: { TableRow, TableHeader },
 };
 </script>

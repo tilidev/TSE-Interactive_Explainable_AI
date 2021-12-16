@@ -1,6 +1,6 @@
 <template>
   <div class="dataset">
-    <data-table v-bind:data="tableData"></data-table>
+    <data-table :data="tableData" />
   </div>
 </template>
 
@@ -11,6 +11,10 @@ export default {
   data() {
     return {
       tableData: {
+        sorting: {
+          attribute: "id",
+          desc: false
+        }
         labels: {
           id: "#",
           balance: "Balance",
