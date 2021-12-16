@@ -13,7 +13,7 @@ export default {
       tableData: {
         sorting: {
           attribute: "id",
-          desc: false
+          desc: false,
         },
         labels: {
           id: "#",
@@ -35,37 +35,61 @@ export default {
         },
         rows: [
           {
-            id: "1",
-            balance: "Above 200 EUR",
-            duration: "48",
-            amount: "14000 EUR",
-            purpose: "new car",
-            NN_recommendation: "Approve",
-            NN_confidence: 0.9,
+            attributes: {
+              id: "1",
+              balance: "Above 200 EUR",
+              duration: "48",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            results: {
+              NN_recommendation: "Approve",
+              NN_confidence: 0.9,
+            },
           },
           {
-            id: "1",
-            balance: "Above 200 EUR",
-            duration: "48",
-            amount: "14000 EUR",
-            purpose: "new car",
-            NN_recommendation: "Approve",
-            NN_confidence: 0.9,
+            attributes: {
+              id: "1",
+              balance: "Above 200 EUR",
+              duration: "48",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            results: {
+              NN_recommendation: "Approve",
+              NN_confidence: 0.9,
+            },
           },
           {
-            id: "1",
-            balance: "Above 200 EUR",
-            duration: "48",
-            amount: "14000 EUR",
-            purpose: "new car",
-            NN_recommendation: "Approve",
-            NN_confidence: 0.9,
+            attributes: {
+              id: "1",
+              balance: "Above 200 EUR",
+              duration: "48",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            results: {
+              NN_recommendation: "Approve",
+              NN_confidence: 0.9,
+            },
+          },
+          {
+            attributes: {
+              id: "1",
+              balance: "Above 200 EUR",
+              duration: "48",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            results: {
+              NN_recommendation: "Approve",
+              NN_confidence: 0.9,
+            },
           },
         ],
       },
       requestBody: {
-        filter: [
-        ],
+        filter: [],
         attributes: ["amount", "duration", "balance", "age", "employment"],
         sort_by: "id",
         limit: 100,

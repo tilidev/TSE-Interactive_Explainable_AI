@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table>
+    <table class="w-full table-auto">
       <thead>
         <table-header
           :labels="data.labels"

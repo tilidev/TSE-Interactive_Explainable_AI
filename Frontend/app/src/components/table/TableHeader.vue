@@ -1,6 +1,6 @@
 <template>
-      <tr>
-  <th v-for="label in labels" :key=label>{{label}}</th>
+  <tr>
+    <th class="p-4" v-for="label in labels" :key="label">{{ label }}</th>
   </tr>
 </template>
 
@@ -9,7 +9,7 @@ export default {
   props: {
     labels: Object,
     descriptions: Object,
-    sorting: Object
+    sorting: Object,
   },
 };
 </script>
