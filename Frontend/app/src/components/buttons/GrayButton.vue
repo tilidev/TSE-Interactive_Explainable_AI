@@ -4,12 +4,13 @@
       class="
         btn
         bg-gray-light
+        hover:bg-gray
         text-primary-text
-        px-4
-        py-2
+        px-2
+        py-0.5
         rounded-md
-        text-lg
-        font-bold
+        text-xs
+        font-extralight
         m-4
       "
     >
