@@ -1,6 +1,6 @@
 <template>
-  <tr>
-    <th class="p-4" v-for="label in labels" :key="label">{{ label }}</th>
+  <tr class="rounded-md">
+    <th class="p-3" v-for="label in labels" :key="label">{{ label }}</th>
   </tr>
 </template>
 

@@ -36,52 +36,52 @@ export default {
         rows: [
           {
             attributes: {
-              id: "1",
               balance: "Above 200 EUR",
               duration: "48",
               amount: "1400000 EUR",
               purpose: "new car",
             },
-            results: {
+            other: {
+              id: 1,
               NN_recommendation: "Approve",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
-              id: "1",
               balance: "Above 200 EUR",
               duration: "48",
               amount: "1400000 EUR",
               purpose: "new car",
             },
-            results: {
+            other: {
+              id: 1,
               NN_recommendation: "Approve",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
-              id: "1",
               balance: "Above 200 EUR",
               duration: "48",
               amount: "1400000 EUR",
               purpose: "new car",
             },
-            results: {
+            other: {
+              id: 1,
               NN_recommendation: "Approve",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
-              id: "1",
               balance: "Above 200 EUR",
               duration: "48",
               amount: "1400000 EUR",
               purpose: "new car",
             },
-            results: {
+            other: {
+              id: 1,
               NN_recommendation: "Approve",
               NN_confidence: 0.9,
             },
