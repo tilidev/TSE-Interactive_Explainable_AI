@@ -35,6 +35,7 @@ app.add_middleware(
 attribute_constraints = [
     {
         attr_name : AttributeNames.balance,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [], #List[str]
@@ -42,6 +43,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.duration,
+        display_name : "",
         type : continuous,
         category : loan_cat,
         lower_bound : 0, #float
@@ -50,6 +52,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.history,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -57,6 +60,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.purpose,
+        display_name : "",
         type : categorical,
         category : loan_cat,
         values : [],
@@ -64,6 +68,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.amount,
+        display_name : "",
         type : continuous,
         category : loan_cat,
         lower_bound : 0,
@@ -72,6 +77,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.savings,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -79,6 +85,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.employment,
+        display_name : "",
         type : categorical,
         category : personal_cat,
         values : [],
@@ -86,6 +93,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.available_income,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -93,6 +101,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.residence,
+        display_name : "",
         type : categorical,
         category : personal_cat,
         values : [],
@@ -100,6 +109,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.assets,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -107,6 +117,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.age,
+        display_name : "",
         type : continuous,
         category : personal_cat,
         lower_bound : 16,
@@ -115,6 +126,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.other_loans,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -122,6 +134,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.housing,
+        display_name : "",
         type : categorical,
         category : personal_cat,
         values : [],
@@ -129,6 +142,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.previous_loans,
+        display_name : "",
         type : categorical,
         category : financial_cat,
         values : [],
@@ -136,6 +150,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.job,
+        display_name : "",
         type : categorical,
         category : personal_cat,
         values : [],
@@ -143,6 +158,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.other_debtors,
+        display_name : "",
         type : categorical,
         category : loan_cat,
         values : [],
@@ -150,6 +166,7 @@ attribute_constraints = [
     },
     {
         attr_name : AttributeNames.people_liable,
+        display_name : "",
         type : categorical,
         category : loan_cat,
         values : [],
