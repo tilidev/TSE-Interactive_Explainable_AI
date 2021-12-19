@@ -13,14 +13,14 @@ def create_connection(db):
 def get_applications(con, start, num = 20):
     c = con.cursor()
     end = int(start) + int(num)
-    query = 'SELECT * FROM applicants WHERE id >= ' + str(start) + ' AND id < ' + str(end)  
+    query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
     c.execute(query)
     result = c.fetchall()
     return result
 
-def get_application(con, id, json_str = False):
+def get_application(con, ident, json_str = False):
     c = con.cursor()
-    query = 'SELECT * FROM applicants WHERE id = ' + str(id)
+    query = 'SELECT * FROM applicants WHERE ident = ' + str(id)
     rows = c.execute(query).fetchall()
     if json_str:
         con.row_factory = sql.Row
@@ -38,7 +38,7 @@ def get_applications_custom(con, start, attributes,  num = 20, json_str = False,
             chosen += ','
         chosen = chosen[:-1]
     end = int(start) + int(num)
-    query = 'SELECT ' + chosen + ' FROM applicants WHERE id >= ' + str(start) + ' AND id < ' + str(end)  
+    query = 'SELECT ' + chosen + ' FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
      
     #add filters to query
     filterStr = ''
