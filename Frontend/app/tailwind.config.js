@@ -20,9 +20,9 @@ module.exports = {
         'background' : '#F6F1EB',
 
         // Colors for the color coding for low, medium and high
-        'cc-low' : '#EBF5FF',
-        'cc-medium' : '#B2EDFF',
-        'cc-high' : '#40BBE1',
+        'cc-low' : '#38bdf8',
+        'cc-medium' : '#0284c7',
+        'cc-high' : '#075985',
       }
     },
   },

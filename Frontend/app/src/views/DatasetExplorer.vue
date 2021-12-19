@@ -18,7 +18,7 @@ export default {
         labels: {
           id: "#",
           balance: "Balance",
-          duration: "Duration (months)",
+          duration: "Duration",
           amount: "Amount",
           purpose: "Purpose",
           NN_recommendation: "AI Recommendation",
@@ -37,234 +37,234 @@ export default {
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "false",
+              NN_confidence: 0.6,
+            },
+          },
+          {
+            attributes: {
+              balance: "Above 200 EUR",
+              duration: "48 months",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            other: {
+              id: 1,
+              NN_recommendation: "true",
+              NN_confidence: 0.8,
+            },
+          },
+          {
+            attributes: {
+              balance: "Above 200 EUR",
+              duration: "48 months",
+              amount: "1400000 EUR",
+              purpose: "new car",
+            },
+            other: {
+              id: 1,
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
           {
             attributes: {
               balance: "Above 200 EUR",
-              duration: "48",
+              duration: "48 months",
               amount: "1400000 EUR",
               purpose: "new car",
             },
             other: {
               id: 1,
-              NN_recommendation: "Approve",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "Approve",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "Approve",
+              NN_recommendation: "true",
               NN_confidence: 0.9,
             },
           },
