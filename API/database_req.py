@@ -28,7 +28,7 @@ def get_application(con, id, json_str = False):
     return rows
 
 
-def get_applications_custom(con, start, filters, attributes,  num = 20, json_str = False):   
+def get_applications_custom(con, start, attributes,  num = 20, json_str = False, filters = None):   
     c = con.cursor()
     #add customize values
     chosen = ''
@@ -42,7 +42,7 @@ def get_applications_custom(con, start, filters, attributes,  num = 20, json_str
      
     #add filters to query
     filterStr = ''
-    if len(filters) > 0:
+    if filters:
         for i in range(0,len(filters)):
             filter_dict = json.loads(filters[i])
             attribute = filter_dict["attribute"]
