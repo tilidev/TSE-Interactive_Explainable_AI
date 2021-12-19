@@ -10,7 +10,7 @@ def create_connection(db):
     return con
 
 
-def get_applications(con, start, num = 10):
+def get_applications(con, start, num = 20):
     c = con.cursor()
     end = int(start) + int(num)
     query = 'SELECT * FROM applicants WHERE id >= ' + str(start) + ' AND id < ' + str(end)  
@@ -28,8 +28,9 @@ def get_application(con, id, json_str = False):
     return rows
 
 
-def get_applications_custom(con, start, attributes,  num = 10, json_str = False):   
+def get_applications_custom(con, start, filters, attributes,  num = 20, json_str = False):   
     c = con.cursor()
+    #add customize values
     chosen = ''
     if len(attributes) > 0:
         for i in range(0,len(attributes)):
@@ -37,7 +38,30 @@ def get_applications_custom(con, start, attributes,  num = 10, json_str = False)
             chosen += ','
         chosen = chosen[:-1]
     end = int(start) + int(num)
-    query = 'SELECT ' + chosen + ' FROM applicants WHERE id >= ' + str(start) + ' AND id < ' + str(end) 
+    query = 'SELECT ' + chosen + ' FROM applicants WHERE id >= ' + str(start) + ' AND id < ' + str(end)  
+     
+    #add filters to query
+    filterStr = ''
+    if len(filters) > 0:
+        for i in range(0,len(filters)):
+            filter_dict = json.loads(filters[i])
+            attribute = filter_dict["attribute"]
+            if ("values" in filter_dict):
+                #categorical filter
+                selected = filter_dict["values"]
+                filterStr += "("
+                for j in selected:
+                    filterStr += attribute + " = " + selected[j]
+                    if j < len(selected) - 1:
+                        filterStr += " OR "
+                filterStr += ")"
+            else:
+                #numerical
+                filterStr += "(" + attribute + " >= " + filter_dict["lower_bound"] + " AND " + attribute + " <= " + filter_dict["upper_bound"] + ")"
+            if i < len(filters) - 1:
+                filterStr += " AND "
+        query += "AND " + filterStr
+
     rows = c.execute(query).fetchall()
     if json_str:
         con.row_factory = sql.Row
