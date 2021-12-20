@@ -32,10 +32,11 @@ def get_application(con, ident:int, json_str = False):
     return rows
 
 
-def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None):   
+def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None, sort = "ident", sort_asc = True):   
     if json_str:
         con.row_factory = sql.Row
     c = con.cursor()
+    view_query = 'CREATE VIEW custom AS '
     #add customize values
     chosen = ''
     if len(attributes) > 0:
@@ -44,31 +45,39 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
             chosen += ','
         chosen = chosen[:-1]
     end = start + num
-    query = 'SELECT ' + chosen + ' FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
+    view_query += 'SELECT Row_Number() OVER (ORDER BY amount) RowNum,' + chosen + ' FROM applicants'  
      
     #add filters to query
-    filterStr = ''
     if filters:
-        for i in range(0,len(filters)):
+        view_query += " WHERE " + create_filter_query(filters)
+    print(view_query)
+    c.execute(view_query)
+    con.commit()
+    query = ''
+    #rows = c.execute(query).fetchall()
+    #if json_str:
+    #    rows = json.dumps([dict(ix) for ix in rows])
+    #return rows
+
+
+
+def create_filter_query(filters):
+    filter_str = ""
+    for i in range(0,len(filters)):
             filter_dict = json.loads(filters[i])
             attribute = filter_dict["attribute"]
             if ("values" in filter_dict):
                 #categorical filter
                 selected = filter_dict["values"]
-                filterStr += "("
+                filter_str += "("
                 for j in range(0,len(selected)):
-                    filterStr += attribute + " = " + "'"+ selected[j] + "'"
+                    filter_str += attribute + " = " + "'"+ selected[j] + "'"
                     if j < len(selected) - 1:
-                        filterStr += " OR "
-                filterStr += ")"
+                        filter_str += " OR "
+                filter_str += ")"
             else:
                 #numerical
-                filterStr += "(" + attribute + " >= " + str(filter_dict["lower_bound"]) + " AND " + attribute + " <= " + str(filter_dict["upper_bound"]) + ")"
+                filter_str += "(" + attribute + " >= " + str(filter_dict["lower_bound"]) + " AND " + attribute + " <= " + str(filter_dict["upper_bound"]) + ")"
             if i < len(filters) - 1:
-                filterStr += " AND "
-        query += " AND " + filterStr
-    rows = c.execute(query).fetchall()
-    if json_str:
-        rows = json.dumps([dict(ix) for ix in rows])
-    return rows
-
+                filter_str += " AND "
+    return filter_str
