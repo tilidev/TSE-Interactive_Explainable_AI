@@ -19,6 +19,7 @@ c.execute('ALTER TABLE applicants RENAME COLUMN available_income_ TO available_i
 c.execute('ALTER TABLE applicants RENAME COLUMN other_debtors_ TO other_debtors;')
 c.execute('ALTER TABLE applicants RENAME COLUMN residence_ TO residence;')
 c.execute('ALTER TABLE applicants RENAME COLUMN assets_ TO assets;')
+c.execute('ALTER TABLE applicants RENAME COLUMN age_ TO age;')
 c.execute('ALTER TABLE applicants RENAME COLUMN other_loans_ TO other_loans;')
 c.execute('ALTER TABLE applicants RENAME COLUMN housing_ TO housing;')
 c.execute('ALTER TABLE applicants RENAME COLUMN previous_loans_ TO previous_loans;')
