@@ -1,7 +1,9 @@
 import sqlite3 as sql
 import json
+from typing import List
 
-def create_connection(db):
+def create_connection(db: str):
+    """ Builds a connection to the database stored in the given file db and returns the connection element."""
     con = None
     try:
         con = sql.connect(db)
@@ -10,7 +12,7 @@ def create_connection(db):
     return con
 
 
-def get_applications(con, start, num = 20):
+def get_applications(con, start:int, num = 20):
     c = con.cursor()
     end = int(start) + int(num)
     query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
@@ -18,17 +20,21 @@ def get_applications(con, start, num = 20):
     result = c.fetchall()
     return result
 
-def get_application(con, ident, json_str = False):
-    c = con.cursor()
-    query = 'SELECT * FROM applicants WHERE ident = ' + str(id)
-    rows = c.execute(query).fetchall()
+def get_application(con, ident:int, json_str = False):
+    """Returns the application information for the application with the specified id."""
     if json_str:
         con.row_factory = sql.Row
+    c = con.cursor()
+    query = 'SELECT * FROM applicants WHERE ident = ' + str(ident)
+    rows = c.execute(query).fetchall()
+    if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
     return rows
 
 
-def get_applications_custom(con, start, attributes,  num = 20, json_str = False, filters = None):   
+def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None):   
+    if json_str:
+        con.row_factory = sql.Row
     c = con.cursor()
     #add customize values
     chosen = ''
@@ -37,7 +43,7 @@ def get_applications_custom(con, start, attributes,  num = 20, json_str = False,
             chosen += str(attributes[i])
             chosen += ','
         chosen = chosen[:-1]
-    end = int(start) + int(num)
+    end = start + num
     query = 'SELECT ' + chosen + ' FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
      
     #add filters to query
@@ -50,21 +56,19 @@ def get_applications_custom(con, start, attributes,  num = 20, json_str = False,
                 #categorical filter
                 selected = filter_dict["values"]
                 filterStr += "("
-                for j in selected:
-                    filterStr += attribute + " = " + selected[j]
+                for j in range(0,len(selected)):
+                    filterStr += attribute + " = " + "'"+ selected[j] + "'"
                     if j < len(selected) - 1:
                         filterStr += " OR "
                 filterStr += ")"
             else:
                 #numerical
-                filterStr += "(" + attribute + " >= " + filter_dict["lower_bound"] + " AND " + attribute + " <= " + filter_dict["upper_bound"] + ")"
+                filterStr += "(" + attribute + " >= " + str(filter_dict["lower_bound"]) + " AND " + attribute + " <= " + str(filter_dict["upper_bound"]) + ")"
             if i < len(filters) - 1:
                 filterStr += " AND "
-        query += "AND " + filterStr
-
+        query += " AND " + filterStr
     rows = c.execute(query).fetchall()
     if json_str:
-        con.row_factory = sql.Row
         rows = json.dumps([dict(ix) for ix in rows])
     return rows
 
