@@ -35,143 +35,127 @@ app.add_middleware(
 attribute_constraints = [
     {
         attr_name : AttributeNames.balance,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [], #List[str]
+        values : ['no account', 'no balance', 'below 200 EUR', 'above 200 EUR'], #List[str]
         attr_description : "The current balance of the applicant's checking account (in Euro)"
     },
     {
         attr_name : AttributeNames.duration,
-        display_name : "",
         type : continuous,
         category : loan_cat,
-        lower_bound : 0, #float
-        upper_bound : 1, #float
+        lower_bound : 4, #float
+        upper_bound : 72, #float
         attr_description : "The duration of the loan (in months)"
     },
     {
         attr_name : AttributeNames.history,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['delay payment of previous loans', 'paid back all previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
+        attr_description : "How reliably the applicant handled previous or current loans"
     },
     {
         attr_name : AttributeNames.purpose,
-        display_name : "",
         type : categorical,
         category : loan_cat,
-        values : [],
-        attr_description : "..."
+        values : ['furniture', 'television', 'used car', 'domestic appliances', 'repair', 'retraining', 'business', 'new car', 'other', 'vacation'],
+        attr_description : "What the money from the loan will be used for"
     },
     {
         attr_name : AttributeNames.amount,
-        display_name : "",
         type : continuous,
         category : loan_cat,
-        lower_bound : 0,
-        upper_bound : 1,
-        attr_description : "..."
+        lower_bound : 250,
+        upper_bound : 11792.5,
+        attr_description : "How much money the applicant wants to lend (in euros)"
     },
     {
         attr_name : AttributeNames.savings,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['no savings account at this bank', 'below 100 EUR', 'between 100 and 500 EUR', 'between 500 and 1000 EUR', 'above 1000 EUR'],
+        attr_description : "Amount of savings at that bank (in euros)"
     },
     {
         attr_name : AttributeNames.employment,
-        display_name : "",
         type : categorical,
         category : personal_cat,
-        values : [],
-        attr_description : "..."
+        values : ['unemployed', 'less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
+        attr_description : "Duration of current applicant's current employment"
     },
     {
         attr_name : AttributeNames.available_income,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['less than 20%', 'between 20 and 25%', 'between 25 and 35%', 'more than 35%'],
+        attr_description : "Percentage of income that the applicant could use for repaying the loan"
     },
     {
         attr_name : AttributeNames.residence,
-        display_name : "",
         type : categorical,
         category : personal_cat,
-        values : [],
-        attr_description : "..."
+        values : ['less than 1 year', 'between 1 and 4 years', ' between 4 and 7 years', 'more than 7 years'],
+        attr_description : "How long the applicant has lived in current housing"
     },
     {
         attr_name : AttributeNames.assets,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['none', 'life insurance', 'car', 'real estate'],
+        attr_description : "Other resources the applicant might have"
     },
     {
         attr_name : AttributeNames.age,
-        display_name : "",
         type : continuous,
         category : personal_cat,
-        lower_bound : 16,
-        upper_bound : 100,
-        attr_description : "..."
+        lower_bound : 19,
+        upper_bound : 75,
+        attr_description : "The age of the loan applicant"
     },
     {
         attr_name : AttributeNames.other_loans,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['no additional loans', 'at department store', 'at other banks'],
+        attr_description : "Other installment plans"
     },
     {
         attr_name : AttributeNames.housing,
-        display_name : "",
         type : categorical,
         category : personal_cat,
-        values : [],
-        attr_description : "..."
+        values : ['rent', 'for free','own'],
+        attr_description : "Whether the applicant pays rent for housing, owns or lives for free"
     },
     {
         attr_name : AttributeNames.previous_loans,
-        display_name : "",
         type : categorical,
         category : financial_cat,
-        values : [],
-        attr_description : "..."
+        values : ['1', '2 or 3', '4 or 5', '6'],
+        attr_description : "Number of loans the applicant has already had"
     },
     {
         attr_name : AttributeNames.job,
-        display_name : "",
         type : categorical,
         category : personal_cat,
-        values : [],
-        attr_description : "..."
+        values : ['unskilled (non-resident)', 'unskilled (permanent resident)', 'skilled','executive or self-employed'],
+        attr_description : "Type of profession"
     },
     {
         attr_name : AttributeNames.other_debtors,
-        display_name : "",
         type : categorical,
         category : loan_cat,
-        values : [],
+        values : ['none', 'co-applicant', 'guarantor'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     },
     {
         attr_name : AttributeNames.people_liable,
-        display_name : "",
         type : categorical,
         category : loan_cat,
-        values : [],
+        values : ['0 to 2', '3 and more'],
         attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
     }
+
     # TODO: fill in the rest of the constraints
     # TODO: use smart lower and upper bounds as they will be important for filtering
 ]
