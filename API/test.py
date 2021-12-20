@@ -2,6 +2,9 @@
 from database_req import create_connection
 from database_req import get_application
 from database_req import get_applications_custom
+from database_req import create_order_query
+from database_req import ordering_info_dict_creation
+from database_req import ordering_info
 import json
 
 
@@ -23,8 +26,13 @@ amount_dict = {
 filter1 = json.dumps(balance_dict)
 filter2 = json.dumps(amount_dict)
 filters = [filter1, filter2]
-res = get_applications_custom(con, 0, l, json_str = True, filters=filters)
+#res = get_applications_custom(con, 0, l, json_str = True, filters=filters, sort='balance')
 
-print(res)
+#create_order_query("balance")
 
+#diction = ordering_info_dict_creation()
+#print(diction)
+
+
+#print(res)
 
