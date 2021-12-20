@@ -25,13 +25,13 @@ export default {
           NN_confidence: "AI Confidence",
         },
         descriptions: {
-          id: "Description",
-          balance: "Description",
-          duration: "Description",
-          amount: "Description",
-          purpose: "Description",
-          NN_recommendation: "Description",
-          NN_confidence: "Description",
+          id: "Unique identifier for each loan application",
+          balance: "The applicant's account balance",
+          duration: "Duration over which the loan has to be paid back",
+          amount: "The amount the applicant wants to borrow",
+          purpose: "The purpose of the loan",
+          NN_recommendation: "Recommendation from the AI",
+          NN_confidence: "Specifies how confident the AI is in it's decision",
         },
         rows: [
           {
