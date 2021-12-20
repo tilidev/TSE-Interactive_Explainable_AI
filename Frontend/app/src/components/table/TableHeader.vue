@@ -1,10 +1,11 @@
 <template>
   <tr class="rounded-md border-gray-light">
     <th
-      class="py-5 pt-5 px-10 font-bold"
+      class="py-5 px-10 font-bold"
       v-for="(label, key) in labels"
-      :key="key"
-    >
+      :key="key">
+      <fa-icon class="align-text-bottom" v-if="sorting['attribute'] == key && sorting['desc'] == false" icon="sort-up" size="xs" />
+      <fa-icon class="align-text-top" v-if="sorting['attribute'] == key && sorting['desc'] == true" icon="sort-down" size="xs" />
       {{ label
       }}<fa-icon
         @click="hoverText = hoverText ? '' : descriptions[key]"
