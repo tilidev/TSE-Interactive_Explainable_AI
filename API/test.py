@@ -24,11 +24,6 @@ amount_dict = {
 filter1 = json.dumps(balance_dict)
 filter2 = json.dumps(amount_dict)
 filters = [filter1, filter2]
-res = get_applications_custom(con, 0, l, json_str = True, filters=filters, sort='balance')
-
-
-
-
-
+res = get_applications_custom(con, 0, l, sort='balance')
 print(res)
 

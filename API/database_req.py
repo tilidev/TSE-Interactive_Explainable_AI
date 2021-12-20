@@ -14,6 +14,8 @@ def create_connection(db: str):
 
 
 def get_applications(con, start:int, num = 20):
+    """Returns the applications with the ids from start to start + num
+    Needs a connection con to the database.db (use create_connection) and a start value as int """    
     c = con.cursor()
     end = int(start) + int(num)
     query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
@@ -22,7 +24,9 @@ def get_applications(con, start:int, num = 20):
     return result
 
 def get_application(con, ident:int, json_str = False):
-    """Returns the application information for the application with the specified id."""
+    """Returns the application information for the application with the specified id.
+    Needs a connection con to the database and the id.
+    Result can be returned in json format."""
     if json_str:
         con.row_factory = sql.Row
     c = con.cursor()
@@ -34,6 +38,10 @@ def get_application(con, ident:int, json_str = False):
 
 
 def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None, sort = "ident", sort_desc = False):   
+    """Returns a list of application data from the database that is connected via con. 
+    Attributes is the list of chosen attributes, num the amount of applications that is requested, 
+    filters a list of jsons with filter information, sort a String of the attribute name to be sorted by sort_desc allows to sort by descending order.
+    Result can also be returned in json format."""
     if json_str:
         con.row_factory = sql.Row
     c = con.cursor()
@@ -48,12 +56,12 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     view_query += 'SELECT Row_Number() OVER '
     view_query += create_order_query(sort)
     if sort_desc:
-        view_query += 'DESC'
-    view_query += ' RowNum,' + chosen + ' FROM applicants'  
+        view_query += ' DESC'
+    view_query += ') RowNum,' + chosen + ' FROM applicants'  
      
     #add filters to query
     if filters:
-        view_query += ' WHERE ' + create_filter_query(filters)
+        view_query += create_filter_query(filters)
     c.execute(view_query)
     con.commit()
     end = start + num
@@ -68,7 +76,8 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
 
 
 def create_filter_query(filters):
-    filter_str = ""
+    """Creates a string for the filter query in sql from a given list of filters in json format."""
+    filter_str = " WHERE "
     for i in range(0,len(filters)):
             filter_dict = json.loads(filters[i])
             attribute = filter_dict["attribute"]
@@ -90,6 +99,7 @@ def create_filter_query(filters):
 
 
 def create_order_query(sort:str):
+    """Creates a string for the ordering query in sql for a given attribute name as a string"""
     query = '(ORDER BY '
     attr_dict = {}
     if (sort == 'ident'):
@@ -108,7 +118,6 @@ def create_order_query(sort:str):
         query += ' END'
     else:
         query += sort
-    query += ')'
     return query
 
 
