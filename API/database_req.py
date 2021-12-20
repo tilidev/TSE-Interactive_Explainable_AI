@@ -54,7 +54,6 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     #add filters to query
     if filters:
         view_query += ' WHERE ' + create_filter_query(filters)
-    print(view_query)
     c.execute(view_query)
     con.commit()
     end = start + num
@@ -94,7 +93,7 @@ def create_order_query(sort:str):
     query = '(ORDER BY '
     attr_dict = {}
     if (sort == 'ident'):
-        query += sort
+        query += sort + ')'
         return query
     for i in attribute_constraints:
         if i['attribute'] == sort:
@@ -110,7 +109,6 @@ def create_order_query(sort:str):
     else:
         query += sort
     query += ')'
-    print(query)
     return query
 
 
