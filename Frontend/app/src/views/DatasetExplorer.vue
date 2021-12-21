@@ -1,6 +1,6 @@
 <template>
   <div>
-    <data-table :data="tableData" />
+    <data-table @apply-sorting="applySorting" :data="tableData" />
   </div>
 </template>
 
@@ -12,8 +12,8 @@ export default {
     return {
       tableData: {
         sorting: {
-          attribute: "id",
-          desc: false,
+          sort_by: "id",
+          desc: false,       
         },
         labels: {
           id: "#",
@@ -278,6 +278,12 @@ export default {
         offset: 0,
       },
     };
+  },
+  methods: {
+    applySorting(sorting) {
+      this.tableData.sorting.sort_by = sorting.sort_by;
+      this.tableData.sorting.desc = sorting.desc;
+    },
   },
   components: { DataTable },
 };

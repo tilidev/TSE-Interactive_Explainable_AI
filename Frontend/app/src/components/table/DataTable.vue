@@ -4,6 +4,7 @@
       <table class="table-auto text-primary shadow-lg text-left">
         <thead class="bg-primary text-white">
           <table-header
+            @apply-sorting="applySorting"
             :labels="data.labels"
             :descriptions="data.descriptions"
             :sorting="data.sorting"
@@ -25,5 +26,10 @@ export default {
     data: Object,
   },
   components: { TableRow, TableHeader },
+  methods: {
+    applySorting(sorting) {
+      this.$emit('apply-sorting', sorting);
+    }
+  }
 };
 </script>

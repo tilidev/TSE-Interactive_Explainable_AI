@@ -1,13 +1,21 @@
 <template>
   <tr class="rounded-md border-gray-light">
-    <th
-      class="py-5 px-10 font-bold"
-      v-for="(label, key) in labels"
-      :key="key">
-      <fa-icon class="align-text-bottom" v-if="sorting['attribute'] == key && sorting['desc'] == false" icon="sort-up" size="xs" />
-      <fa-icon class="align-text-top" v-if="sorting['attribute'] == key && sorting['desc'] == true" icon="sort-down" size="xs" />
+    <th class="py-5 px-10 font-bold" v-for="(label, key) in labels" :key="key">
+      <span @click="applySorting(key)">
+      <fa-icon
+        class="align-text-bottom"
+        v-if="sorting.sort_by == key && sorting.desc == false"
+        icon="sort-up"
+        size="xs"
+      />
+      <fa-icon
+        class="align-text-top"
+        v-if="sorting.sort_by == key && sorting.desc == true"
+        icon="sort-down"
+        size="xs"
+      />
       {{ label
-      }}<fa-icon
+      }}</span><fa-icon
         @click="hoverText = hoverText ? '' : descriptions[key]"
         @mouseover="hoverText = descriptions[key]"
         @mouseleave="hoverText = ''"
@@ -16,17 +24,11 @@
       />
       <div
         v-if="hoverText == descriptions[key]"
-        class="
-          modal
-          fixed
-          inset-0
-          flex
-          items-center
-          justify-center
-          z-50
-        "
+        class="modal fixed inset-0 flex items-center justify-center z-50"
       >
-        <div class="p-4 bg-white font-regular text-primary-dark shadow rounded-md">
+        <div
+          class="p-4 bg-white font-regular text-primary-dark shadow rounded-md"
+        >
           {{ hoverText }}
         </div>
       </div>
@@ -46,5 +48,11 @@ export default {
     descriptions: Object,
     sorting: Object,
   },
+  methods: {
+    applySorting(key) {
+      const newSorting = {sort_by : key, desc : (this.sorting.desc == false && this.sorting.sort_by == key)? true : false};
+      this.$emit('apply-sorting', newSorting);
+    }
+  }
 };
 </script>
