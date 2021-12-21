@@ -284,6 +284,12 @@ export default {
       this.tableData.sorting.sort_by = sorting.sort_by;
       this.tableData.sorting.desc = sorting.desc;
     },
+    applyFilters(filters) {
+      console.log(filters);
+    },
+    applyCustomization(customization) {
+      console.log(customization);
+    },
   },
   components: { DataTable },
 };
