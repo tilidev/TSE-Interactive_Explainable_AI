@@ -3,8 +3,8 @@
     <button
       class="
         btn
-        bg-gray-light
-        hover:bg-gray
+        bg-gray-light 
+        hover:bg-gray 
         text-primary-text
         px-2
         py-0.5
@@ -15,6 +15,17 @@
       "
     >
       <slot />
-    </button>
+      </button>
   </div>
 </template>
+
+<script>
+export default {
+
+  data() {
+    return {
+       clicked: false
+    }
+  }
+}
+</script>
