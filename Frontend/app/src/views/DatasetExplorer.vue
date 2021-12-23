@@ -1,6 +1,11 @@
 <template>
   <div>
-    <data-table @apply-sorting="applySorting" :data="tableData" />
+    <data-table
+      @apply-sorting="applySorting"
+      :tableRows="tableRows"
+      :attributeData="attributeData"
+      :optionsData="requestBody"
+    />
   </div>
 </template>
 
@@ -10,279 +15,66 @@ import DataTable from "../components/table/DataTable.vue";
 export default {
   data() {
     return {
-      tableData: {
-        sorting: {
-          sort_by: "id",
-          desc: false,       
-        },
+      apiUrl: "http://localhost:8000/",
+      attributeData: {
+        descriptions: {},
         labels: {
-          id: "#",
-          balance: "Balance",
-          duration: "Duration",
           amount: "Amount",
-          purpose: "Purpose",
+          duration: "Duration",
+          balance: "Balance",
+          age: "Age",
+          employment: "Employment",
           NN_recommendation: "AI Recommendation",
           NN_confidence: "AI Confidence",
+          id: "#",
         },
-        descriptions: {
-          id: "Unique identifier for each loan application",
-          balance: "The applicant's account balance",
-          duration: "Duration over which the loan has to be paid back",
-          amount: "The amount the applicant wants to borrow",
-          purpose: "The purpose of the loan",
-          NN_recommendation: "Recommendation from the AI",
-          NN_confidence: "Specifies how confident the AI is in it's decision",
-        },
-        rows: [
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "false",
-              NN_confidence: 0.6,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.8,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-          {
-            attributes: {
-              balance: "Above 200 EUR",
-              duration: "48 months",
-              amount: "1400000 EUR",
-              purpose: "new car",
-            },
-            other: {
-              id: 1,
-              NN_recommendation: "true",
-              NN_confidence: 0.9,
-            },
-          },
-        ],
+        categories: {},
+        types: {},
+        lowerBounds: {},
+        upperBounds: {},
       },
+      tableRows: [],
       requestBody: {
         filter: [],
-        attributes: ["amount", "duration", "balance", "age", "employment"],
+        attributes: ["balance", "duration", "amount", "employment", "age"],
         sort_by: "id",
+        desc: false,
         limit: 100,
         offset: 0,
       },
     };
   },
+  mounted() {
+    this.sendAttributeRequest();
+    this.sendTableRequest();
+  },
   methods: {
+    sendTableRequest() {
+      const axios = require("axios");
+      axios.post(this.apiUrl + 'table', this.requestBody).then((response) => {
+        this.tableRows = response.data;
+        
+      })
+    },
+    sendAttributeRequest() {
+      const axios = require("axios");
+      axios.get(this.apiUrl + "attributes/information").then((response) => {
+        for (const element of response.data) {
+          this.attributeData.descriptions[element.attribute] =
+            element.description;
+          this.attributeData.categories[element.attribute] = element.category;
+          this.attributeData.types[element.attribute] = element.type;
+          this.attributeData.lowerBounds[element.attribute] =
+            element.lowerBound;
+          this.attributeData.upperBounds[element.attribute] =
+            element.upperBound;
+        }
+      });
+    },
     applySorting(sorting) {
-      this.tableData.sorting.sort_by = sorting.sort_by;
-      this.tableData.sorting.desc = sorting.desc;
+      this.requestBody.sort_by = sorting.sort_by;
+      this.requestBody.desc = sorting.desc;
+      this.sendTableRequest();
     },
     applyFilters(filters) {
       console.log(filters);

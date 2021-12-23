@@ -5,13 +5,15 @@
         <thead class="bg-primary text-white">
           <table-header
             @apply-sorting="applySorting"
-            :labels="data.labels"
-            :descriptions="data.descriptions"
-            :sorting="data.sorting"
+            :labels="attributeData.labels"
+            :descriptions="attributeData.descriptions"
+            :sort_by="optionsData.sort_by"
+            :desc="optionsData.desc"
+            :attributes="optionsData.attributes"
           />
         </thead>
         <tbody class="divide-gray divide-y">
-          <table-row v-for="row in data.rows" :key="row.id" :rowData="row" />
+          <table-row v-for="row in tableRows" :key="row.id" :rowData="row" />
         </tbody>
       </table>
     </div>
@@ -23,13 +25,15 @@ import TableHeader from "./TableHeader.vue";
 import TableRow from "./TableRow.vue";
 export default {
   props: {
-    data: Object,
+    tableRows: Array,
+    attributeData: Object,
+    optionsData: Object,
   },
   components: { TableRow, TableHeader },
   methods: {
     applySorting(sorting) {
-      this.$emit('apply-sorting', sorting);
-    }
-  }
+      this.$emit("apply-sorting", sorting);
+    },
+  },
 };
 </script>

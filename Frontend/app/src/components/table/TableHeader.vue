@@ -1,29 +1,29 @@
 <template>
   <tr class="rounded-md border-gray-light">
-    <th class="py-5 px-10 font-bold" v-for="(label, key) in labels" :key="key">
-      <span @click="applySorting(key)">
+    <th class="py-5 px-10 font-bold" v-for="attribute in [...['id'], ...attributes, ...['NN_recommendation', 'NN_confidence']]" :key="attribute">
+      <span @click="applySorting(attribute)">
       <fa-icon
         class="align-text-bottom"
-        v-if="sorting.sort_by == key && sorting.desc == false"
+        v-if="sort_by == attribute && desc == false"
         icon="sort-up"
         size="xs"
       />
       <fa-icon
         class="align-text-top"
-        v-if="sorting.sort_by == key && sorting.desc == true"
+        v-if="sort_by == attribute && desc == true"
         icon="sort-down"
         size="xs"
       />
-      {{ label
+      {{ labels[attribute]
       }}</span><fa-icon
-        @click="hoverText = hoverText ? '' : descriptions[key]"
-        @mouseover="hoverText = descriptions[key]"
+        @click="hoverText = hoverText ? '' : descriptions[attribute]"
+        @mouseover="hoverText = descriptions[attribute]"
         @mouseleave="hoverText = ''"
         icon="info-circle"
         class="ml-2"
       />
       <div
-        v-if="hoverText == descriptions[key]"
+        v-if="hoverText == descriptions[attribute]"
         class="modal fixed inset-0 flex items-center justify-center z-50"
       >
         <div
@@ -47,10 +47,13 @@ export default {
     labels: Object,
     descriptions: Object,
     sorting: Object,
+    attributes: Array,
+    sort_by: String,
+    desc: Boolean,
   },
   methods: {
-    applySorting(key) {
-      const newSorting = {sort_by : key, desc : (this.sorting.desc == false && this.sorting.sort_by == key)? true : false};
+    applySorting(attribute) {
+      const newSorting = {sort_by : attribute, desc : (this.desc == false && this.sort_by == attribute)? true : false};
       this.$emit('apply-sorting', newSorting);
     }
   }
