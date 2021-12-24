@@ -47,14 +47,29 @@ export default {
   mounted() {
     this.sendAttributeRequest();
     this.sendTableRequest();
+    this.loadMoreRows();
   },
   methods: {
     sendTableRequest() {
       const axios = require("axios");
-      axios.post(this.apiUrl + 'table', this.requestBody).then((response) => {
+      axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
         this.tableRows = response.data;
-        
-      })
+      });
+    },
+    loadMoreRows() {
+      window.onscroll = () => {
+        const axios = require('axios');
+        let bottomOfWindow =
+          document.documentElement.scrollTop + window.innerHeight >=
+          document.documentElement.offsetHeight - window.innerHeight;
+        if (bottomOfWindow) {
+          this.requestBody.offset += this.requestBody.limit;
+          axios.post("http://localhost:8000/" + "table", this.requestBody).then((response) => {
+            this.tableRows = [...this.tableRows, ...response.data]
+            console.log(this.tableRows);
+          });
+        }
+      };
     },
     sendAttributeRequest() {
       const axios = require("axios");
