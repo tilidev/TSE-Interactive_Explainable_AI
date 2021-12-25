@@ -6,8 +6,8 @@
         bg-gray-light 
         hover:bg-gray 
         text-primary-text
-        px-2
-        py-0.5
+        px-1
+        py-1
         rounded-md
         text-xs
         font-extralight
