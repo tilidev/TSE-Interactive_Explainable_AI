@@ -30,8 +30,16 @@
               </h4>
               </div>
               <div class="pl-20">
-               X
+                <button @click="toggleCustomize = false" class="
+                bg-white 
+                hover:bg-gray-light 
+                px-2
+                py-0.5
+                rounded-full">
+                  <fa-icon icon="times"></fa-icon>
+                </button>
               </div>
+              
             </div>
             <div class="grid grid-cols-8 gap-y-2 gap-x-2 pr-10">
               <div class="col-span-4 pt-4 pr-40">Loan</div>
@@ -148,19 +156,30 @@
 import OutlineButton from "../components/buttons/OutlineButton.vue";
 import GrayButton from "../components/buttons/GrayButton.vue";
 import DefaultButton from "../components/buttons/DefaultButton.vue";
+//import RoundButton from "../components/buttons/RoundButton.vue";
+
 
 export default {
   name: "customize",
-  methods: {},
   data() {
     return {
       toggleCustomize: false,
       toggleFilter: false,
+      
+      customizationMemory:[], 
+      customization: ["balance", "duration", "amount", "employment", "age"] // default attributes
     };
   },
-
+  methods: {
+    addToCustomizations(attribute) {
+      if(this.customizationMemory.includes(attribute)){
+        var attributeLocation = this.customizationMemory.indexOf(attribute);
+        this.customizationMemory.splice(attributeLocation, 1);
+      }
+  }
+  },
   components: { OutlineButton, GrayButton, DefaultButton },
-};
+}
 </script>
 
 <style scoped>
@@ -183,3 +202,4 @@ export default {
   transition: all 1s ease;
 }
 </style>
+}

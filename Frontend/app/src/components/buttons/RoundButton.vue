@@ -1,27 +1,26 @@
 <template>
   <div>
-    <button @click="this.clicked = !this.clicked"
+    <button
       class="
         btn
-        bg-gray-light 
+        bg-gray-light
         hover:bg-gray 
         text-primary-text
-        px-1
-        py-1
-        rounded-md
+        px-5
+        py-5
+        rounded-xl
         text-xs
         font-extralight
         m-4
       "
     >
-    <slot />
+      <slot />
       </button>
   </div>
 </template>
 
 <script>
 export default {
-
 
   data() {
     return {
