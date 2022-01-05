@@ -1,12 +1,15 @@
 <template>
-  <div>
+  <span>
+    <div class="flex justify-end items-end pr-16 pb-16 modal fixed inset-0 z-50">
+    <fa-icon v-if="!isAtPageTop" icon="arrow-circle-up" size="4x" class="text-primary border-primary" @click="scrollUp"/>
+    </div>
     <data-table
       @apply-sorting="applySorting"
       :tableRows="tableRows"
       :attributeData="attributeData"
       :optionsData="requestBody"
     />
-  </div>
+  </span>
 </template>
 
 <script>
@@ -15,6 +18,7 @@ import DataTable from "../components/table/DataTable.vue";
 export default {
   data() {
     return {
+      isAtPageTop: true,
       apiUrl: "http://localhost:8000/",
       attributeData: {
         descriptions: {},
@@ -50,6 +54,9 @@ export default {
     this.loadMoreRows();
   },
   methods: {
+    scrollUp() {
+      window.scrollTo(0,0);
+    },
     sendTableRequest() {
       const axios = require("axios");
       axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
@@ -58,6 +65,7 @@ export default {
     },
     loadMoreRows() {
       window.onscroll = () => {
+        this.isAtPageTop = (document.documentElement.scrollTop < 150)? true : false;
         const axios = require('axios');
         let bottomOfWindow =
           document.documentElement.scrollTop + window.innerHeight >=
@@ -66,7 +74,6 @@ export default {
           this.requestBody.offset += this.requestBody.limit;
           axios.post("http://localhost:8000/" + "table", this.requestBody).then((response) => {
             this.tableRows = [...this.tableRows, ...response.data]
-            console.log(this.tableRows);
           });
         }
       };
