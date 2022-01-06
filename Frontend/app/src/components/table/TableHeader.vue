@@ -1,6 +1,6 @@
 <template>
   <tr class="rounded-md border-gray-light">
-    <th class="py-5 px-10 font-bold" v-for="attribute in [...['id'], ...attributes, ...['NN_recommendation', 'NN_confidence']]" :key="attribute">
+    <th class="py-5 px-10 font-bold" v-for="attribute in extendedAttributes" :key="attribute">
       <span @click="applySorting(attribute)">
       <fa-icon
         class="align-text-bottom"
@@ -38,6 +38,9 @@
 
 <script>
 export default {
+  mounted() {
+    console.log(this.extendedAttributes);
+  },
   data() {
     return {
       hoverText: "",
@@ -50,6 +53,11 @@ export default {
     attributes: Array,
     sort_by: String,
     desc: Boolean,
+  },
+  computed: {
+    extendedAttributes() {
+      return [...['id'], ...this.attributes, ...['NN_recommendation', 'NN_confidence']];
+    }
   },
   methods: {
     applySorting(attribute) {

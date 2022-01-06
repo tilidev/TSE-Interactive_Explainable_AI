@@ -1,6 +1,6 @@
 <template>
   <span>
-    <div class="flex justify-end items-end pr-16 pb-16 modal fixed inset-0 z-50">
+    <div class="fixed right-16 bottom-16 z-50">
     <fa-icon v-if="!isAtPageTop" icon="arrow-circle-up" size="4x" class="text-primary border-primary" @click="scrollUp"/>
     </div>
     <data-table
