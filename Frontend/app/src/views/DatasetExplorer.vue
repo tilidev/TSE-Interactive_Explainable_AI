@@ -1,7 +1,7 @@
 <template>
   <span>
-    <div class="fixed right-16 bottom-16 z-50">
-    <fa-icon v-if="!isAtPageTop" icon="arrow-circle-up" size="4x" class="text-primary border-primary" @click="scrollUp"/>
+    <div v-if="!isAtPageTop" class="fixed right-16 bottom-16 w-16 h-16 rounded-full bg-primary shadow-md">
+    <fa-icon icon="arrow-up" size="2x" class="mt-4 text-white text-middle" @click="scrollUp"/>
     </div>
     <data-table
       @apply-sorting="applySorting"
