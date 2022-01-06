@@ -1,5 +1,5 @@
 <template>
-  <tr class="bg-white hover:bg-gray">
+  <tr class="bg-white hover:bg-gray cursor-pointer">
     <td class="py-5 px-10 text-primary">{{ rowData.id }}</td>
     <td class="py-5 px-10" v-for="attrName in filteredAttributes" :key="attrName">
       {{ rowData[attrName
