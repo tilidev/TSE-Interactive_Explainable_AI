@@ -1,6 +1,6 @@
 <template>
   <tr class="rounded-md border-gray-light">
-    <th class="py-5 px-10 font-bold" v-for="attribute in extendedAttributes" :key="attribute">
+    <th class="py-5 px-8 font-bold" v-for="attribute in extendedAttributes" :key="attribute">
       <span @click="applySorting(attribute)" class="cursor-pointer">
       <fa-icon
         class="align-text-bottom"
