@@ -3,13 +3,13 @@
     <th class="py-5 px-8 font-bold" v-for="attribute in extendedAttributes" :key="attribute">
       <span @click="applySorting(attribute)" class="cursor-pointer">
       <fa-icon
-        class="align-text-bottom"
+        class="align-text-bottom -ml-3"
         v-if="sort_by == attribute && desc == false"
         icon="sort-up"
         size="xs"
       />
       <fa-icon
-        class="align-text-top"
+        class="align-text-top -ml-3"
         v-if="sort_by == attribute && desc == true"
         icon="sort-down"
         size="xs"
