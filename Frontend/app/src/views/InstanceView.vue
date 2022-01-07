@@ -1,18 +1,21 @@
 <template>
-  <div><info-card :instanceInfo="instanceInfo"></info-card></div>
+  <div>
+    <div>id: {{ id }}</div>
+    <info-card :instanceInfo="instanceInfo"></info-card>
+  </div>
 </template>
 
 <script>
-import InfoCard from '../components/InfoCard.vue'
+import InfoCard from "../components/InfoCard.vue";
 
 export default {
-    data() {
-        return {
-            instanceInfo: {}
-        }
-    },
+  data() {
+    return {
+      instanceInfo: {},
+    };
+  },
   props: { id: Number },
-  components: {InfoCard}
+  components: { InfoCard },
 };
 </script>
 

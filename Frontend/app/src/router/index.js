@@ -19,7 +19,7 @@ const routes = [
   },
   {
     path: '/applications/:id',
-    name: 'Loan Application View',
+    name: 'Application View',
     component: InstanceView
   }
 ]
