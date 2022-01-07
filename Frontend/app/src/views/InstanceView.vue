@@ -1,5 +1,5 @@
 <template>
-  <div><info-card :instanceInfo="instanceInfo"></info-card>/div>
+  <div><info-card :instanceInfo="instanceInfo"></info-card></div>
 </template>
 
 <script>
