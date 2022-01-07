@@ -12,9 +12,9 @@ export default {
   data() {
     return {
       instanceInfo: {},
+      id: this.$route.params.id,
     };
   },
-  props: { id: Number },
   components: { InfoCard },
 };
 </script>
