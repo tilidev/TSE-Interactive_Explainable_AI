@@ -7,6 +7,9 @@ module.exports = {
         serif: ['Merriweather', 'serif'],
       },
     extend: {
+      boxShadow: {
+        'blurred': '0 2px 10px 3px rgb(0 0 0 / 0.1)'
+      },
       colors: {
         'primary': '#283252', // Primary accent color, currently blue
         'primary-dark' : '#050F2D', // Used for hovering over a button

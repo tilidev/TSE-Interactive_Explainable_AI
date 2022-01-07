@@ -24,10 +24,10 @@
       />
       <div
         v-if="hoverText == descriptions[attribute]"
-        class="modal fixed inset-0 flex items-center justify-center z-50"
+        class="mt-8 absolute z-50"
       >
         <div
-          class="p-4 bg-white font-regular text-primary-dark shadow rounded-md"
+          class="p-4 bg-white font-normal text-primary-dark shadow-blurred rounded"
         >
           {{ hoverText }}
         </div>
@@ -38,9 +38,6 @@
 
 <script>
 export default {
-  mounted() {
-    console.log(this.extendedAttributes);
-  },
   data() {
     return {
       hoverText: "",
