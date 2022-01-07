@@ -9,13 +9,13 @@
       v-if="rowData.NN_recommendation == true"
       class="py-5 px-10 text-positive font-bold"
     >
-      <fa-icon icon="check" class=""></fa-icon><span class="ml-2">Approve</span>
+      <fa-icon icon="check-circle" size="lg"></fa-icon><span class="ml-2">Approve</span>
     </td>
     <td
       v-else-if="rowData.NN_recommendation == false"
       class="py-5 px-10 text-negative font-bold"
     >
-      <fa-icon icon="times"></fa-icon><span class="ml-2">Reject</span>
+      <fa-icon icon="times-circle" size="lg"></fa-icon><span class="ml-2">Reject</span>
     </td>
     <td
       v-if="rowData.NN_confidence < 0.75"
