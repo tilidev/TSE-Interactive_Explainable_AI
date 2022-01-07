@@ -1,5 +1,5 @@
 <template>
-  <div>{{instanceInfo}}</div>
+  <div>instance: {{instanceInfo}}</div>
 </template>
 
 <script>
