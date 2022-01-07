@@ -1,6 +1,6 @@
 <template>
   <span>
-    <div v-if="!isAtPageTop" class="fixed right-16 bottom-16 w-16 h-16 rounded-full bg-primary shadow-md cursor-pointer">
+    <div v-if="!isAtPageTop" class="fixed right-16 bottom-16 w-16 h-16 rounded-full bg-primary shadow-float cursor-pointer">
     <fa-icon icon="arrow-up" size="2x" class="mt-4 text-white text-middle" @click="scrollUp"/>
     </div>
     <data-table
