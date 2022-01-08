@@ -1,6 +1,14 @@
 <template>
   <div class="bg-white shadow-md p-4">
-    <div>{{ attributeCategories }}</div>
+    <div class="flex text-left">
+      <div class="pr-8"
+        v-for="(attributes, category) of attributeCategories"
+        :key="category"
+      >
+        <h3 class="capitalize font-bold">{{ category }}</h3>
+        <div v-for="attribute of attributes" :key="attribute">{{attributeData.labels[attribute]}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,7 +27,7 @@ export default {
       }
       return attrCat;
     },
-  }
+  },
 };
 </script>
 
