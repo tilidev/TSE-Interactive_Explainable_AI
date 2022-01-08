@@ -6,7 +6,7 @@
         :key="category"
       >
         <h3 class="capitalize font-bold">{{ category }}</h3>
-        <div v-for="attribute of attributes" :key="attribute">{{attributeData.labels[attribute]}}</div>
+        <div v-for="attribute of attributes" :key="attribute"><span>{{attributeData.labels[attribute]}}: </span><span>{{instanceInfo[attribute]}}</span></div>
       </div>
     </div>
   </div>
