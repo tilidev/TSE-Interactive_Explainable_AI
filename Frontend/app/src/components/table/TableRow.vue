@@ -2,7 +2,10 @@
   <tr
     class="bg-white hover:bg-gray cursor-pointer"
     @click="
-      this.router.push({ name: 'Application View', params: { id: rowData.id } })
+      this.router.push({
+        name: 'Application View',
+        params: { id: rowData.id},
+      })
     "
   >
     <td class="py-5 px-8 text-primary">{{ rowData.id }}</td>
