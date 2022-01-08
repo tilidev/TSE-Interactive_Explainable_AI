@@ -1,7 +1,25 @@
 <template>
   <span>
-    <div v-if="!isAtPageTop" class="fixed right-16 bottom-16 w-16 h-16 rounded-full bg-primary shadow-float cursor-pointer">
-    <fa-icon icon="arrow-up" size="2x" class="mt-4 text-white text-middle" @click="scrollUp"/>
+    <div
+      v-if="!isAtPageTop"
+      class="
+        fixed
+        right-16
+        bottom-16
+        w-16
+        h-16
+        rounded-full
+        bg-primary
+        shadow-float
+        cursor-pointer
+      "
+    >
+      <fa-icon
+        icon="arrow-up"
+        size="2x"
+        class="mt-4 text-white text-middle"
+        @click="scrollUp"
+      />
     </div>
     <data-table
       @apply-sorting="applySorting"
@@ -55,7 +73,7 @@ export default {
   },
   methods: {
     scrollUp() {
-      window.scrollTo(0,0);
+      window.scrollTo(0, 0);
     },
     sendTableRequest() {
       const axios = require("axios");
@@ -65,16 +83,19 @@ export default {
     },
     loadMoreRows() {
       window.onscroll = () => {
-        this.isAtPageTop = (document.documentElement.scrollTop < 150)? true : false;
-        const axios = require('axios');
+        this.isAtPageTop =
+          document.documentElement.scrollTop < 150 ? true : false;
+        const axios = require("axios");
         let bottomOfWindow =
           document.documentElement.scrollTop + window.innerHeight >=
           document.documentElement.offsetHeight - window.innerHeight;
         if (bottomOfWindow) {
           this.requestBody.offset += this.requestBody.limit;
-          axios.post("http://localhost:8000/" + "table", this.requestBody).then((response) => {
-            this.tableRows = [...this.tableRows, ...response.data]
-          });
+          axios
+            .post("http://localhost:8000/" + "table", this.requestBody)
+            .then((response) => {
+              this.tableRows = [...this.tableRows, ...response.data];
+            });
         }
       };
     },

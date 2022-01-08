@@ -4,7 +4,7 @@
     @click="
       this.router.push({
         name: 'Application View',
-        params: { id: rowData.id},
+        params: { id: rowData.id },
       })
     "
   >

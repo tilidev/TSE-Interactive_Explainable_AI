@@ -35,7 +35,7 @@ export default {
         categories: {},
         types: {},
         lowerBounds: {},
-        upperBounds: {}
+        upperBounds: {},
       },
       apiUrl: "http://localhost:8000/",
     };

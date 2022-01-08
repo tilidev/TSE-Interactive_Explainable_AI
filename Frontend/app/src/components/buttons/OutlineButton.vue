@@ -12,8 +12,7 @@
         text-lg
         font-bold
         m-4
-        border
-        border-primary
+        border border-primary
       "
     >
       <slot />
