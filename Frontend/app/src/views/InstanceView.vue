@@ -48,7 +48,6 @@ export default {
         lowerBounds: {},
         upperBounds: {},
       },
-      apiUrl: "http://localhost:8000/",
     };
   },
   components: { InfoCard },
@@ -76,6 +75,7 @@ export default {
       });
     },
   },
+  inject: ["apiUrl"],
 };
 </script>
 

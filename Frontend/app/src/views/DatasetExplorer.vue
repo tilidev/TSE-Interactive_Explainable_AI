@@ -37,7 +37,6 @@ export default {
   data() {
     return {
       isAtPageTop: true,
-      apiUrl: "http://localhost:8000/",
       attributeData: {
         descriptions: {},
         labels: {
@@ -92,7 +91,7 @@ export default {
         if (bottomOfWindow) {
           this.requestBody.offset += this.requestBody.limit;
           axios
-            .post("http://localhost:8000/" + "table", this.requestBody)
+            .post(this.apiUrl + "table", this.requestBody)
             .then((response) => {
               this.tableRows = [...this.tableRows, ...response.data];
             });
@@ -127,5 +126,6 @@ export default {
     },
   },
   components: { DataTable },
+  inject: ["apiUrl"],
 };
 </script>

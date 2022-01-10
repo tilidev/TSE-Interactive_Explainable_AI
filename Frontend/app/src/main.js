@@ -9,4 +9,5 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 library.add(fas);
 
 
-createApp(App).use(router).component("fa-icon", FontAwesomeIcon).mount('#app')
+const app = createApp(App).use(router).component("fa-icon", FontAwesomeIcon).mount('#app');
+app.provide('apiUrl', 'localhost:8000/')
