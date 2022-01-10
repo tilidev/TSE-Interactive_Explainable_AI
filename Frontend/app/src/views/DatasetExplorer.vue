@@ -37,23 +37,6 @@ export default {
   data() {
     return {
       isAtPageTop: true,
-      attributeData: {
-        descriptions: {},
-        labels: {
-          amount: "Amount",
-          duration: "Duration",
-          balance: "Balance",
-          age: "Age",
-          employment: "Employment",
-          NN_recommendation: "AI Recommendation",
-          NN_confidence: "AI Confidence",
-          id: "#",
-        },
-        categories: {},
-        types: {},
-        lowerBounds: {},
-        upperBounds: {},
-      },
       tableRows: [],
       requestBody: {
         filter: [],
@@ -98,21 +81,6 @@ export default {
         }
       };
     },
-    sendAttributeRequest() {
-      const axios = require("axios");
-      axios.get(this.apiUrl + "attributes/information").then((response) => {
-        for (const element of response.data) {
-          this.attributeData.descriptions[element.attribute] =
-            element.description;
-          this.attributeData.categories[element.attribute] = element.category;
-          this.attributeData.types[element.attribute] = element.type;
-          this.attributeData.lowerBounds[element.attribute] =
-            element.lowerBound;
-          this.attributeData.upperBounds[element.attribute] =
-            element.upperBound;
-        }
-      });
-    },
     applySorting(sorting) {
       this.requestBody.sort_by = sorting.sort_by;
       this.requestBody.desc = sorting.desc;
@@ -126,6 +94,6 @@ export default {
     },
   },
   components: { DataTable },
-  inject: ["apiUrl"],
+  inject: ["apiUrl", "attributeData"],
 };
 </script>

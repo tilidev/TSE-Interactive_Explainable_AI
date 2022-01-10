@@ -3,7 +3,7 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/dataset">Dataset Explorer</router-link>
   </div>
-  <router-view/>
+  <router-view />
 </template>
 
 <style lang="scss">
@@ -28,3 +28,64 @@
   }
 }
 </style>
+
+<script>
+export default {
+  data() {
+    return {
+      attributeData: {
+        descriptions: {},
+        labels: {
+          amount: "Amount",
+          duration: "Duration",
+          balance: "Balance",
+          age: "Age",
+          employment: "Employment",
+          NN_recommendation: "AI Recommendation",
+          NN_confidence: "AI Confidence",
+          id: "#",
+        },
+        categories: {},
+        types: {},
+        lowerBounds: {},
+        upperBounds: {},
+      },
+      tableRows: [],
+      requestBody: {
+        filter: [],
+        attributes: ["balance", "duration", "amount", "employment", "age"],
+        sort_by: "id",
+        desc: false,
+        limit: 100,
+        offset: 0,
+      },
+    };
+  },
+  mounted() {
+    this.sendAttributeRequest();
+  },
+  methods: {
+    sendAttributeRequest() {
+      const axios = require("axios");
+      axios.get(this.apiUrl + "attributes/information").then((response) => {
+        for (const element of response.data) {
+          this.attributeData.descriptions[element.attribute] =
+            element.description;
+          this.attributeData.categories[element.attribute] = element.category;
+          this.attributeData.types[element.attribute] = element.type;
+          this.attributeData.lowerBounds[element.attribute] =
+            element.lowerBound;
+          this.attributeData.upperBounds[element.attribute] =
+            element.upperBound;
+        }
+      });
+    },
+  },
+  provide() {
+    return {
+      attributeData: this.attributeData,
+      apiUrl: "http://localhost:8000",
+    };
+  },
+};
+</script>
