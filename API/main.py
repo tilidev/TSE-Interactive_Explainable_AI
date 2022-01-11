@@ -8,7 +8,7 @@ from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 from responses import table_Response
 from fastapi.middleware.cors import CORSMiddleware
-from database_req import get_applications_custom, create_connection
+from database_req import get_applications_custom, create_connection, get_application
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -165,7 +165,7 @@ attribute_constraints = [
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
     con = create_connection("database.db")
-    table_Respone = get_applications_custom(con, TableRequest.offset, TableRequest.attributes, TableRequest.limit, json_str=True, filters=TableRequest.filter, sort = TableRequest.sort_by, sort_asc= TableRequest.sort_ascending)
+    table_Response = get_applications_custom(con, TableRequest.offset, TableRequest.attributes, TableRequest.limit, json_str=True, filters=TableRequest.filter, sort = TableRequest.sort_by, sort_asc= TableRequest.sort_ascending)
     return table_Response
 
 
@@ -183,7 +183,9 @@ async def entire_instance_by_id(id: int):
         AttributeNames.NN_recommendation : True,
         AttributeNames.NN_confidence : 0.93
     }
-    return example_output 
+    con = create_connection("database.db")
+    output = get_application(con, id, json_str=True)
+    return output 
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
 async def attribute_informations():
