@@ -37,7 +37,7 @@ if __name__ == "__main__":
     d.normalize_data(d.one_hot_encode_data(data))
     m = dice_ml.Model(model=model, backend=backend)
     exp = dice_ml.Dice(d, m)
-    res = iterate_instances(0, 2, data, exp, None, no_queue=True)
+    res = iterate_instances(0, 3, data, exp, None, no_queue=True)
 
     with open("test_res.json", 'w') as f: # This would be the end file in which everything is saved
         json.dump(res, f)
