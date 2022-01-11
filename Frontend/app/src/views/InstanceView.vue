@@ -12,7 +12,6 @@ import InfoCard from "../components/InfoCard.vue";
 
 export default {
   mounted() {
-    this.sendAttributeRequest();
     this.sendInstanceRequest();
   },
   data() {

@@ -33,10 +33,23 @@
 export default {
   data() {
     return {
+      apiUrl: 'http://localhost:8000/',
       attributeData: {
         descriptions: {},
         labels: {
           amount: "Amount",
+          history: "History",
+          purpose: "Purpose",
+          savings: "Savings",
+          available_income: "Available Income",
+          residence: "Residence",
+          assets: "Assets",
+          other_loans: "Other Loans",
+          housing: "Housing",
+          previous_loans: "Previous Loans",
+          job: "Job",
+          other_debtors: "Other Debtors",
+          people_liable: "People liable",
           duration: "Duration",
           balance: "Balance",
           age: "Age",
@@ -84,7 +97,7 @@ export default {
   provide() {
     return {
       attributeData: this.attributeData,
-      apiUrl: "http://localhost:8000",
+      apiUrl: this.apiUrl,
     };
   },
 };

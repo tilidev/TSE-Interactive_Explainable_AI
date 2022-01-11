@@ -49,7 +49,7 @@ export default {
     };
   },
   mounted() {
-    this.sendAttributeRequest();
+    console.log(this.apiUrl);
     this.sendTableRequest();
     this.loadMoreRows();
   },
