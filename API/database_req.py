@@ -37,7 +37,7 @@ def get_application(con, ident:int, json_str = False):
     return rows
 
 
-def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None, sort = "ident", sort_desc = False):   
+def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None, sort = "ident", sort_asc = True):   
     """Returns a list of application data from the database that is connected via con. 
     Attributes is the list of chosen attributes, num the amount of applications that is requested, 
     filters a list of jsons with filter information, sort a String of the attribute name to be sorted by sort_desc allows to sort by descending order.
@@ -55,7 +55,7 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
         chosen = chosen[:-1]
     view_query += 'SELECT Row_Number() OVER '
     view_query += create_order_query(sort)
-    if sort_desc:
+    if sort_asc == False:
         view_query += ' DESC'
     view_query += ') RowNum,' + chosen + ' FROM applicants'  
      
@@ -103,7 +103,7 @@ def create_order_query(sort:str):
     query = '(ORDER BY '
     attr_dict = {}
     if (sort == 'ident'):
-        query += sort + ')'
+        query += sort 
         return query
     for i in attribute_constraints:
         if i['attribute'] == sort:
