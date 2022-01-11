@@ -8,6 +8,7 @@ from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 from responses import table_Response
 from fastapi.middleware.cors import CORSMiddleware
+from database_req import get_applications_custom, create_connection
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -163,7 +164,8 @@ attribute_constraints = [
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
-    
+    con = create_connection("database.db")
+    table_Respone = get_applications_custom(con, TableRequest.offset, TableRequest.attributes, TableRequest.limit, json_str=True, filters=TableRequest.filter, sort = TableRequest.sort_by, sort_asc= TableRequest.sort_ascending)
     return table_Response
 
 
