@@ -43,7 +43,7 @@
             </div>
             <div class="grid grid-cols-8 gap-y-2 gap-x-2 pr-10">
               <div class="col-span-4 pt-4 pr-40">Loan</div>
-              <div><gray-button>Amount</gray-button></div>
+              <div><gray-button @click="addToCustomizations(amount)">Amount</gray-button></div>
               <div><gray-button>Duration</gray-button></div>
               <div><gray-button>Purpose</gray-button></div>
               <div><gray-button>People Liable</gray-button></div>
@@ -166,17 +166,21 @@ export default {
       toggleCustomize: false,
       toggleFilter: false,
       
-      customizationMemory:[], 
-      customization: ["balance", "duration", "amount", "employment", "age"] // default attributes
+      customizationMemory: [], 
+      customization: ['balance', 'duration', 'amount', 'employment', 'age'] // default attributes
     };
   },
   methods: {
     addToCustomizations(attribute) {
-      if(this.customizationMemory.includes(attribute)){
-        var attributeLocation = this.customizationMemory.indexOf(attribute);
-        this.customizationMemory.splice(attributeLocation, 1);
-      }
-  }
+    if(!(this.customizationMemory.includes(attribute))){
+    this.customizationMemory.push(attribute);
+    }else{
+      this.removeAttribute(attribute);
+    }
+  },
+    removeAttribute(attribute) {
+      this.customizationMemory.push(attribute);//to be changed so it removes
+    }
   },
   components: { OutlineButton, GrayButton, DefaultButton },
 }
