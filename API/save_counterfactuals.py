@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
 
 
-if __name__ == "test":
+if __name__ == "test": # old code do not delete yet
     num_processes = 4
     instances_per_process = 2
 
