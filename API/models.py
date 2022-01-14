@@ -45,12 +45,14 @@ class TableRequest(BaseModel):
     filter: Optional[List[Union[ContinuousFilter, CategoricalFilter]]] = Field(None, alias=filter)
     attributes: List[AttributeNames] = Field(standard_attributes, alias=attributes)
     sort_by: AttributeNames = Field(AttributeNames.ident, alias=sort_by)
+    sort_ascending: bool = Field(True, alias=sort_ascending)
     limit: int = Field(row_limit, alias=limit)
     offset: int = Field(0, alias=offset)
 
 class CategoricalInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
+    display_name: str = Field(alias=display_name)
     type: str = Field(categorical, const=True, alias=type)
     category: str = Field(alias=category)
     values: List[str]
@@ -59,6 +61,7 @@ class CategoricalInformation(BaseModel):
 class ContinuousInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
+    display_name: str = Field(alias=display_name)
     type: str = Field(continuous, const=True, alias=type)
     category: str = Field(alias=category)
     lower_bound: float = Field(alias=lower_bound)
