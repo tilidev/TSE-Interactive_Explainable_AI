@@ -150,6 +150,7 @@ def get_applications(con, start:int, num = 20):
     query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
     c.execute(query)
     result = c.fetchall()
+    con.close()
     return result
 
 def get_application(con, ident:int, json_str = False):
@@ -159,10 +160,11 @@ def get_application(con, ident:int, json_str = False):
     if json_str:
         con.row_factory = sql.Row
     c = con.cursor()
-    query = 'SELECT * FROM applicants WHERE ident = ' + str(ident)
+    query = 'SELECT * FROM applicants WHERE id = ' + str(ident)
     rows = c.execute(query).fetchall()
     if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
+    con.close()
     return rows
 
 
@@ -200,6 +202,7 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     con.commit()
     if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
+    con.close()
     return rows
 
 
