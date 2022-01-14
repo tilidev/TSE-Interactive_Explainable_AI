@@ -25,7 +25,7 @@ app = FastAPI(description=API_description)
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8080/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -165,7 +165,7 @@ attribute_constraints = [
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
     con = create_connection("database.db")
-    table_Response = get_applications_custom(con, TableRequest.offset, TableRequest.attributes, TableRequest.limit, json_str=True, filters=TableRequest.filter, sort = TableRequest.sort_by, sort_asc= TableRequest.sort_ascending)
+    table_Response = get_applications_custom(con, request.offset, request.attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
 
 
@@ -251,7 +251,3 @@ async def shap_explanation(process_id: int):
 async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
