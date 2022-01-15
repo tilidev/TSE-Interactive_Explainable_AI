@@ -1,3 +1,4 @@
+from unittest import result
 from starlette.status import HTTP_202_ACCEPTED
 import uvicorn
 import json
@@ -195,7 +196,9 @@ async def entire_instance_by_id(id: int):
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
 async def attribute_informations():
     '''Returns a JSON with the constraints for each attribute.'''
-    return attribute_constraints
+    result = json.dumps(attribute_constraints)
+    result = json.loads(result)
+    return result
 
 
 @app.post("explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
