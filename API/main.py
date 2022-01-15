@@ -1,14 +1,12 @@
 from unittest import result
 from starlette.status import HTTP_202_ACCEPTED
-import uvicorn
 import json
 
-from typing import Any, Dict, Optional, List, Union
-from fastapi import FastAPI, status
+from typing import Optional, List, Union
+from fastapi import FastAPI
 from fastapi.params import Body
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
-from responses import table_Response
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
 
