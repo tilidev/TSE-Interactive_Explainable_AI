@@ -2,8 +2,6 @@ import sqlite3 as sql
 import json
 from typing import List
 
-import json5
-from matplotlib.font_manager import json_dump
 from constants import *
 
 

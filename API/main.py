@@ -178,17 +178,6 @@ async def table_view(request: TableRequest):
 @app.get("/instance/{id}", response_model=InstanceInfo)
 async def entire_instance_by_id(id: int):
     '''Returns an entire instance information for the lvl2 view'''
-    example_output = {
-        AttributeNames.amount : 8000,
-        AttributeNames.duration : 12,
-        AttributeNames.assets : "example_value",
-        AttributeNames.available_income : "example_value" ,
-        AttributeNames.ident : id,
-        AttributeNames.age : 47,
-        AttributeNames.employment : "more than 7 years",
-        AttributeNames.NN_recommendation : True,
-        AttributeNames.NN_confidence : 0.93
-    }
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     return output 
