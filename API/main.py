@@ -201,9 +201,10 @@ async def schedule_explanation_generation(
     '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
     returns the information that the task has been started and returns a reference as well as a process id to check for & return the actual
     explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
-    Only attributed specific to the explanation method (`exp_method`) will be considered.
+    Only attributes specific to the explanation method (`exp_method`) will be considered.
     ___
     <h1>LIME</h1>
+
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
@@ -212,12 +213,14 @@ async def schedule_explanation_generation(
     It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
     ___
     <h1>SHAP</h1>
+
     The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
     or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
     Note that this method can thus be used for existing as well as modified instances.
     ___
     <h1>DICE</h1>
+
     Only the modified attributes are set in the response items of the `counterfactuals` list.
     Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
     If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
