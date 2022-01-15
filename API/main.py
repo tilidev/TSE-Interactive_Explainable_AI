@@ -182,7 +182,7 @@ async def entire_instance_by_id(id: int):
     output = get_application(con, id, json_str=True)
     return output 
 
-@app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]])
+@app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
 async def attribute_informations():
     '''Returns a JSON with the constraints for each attribute.'''
     result = json.dumps(attribute_constraints)
