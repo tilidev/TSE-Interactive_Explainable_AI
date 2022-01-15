@@ -1,6 +1,9 @@
 import sqlite3 as sql
 import json
 from typing import List
+
+import json5
+from matplotlib.font_manager import json_dump
 from constants import *
 
 
@@ -163,9 +166,11 @@ def get_application(con, ident:int, json_str = False):
     query = 'SELECT * FROM applicants WHERE id = ' + str(ident)
     rows = c.execute(query).fetchall()
     if json_str:
-        rows = json.dumps([dict(ix) for ix in rows])
+        for ix in rows:
+            json_dump = json.dumps(dict(ix))
+    result = json.loads(json_dump)
     con.close()
-    return rows
+    return result
 
 
 def get_applications_custom(con, start:int, attributes: List[str],  num = 20, json_str = False, filters = None, sort = "ident", sort_asc = True):   
@@ -178,8 +183,9 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     c = con.cursor()
     view_query = 'CREATE VIEW custom AS '
     #add customize values
-    chosen = ''
+    chosen = 'id'
     if len(attributes) > 0:
+        chosen += ','
         for i in range(0,len(attributes)):
             chosen += str(attributes[i])
             chosen += ','
@@ -189,7 +195,6 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     if sort_asc == False:
         view_query += ' DESC'
     view_query += ') RowNum,' + chosen + ' FROM applicants'  
-     
     #add filters to query
     if filters:
         view_query += create_filter_query(filters)
@@ -202,6 +207,7 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     con.commit()
     if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
+        rows = json.loads(rows)
     con.close()
     return rows
 
@@ -212,7 +218,6 @@ def create_filter_query(filters):
     filter_str = " WHERE "
     for i in range(0,len(filters)):
             filter_dict = vars(filters[i])
-            print(filter_dict)
             attribute = filter_dict['attr_name']
             if ("values" in filter_dict):
                 #categorical filter
