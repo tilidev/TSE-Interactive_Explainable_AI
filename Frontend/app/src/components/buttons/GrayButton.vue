@@ -1,6 +1,7 @@
 <template>
   <div>
     <button @click="this.clicked = !this.clicked"
+    v-if="this.clicked == false"
       class="
         btn
         bg-gray-light 
@@ -16,6 +17,26 @@
     >
     <slot />
       </button>
+    <button @click="this.clicked = !this.clicked"
+    v-else-if="this.clicked == true"
+      class="
+        btn
+        bg-gray-light 
+        hover:bg-gray 
+        text-blue-800
+        px-1
+        py-1
+        rounded-md
+        text-xs
+        font-extralight
+        border
+        border-blue-800
+        m-4
+      "
+    >
+    <slot />
+      </button>
+    
   </div>
 </template>
 
