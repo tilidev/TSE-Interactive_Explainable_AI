@@ -38,6 +38,7 @@ def data_loader(path='Data/german.csv', raw=False, remove_outliers=True):
 def preprocessX(df):
     X = df.drop(columns='label')
 
+    # TODO Move imports to top of program
     from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
     from sklearn.compose import ColumnTransformer
 
@@ -69,8 +70,8 @@ def createDataframeForDB(deleteLabel=True):
             results[i] = 1 - results[i]
             recommendation.append('Approve')
             
-    df['NN_recommendation']= np.array(recommendation)
     df['NN_confidence'] = results
+    df['NN_recommendation']= np.array(recommendation)
     if (deleteLabel):
         df.drop(columns='label', inplace=True)
 
