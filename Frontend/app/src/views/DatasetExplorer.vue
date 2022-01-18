@@ -42,6 +42,7 @@ export default {
         filter: [],
         attributes: ["balance", "duration", "amount", "employment", "age"],
         sort_by: "id",
+        sort_ascending: true,
         desc: false,
         limit: 100,
         offset: 0,
@@ -49,7 +50,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.apiUrl);
     this.sendTableRequest();
     this.loadMoreRows();
   },
@@ -84,6 +84,8 @@ export default {
     applySorting(sorting) {
       this.requestBody.sort_by = sorting.sort_by;
       this.requestBody.desc = sorting.desc;
+      this.requestBody.sort_ascending = !sorting.desc;
+      this.requestBody.offset = 0;
       this.sendTableRequest();
     },
     applyFilters(filters) {
