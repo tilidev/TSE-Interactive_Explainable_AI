@@ -171,8 +171,8 @@ async def table_view(request: TableRequest):
     for i in request.attributes:
         attributes.append(i.value)
     attributes = attributes[1:]
-    attributes.append(AttributeNames.NN_recommendation)
-    attributes.append(AttributeNames.NN_confidence)
+    attributes.append(AttributeNames.NN_recommendation.value)
+    attributes.append(AttributeNames.NN_confidence.value)
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
 
