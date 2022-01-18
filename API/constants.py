@@ -48,7 +48,9 @@ standard_attributes = [
     AttributeNames.duration,
     AttributeNames.balance,
     AttributeNames.age,
-    AttributeNames.employment
+    AttributeNames.employment,
+    AttributeNames.NN_recommendation,
+    AttributeNames.NN_confidence
 ]
 
 # number definitions to re-use through the entire code
