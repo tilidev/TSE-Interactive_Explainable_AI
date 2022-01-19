@@ -133,7 +133,7 @@ attribute_constraints = [
         attr_name : AttributeNames.employment,
         type : categorical,
         category : personal_cat,
-        values : ['unemployed', 'less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
+        values : ['unemployed', 'less than 1 year', 'between 1 and 4 years', 'between 4  and 7 years', 'more than 7 years'],
         attr_description : "Duration of current applicant's current employment"
     },
     {
