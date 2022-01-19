@@ -61,9 +61,6 @@
 import router from "../../router/index.js";
 
 export default {
-  mounted() {
-    console.log(this.rowData);
-  },
   data() {
     return {
       router: router,

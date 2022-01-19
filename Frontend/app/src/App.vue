@@ -63,15 +63,6 @@ export default {
         lowerBounds: {},
         upperBounds: {},
       },
-      tableRows: [],
-      requestBody: {
-        filter: [],
-        attributes: ["balance", "duration", "amount", "employment", "age"],
-        sort_by: "id",
-        desc: false,
-        limit: 100,
-        offset: 0,
-      },
     };
   },
   mounted() {
