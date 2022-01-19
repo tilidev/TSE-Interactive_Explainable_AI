@@ -20,6 +20,7 @@
         />
         {{ labels[attribute] }}</span
       ><fa-icon
+        v-if="descriptions[attribute]"
         @click="hoverText = hoverText ? '' : descriptions[attribute]"
         @mouseover="hoverText = descriptions[attribute]"
         @mouseleave="hoverText = ''"
