@@ -25,7 +25,7 @@ app = FastAPI(description=API_description)
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080/"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
