@@ -35,7 +35,7 @@
       class="py-5 px-8 text-cc-low font-bold"
     >
       <span class="rounded-lg bg-cc-low text-white px-2 py-1 mr-2"
-        >{{ rowData.NN_confidence * 100 }}%</span
+        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
       ><span>Low</span>
     </td>
     <td
@@ -43,7 +43,7 @@
       class="py-5 px-8 text-cc-high font-bold"
     >
       <span class="rounded-lg bg-cc-high text-white px-2 py-1 mr-2"
-        >{{ rowData.NN_confidence * 100 }}%</span
+        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
       ><span>High</span>
     </td>
     <td
@@ -51,7 +51,7 @@
       class="py-5 px-8 text-cc-medium font-bold"
     >
       <span class="rounded-lg bg-cc-medium text-white px-2 py-1 mr-2"
-        >{{ rowData.NN_confidence * 100 }}%</span
+        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
       ><span>Medium</span>
     </td>
   </tr>
