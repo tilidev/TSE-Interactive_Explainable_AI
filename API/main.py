@@ -25,7 +25,7 @@ app = FastAPI(description=API_description)
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080/"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -170,9 +170,9 @@ async def table_view(request: TableRequest):
     attributes = [str]
     for i in request.attributes:
         attributes.append(i.value)
+    attributes.append("NN_recommendation")
+    attributes.append("NN_confidence")
     attributes = attributes[1:] # TODO Keep this in mind
-    #attributes.append(AttributeNames.NN_recommendation.value)
-    #attributes.append(AttributeNames.NN_confidence.value)
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
 

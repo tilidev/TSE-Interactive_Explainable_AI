@@ -17,14 +17,14 @@
       {{ rowData[attrName] }}
     </td>
     <td
-      v-if="rowData.NN_recommendation == true"
+      v-if="rowData.NN_recommendation == 'Approve'"
       class="py-5 px-8 text-positive font-bold"
     >
       <fa-icon icon="check-circle" size="lg"></fa-icon
       ><span class="ml-2">Approve</span>
     </td>
     <td
-      v-else-if="rowData.NN_recommendation == false"
+      v-if="rowData.NN_recommendation == 'Reject'"
       class="py-5 px-8 text-negative font-bold"
     >
       <fa-icon icon="times-circle" size="lg"></fa-icon
@@ -35,7 +35,7 @@
       class="py-5 px-8 text-cc-low font-bold"
     >
       <span class="rounded-lg bg-cc-low text-white px-2 py-1 mr-2"
-        >{{ rowData.other.NN_confidence * 100 }}%</span
+        >{{ rowData.NN_confidence * 100 }}%</span
       ><span>Low</span>
     </td>
     <td
@@ -61,6 +61,9 @@
 import router from "../../router/index.js";
 
 export default {
+  mounted() {
+    console.log(this.rowData);
+  },
   data() {
     return {
       router: router,
