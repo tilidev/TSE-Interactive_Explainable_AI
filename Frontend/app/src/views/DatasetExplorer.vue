@@ -81,68 +81,11 @@
         </div>
       </div>
     </transition>
-    <transition name="fade">
-      <div
-        class="
-          fixed
-          overflow-y-auto
-          inset-0
-          flex
-          justify-center
-          items-center
-          z-50
-        "
-        v-if="toggleFilter"
-      >
-        <div class="relative mx-auto w-auto max-w-2xl">
-          <div class="bg-white w-100 rounded-lg">
-            <div class="py-8">
-              <h4 class="text-lg font-bold flex flex-row pl-10">
-                Add Filters
-              </h4>
-            </div>
-            <div class="grid grid-cols-8 gap-1 pr-10">
-              <div class="col-span-4 pt-4 pr-40">Loan</div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div class="col-span-6"></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-
-              <div class="col-span-4 pt-4 pr-40 pl-5">Personal</div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div class="col-span-7"></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-
-              <div class="col-span-4 pt-4 pr-40 pl-5">Financial</div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div class="col-span-5"></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-              <div><gray-button>Apply Changes</gray-button></div>
-            </div>
-            <div class="flex flex-row-reverse">
-              <div class="basis-1/2">
-                <outline-button @click="toggleFilter = false"
-                  >Cancel</outline-button
-                >
-              </div>
-              <div class="basis-1/2">
-                <default-button>Apply Changes</default-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+    
+    <filter-overlay
+      v-show="this.toggleFilter"
+      @close="closeFilterModal"
+    />
     <div
       v-if="toggleCustomize||toggleFilter"
       class="absolute inset-0 z-40 opacity-25 bg-black"
@@ -154,7 +97,8 @@
 import OutlineButton from "../components/buttons/OutlineButton.vue";
 import GrayButton from "../components/buttons/GrayButton.vue";
 import DefaultButton from "../components/buttons/DefaultButton.vue";
-//import RoundButton from "../components/buttons/RoundButton.vue";
+import FilterOverlay from '../components/overlays/FilterOverlay.vue';
+
 
 
 export default {
@@ -181,10 +125,16 @@ export default {
     },
     cancelAttributes() {
       this.customizationMemory = [];
-    }
+    },
 
+      showFilterModal() {
+        this.toggleFilter = true;
+      },
+      closeFilterModal() {
+        this.toggleFilter = false;
+      }
   },
-  components: { OutlineButton, GrayButton, DefaultButton },
+  components: { OutlineButton, GrayButton, DefaultButton, FilterOverlay },
 }
 </script>
 
