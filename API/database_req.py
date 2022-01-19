@@ -119,14 +119,29 @@ attribute_constraints = [
         type : categorical,
         category : loan_cat,
         values : ['none', 'co-applicant', 'guarantor'],
-        attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
+        attr_description : "Whether other people would also participate in the loan"
     },
     {
         attr_name : AttributeNames.people_liable,
         type : categorical,
         category : loan_cat,
         values : ['0 to 2', '3 and more'],
+        attr_description : "Amount of people who owe the applicant"
+    },
+    {
+        attr_name : AttributeNames.NN_confidence,
+        type : continuous,
+        category : "other",
+        lower_bound : 0,
+        upper_bound : 1,
         attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
+    },
+    {
+        attr_name : AttributeNames.NN_recommendation,
+        type : categorical,
+        category : "other",
+        values : ['Approve','Reject'],
+        attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     }
 
     # TODO: fill in the rest of the constraints
