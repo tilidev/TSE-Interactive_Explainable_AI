@@ -219,10 +219,8 @@ attribute_constraints = [
         attr_name : AttributeNames.NN_recommendation,
         type : categorical,
         category : "other",
-        values : ['Approve','Reject'],
+        values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     }
 
-    # TODO: fill in the rest of the constraints
-    # TODO: use smart lower and upper bounds as they will be important for filtering
 ]
