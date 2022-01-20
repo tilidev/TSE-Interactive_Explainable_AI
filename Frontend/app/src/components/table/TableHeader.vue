@@ -1,5 +1,5 @@
 <template>
-  <tr class="rounded-md border-gray-light">
+  <tr>
     <th
       class="py-5 px-8 font-bold"
       v-for="attribute in extendedAttributes"
@@ -20,6 +20,7 @@
         />
         {{ labels[attribute] }}</span
       ><fa-icon
+        v-if="descriptions[attribute]"
         @click="hoverText = hoverText ? '' : descriptions[attribute]"
         @mouseover="hoverText = descriptions[attribute]"
         @mouseleave="hoverText = ''"
