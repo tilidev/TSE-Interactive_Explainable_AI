@@ -79,9 +79,9 @@ export default {
           this.attributeData.categories[element.attribute] = element.category;
           this.attributeData.types[element.attribute] = element.type;
           this.attributeData.lowerBounds[element.attribute] =
-            element.lowerBound;
+            element.lower_bound;
           this.attributeData.upperBounds[element.attribute] =
-            element.upperBound;
+            element.upper_bound;
           this.attributeData.values[element.attribute] = element.values;
         }
       });
