@@ -16,20 +16,7 @@
     >
       {{ rowData[attrName] }}
     </td>
-    <td
-      v-if="rowData.NN_recommendation == 'Approve'"
-      class="py-5 px-8 text-positive font-bold"
-    >
-      <fa-icon icon="check-circle" size="lg"></fa-icon
-      ><span class="ml-2">Approve</span>
-    </td>
-    <td
-      v-if="rowData.NN_recommendation == 'Reject'"
-      class="py-5 px-8 text-negative font-bold"
-    >
-      <fa-icon icon="times-circle" size="lg"></fa-icon
-      ><span class="ml-2">Reject</span>
-    </td>
+    <td class="py-5 px-7"><recommendation-vis :recommendation="rowData.NN_recommendation" /></td>
     <td
       v-if="rowData.NN_confidence < 0.75"
       class="py-5 px-8 text-cc-low font-bold"
@@ -59,8 +46,10 @@
 
 <script>
 import router from "../../router/index.js";
+import RecommendationVis from "../ui/RecommendationVis.vue";
 
 export default {
+  components: { RecommendationVis },
   data() {
     return {
       router: router,
