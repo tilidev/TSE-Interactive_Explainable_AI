@@ -13,6 +13,7 @@ module.exports = {
       },
       colors: {
         'primary': '#283252', // Primary accent color, currently blue
+        'primary-light' : '#6578b4',
         'primary-dark' : '#050F2D', // Used for hovering over a button
         'positive': '#16C784', // Green, used to communicate approval
         'positive-light' : '#ABE2AB', // Lighter version of positive, should be used in table & charts
