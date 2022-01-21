@@ -17,39 +17,17 @@
       {{ rowData[attrName] }}
     </td>
     <td class="py-5 px-7"><recommendation-vis :recommendation="rowData.NN_recommendation" /></td>
-    <td
-      v-if="rowData.NN_confidence < 0.75"
-      class="py-5 px-8 text-cc-low font-bold"
-    >
-      <span class="rounded-lg bg-cc-low text-white px-2 py-1 mr-2"
-        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
-      ><span>Low</span>
-    </td>
-    <td
-      v-else-if="rowData.NN_confidence >= 0.9"
-      class="py-5 px-8 text-cc-high font-bold"
-    >
-      <span class="rounded-lg bg-cc-high text-white px-2 py-1 mr-2"
-        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
-      ><span>High</span>
-    </td>
-    <td
-      v-else-if="rowData.NN_confidence >= 0.75"
-      class="py-5 px-8 text-cc-medium font-bold"
-    >
-      <span class="rounded-lg bg-cc-medium text-white px-2 py-1 mr-2"
-        >{{ Math.round(rowData.NN_confidence * 100) }}%</span
-      ><span>Medium</span>
-    </td>
+    <td class ="py-5 px-7"><confidence-vis :confidence="rowData.NN_confidence" /></td>
   </tr>
 </template>
 
 <script>
 import router from "../../router/index.js";
 import RecommendationVis from "../ui/RecommendationVis.vue";
+import ConfidenceVis from "../ui/ConfidenceVis.vue"
 
 export default {
-  components: { RecommendationVis },
+  components: { RecommendationVis, ConfidenceVis },
   data() {
     return {
       router: router,
