@@ -15,11 +15,33 @@
         v-for="attribute in attributeCategories.financial"
         :key="attribute"
       >
-        {{ instanceInfo[attribute] }}
+        <span :class="getValueStyling(attribute)">
+          {{ modifiedInstance[attribute] }}
+        </span>
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute != attribute"
+          class="ml-2"
+          icon="caret-down"
+          @click="dropdownAttribute = attribute"
+        />
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute == attribute"
+          class="ml-2"
+          icon="caret-up"
+          @click="dropdownAttribute = ''"
+        />
+        <dropdown-menu
+          class="absolute mt-1"
+          v-if="attribute == dropdownAttribute"
+          :originalValue="instanceInfo[attribute]"
+          :selectedValue="modifiedInstance[attribute]"
+          :attribute="attribute"
+          @apply-value="applyValue"
+        ></dropdown-menu>
       </div>
       <div class="col-span-2 col-start-3 text-lg">Personal</div>
       <div
-        class="col-start-3 text-primary-light font-bold font-bold" 
+        class="col-start-3 text-primary-light font-bold font-bold"
         v-for="attribute in attributeCategories.personal"
         :key="attribute"
       >
@@ -30,11 +52,31 @@
         v-for="attribute in attributeCategories.personal"
         :key="attribute"
       >
-        {{ instanceInfo[attribute] }}
+        <span :class="getValueStyling(attribute)">
+          {{ modifiedInstance[attribute] }}
+        </span>
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute != attribute"
+          class="ml-2"
+          icon="caret-down"
+          @click="dropdownAttribute = attribute"
+        />
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute == attribute"
+          class="ml-2"
+          icon="caret-up"
+          @click="dropdownAttribute = ''"
+        />
+        <dropdown-menu
+          class="absolute mt-1"
+          v-if="attribute == dropdownAttribute"
+          :originalValue="instanceInfo[attribute]"
+          :selectedValue="modifiedInstance[attribute]"
+          :attribute="attribute"
+          @apply-value="applyValue"
+        ></dropdown-menu>
       </div>
-      <div class="col-span-2 col-start-5 text-lg">
-        Loan-specific
-      </div>
+      <div class="col-span-2 col-start-5 text-lg">Loan-specific</div>
       <div
         class="col-start-5 text-primary-light font-bold"
         v-for="attribute in attributeCategories.loan"
@@ -47,40 +89,90 @@
         v-for="attribute in attributeCategories.loan"
         :key="attribute"
       >
-        {{ instanceInfo[attribute] }}
+        <span :class="getValueStyling(attribute)">
+          {{ modifiedInstance[attribute] }}
+        </span>
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute != attribute"
+          class="ml-2"
+          icon="caret-down"
+          @click="dropdownAttribute = attribute"
+        />
+        <fa-icon
+          v-if="modificationEnabled && dropdownAttribute == attribute"
+          class="ml-2"
+          icon="caret-up"
+          @click="dropdownAttribute = ''"
+        />
+        <dropdown-menu
+          class="absolute mt-1"
+          v-if="attribute == dropdownAttribute"
+          :originalValue="instanceInfo[attribute]"
+          :selectedValue="modifiedInstance[attribute]"
+          :attribute="attribute"
+          @apply-value="applyValue"
+        ></dropdown-menu>
       </div>
-      <div class="col-span- col-start-7 pb-2 text-lg">
-        AI Recommendation
-      </div>
+      <div class="col-span- col-start-7 pb-2 text-lg">AI Recommendation</div>
       <recommendation-vis
         class="col-start-7 row-span-2"
         :recommendation="instanceInfo.NN_recommendation"
       />
       <confidence-vis
-        class="col-start-7"
+        class="col-start-7 row-span-2"
         :confidence="instanceInfo.NN_confidence"
         :explicit="true"
       />
-      <default-button class="col-start-1 mt-4" @click="modificationEnabled=true" v-if="modifiable && !modificationEnabled">Modify</default-button>
-      <default-button class="col-start-1 mt-4" @click="modificationEnabled=false" v-if="modificationEnabled">Reset</default-button>
+      <default-button
+        class="col-start-1 mt-4"
+        @click="modificationEnabled = true"
+        v-if="modifiable && !modificationEnabled"
+        >Modify</default-button
+      >
+      <default-button
+        class="col-start-1 mt-4"
+        @click="modificationEnabled = false"
+        v-if="modificationEnabled"
+        >Reset</default-button
+      >
     </div>
   </div>
 </template>
 
 <script>
-import DefaultButton from './buttons/DefaultButton.vue';
+import DefaultButton from "./buttons/DefaultButton.vue";
 import ConfidenceVis from "./ui/ConfidenceVis.vue";
+import DropdownMenu from "./ui/DropdownMenu.vue";
 import RecommendationVis from "./ui/RecommendationVis.vue";
 
 export default {
   data() {
     return {
+      dropdownAttribute: "",
       modificationEnabled: false,
       isModified: false,
-    }
+    };
   },
-  components: { RecommendationVis, ConfidenceVis, DefaultButton },
-  props: { instanceInfo: Object, attributeData: Object, modifiable: Boolean },
+  components: { RecommendationVis, ConfidenceVis, DefaultButton, DropdownMenu },
+  props: {
+    instanceInfo: Object,
+    attributeData: Object,
+    modifiable: Boolean,
+    modifiedInstance: Object,
+  },
+  methods: {
+    getValueStyling(attribute) {
+      if (this.instanceInfo[attribute] != this.modifiedInstance[attribute]) {
+        return "text-modified font-bold";
+      }
+      return "";
+    },
+    applyValue(value) {
+      const modification = { attribute: this.dropdownAttribute, value: value };
+      this.dropdownAttribute = "";
+      this.$emit("apply-modification", modification);
+    },
+  },
   computed: {
     attributeCategories() {
       const attrCat = {
@@ -90,7 +182,6 @@ export default {
         other: [],
       };
       for (const attr of Object.keys(this.attributeData.categories)) {
-        console.log(attrCat[this.attributeData.categories[attr]]);
         attrCat[this.attributeData.categories[attr]].push(attr);
       }
       return attrCat;

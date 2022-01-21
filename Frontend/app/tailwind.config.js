@@ -12,6 +12,7 @@ module.exports = {
         'float' : '0 6px 10px rgb(0 0 0 / 0.3)' // For floating action buttons
       },
       colors: {
+        'modified': '#16C784', //Color that indicates that an item/value has been modified
         'primary': '#283252', // Primary accent color, currently blue
         'primary-light' : '#6578b4',
         'primary-dark' : '#050F2D', // Used for hovering over a button
