@@ -229,23 +229,22 @@ attribute_constraints = [
         values : ['none', 'yes'],
         attr_description : "Whether telephone information is provided"
     }
-
 ]
 
 rename_dict = {
-    'balance_' : AttributeNames.balance,
-    'history_' : AttributeNames.history,
-    'purpose_' : AttributeNames.purpose,
-    'savings_' : AttributeNames.savings,
-    'employment_' : AttributeNames.employment,
-    'available_income_' : AttributeNames,
-    'other_debtors_' : AttributeNames.other_debtors,
-    'residence_' : AttributeNames.residence,
-    'assets_' : AttributeNames.assets,
-    'other_loans_' : AttributeNames.other_loans,
-    'housing_' : AttributeNames.housing,
-    'previous_loans_' : AttributeNames.previous_loans,
-    'job_' : AttributeNames.job,
-    'people_liable_' : AttributeNames.people_liable,
-    'telephone_' : AttributeNames.telephone
+    'balance_' : AttributeNames.balance.value,
+    'history_' : AttributeNames.history.value,
+    'purpose_' : AttributeNames.purpose.value,
+    'savings_' : AttributeNames.savings.value,
+    'employment_' : AttributeNames.employment.value,
+    'available_income_' : AttributeNames.available_income.value,
+    'other_debtors_' : AttributeNames.other_debtors.value,
+    'residence_' : AttributeNames.residence.value,
+    'assets_' : AttributeNames.assets.value,
+    'other_loans_' : AttributeNames.other_loans.value,
+    'housing_' : AttributeNames.housing.value,
+    'previous_loans_' : AttributeNames.previous_loans.value,
+    'job_' : AttributeNames.job.value,
+    'people_liable_' : AttributeNames.people_liable.value,
+    'telephone_' : AttributeNames.telephone.value
 }

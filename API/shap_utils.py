@@ -30,5 +30,5 @@ class ShapPreprocess():
 
     def transform_API_response(self, instance: InstanceInfo):
         needed_attrs = [e.value for e in AttributeNames if e not in [AttributeNames.NN_confidence, AttributeNames.NN_recommendation]]
-
+        
         pass

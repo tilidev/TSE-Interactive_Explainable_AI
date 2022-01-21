@@ -27,6 +27,7 @@ class InstanceInfo(BaseModel):
     job : Optional[str] = Field(None, alias=AttributeNames.job.value)
     other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
     people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
+    telephone : Optional[str] = Field(None, alias=AttributeNames.telephone.value)
     NN_recommendation : Optional[str] = Field(None, alias=AttributeNames.NN_recommendation.value)
     NN_confidence : Optional[float] = Field(None, le=1, ge=0, alias=AttributeNames.NN_confidence.value)
 
