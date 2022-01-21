@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-white shadow-md p-8 grid grid-cols-auto grid-flow-col text-left">
+  <div
+    class="bg-white shadow-md p-8 grid grid-cols-auto grid-flow-col text-left"
+  >
     <div class="font-bold col-span-2 col-start-1">Financial</div>
     <div
       class="col-start-1"
@@ -46,11 +48,17 @@
       {{ instanceInfo[attribute] }}
     </div>
     <div class="font-bold col-span- col-start-7">AI Recommendation</div>
+    <recommendation-vis class="col-start-7" :recommendation="instanceInfo.NN_recommendation" />
+    <confidence-vis class="col-start-7" :confidence="instanceInfo.NN_confidence" :explicit="true"/>
   </div>
 </template>
 
 <script>
+import ConfidenceVis from "./ui/ConfidenceVis.vue";
+import RecommendationVis from "./ui/RecommendationVis.vue";
+
 export default {
+  components: { RecommendationVis, ConfidenceVis },
   props: { instanceInfo: Object, attributeData: Object },
   computed: {
     attributeCategories() {
