@@ -11,7 +11,6 @@
         rounded-md
         text-lg
         font-bold
-        m-4
         border border-primary
       "
     >
