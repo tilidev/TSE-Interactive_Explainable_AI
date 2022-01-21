@@ -33,7 +33,7 @@
 export default {
   data() {
     return {
-      apiUrl: 'http://localhost:8000/',
+      apiUrl: "http://localhost:8000/",
       attributeData: {
         descriptions: {},
         labels: {
@@ -62,6 +62,7 @@ export default {
         types: {},
         lowerBounds: {},
         upperBounds: {},
+        values: {},
       },
     };
   },
@@ -81,6 +82,7 @@ export default {
             element.lowerBound;
           this.attributeData.upperBounds[element.attribute] =
             element.upperBound;
+          this.attributeData.values[element.attribute] = element.values;
         }
       });
     },
