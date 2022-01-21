@@ -24,7 +24,7 @@ class AttributeNames(str, Enum):
     housing = "housing"
     previous_loans = "previous_loans"
     job = "job"
-    #telephone = "telephone"
+    telephone = "telephone"
     #foreign_worker = "foreign_worker"
     other_debtors = "other_debtors"
     people_liable = "people_liable"
@@ -221,6 +221,31 @@ attribute_constraints = [
         category : "other",
         values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
+    },
+    {
+        attr_name : AttributeNames.telephone,
+        type : categorical,
+        category : personal_cat,
+        values : ['none', 'yes'],
+        attr_description : "Whether telephone information is provided"
     }
 
 ]
+
+rename_dict = {
+    'balance_' : AttributeNames.balance,
+    'history_' : AttributeNames.history,
+    'purpose_' : AttributeNames.purpose,
+    'savings_' : AttributeNames.savings,
+    'employment_' : AttributeNames.employment,
+    'available_income_' : AttributeNames,
+    'other_debtors_' : AttributeNames.other_debtors,
+    'residence_' : AttributeNames.residence,
+    'assets_' : AttributeNames.assets,
+    'other_loans_' : AttributeNames.other_loans,
+    'housing_' : AttributeNames.housing,
+    'previous_loans_' : AttributeNames.previous_loans,
+    'job_' : AttributeNames.job,
+    'people_liable_' : AttributeNames.people_liable,
+    'telephone_' : AttributeNames.telephone
+}
