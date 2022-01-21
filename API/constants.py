@@ -248,3 +248,5 @@ rename_dict = {
     'people_liable_' : AttributeNames.people_liable.value,
     'telephone_' : AttributeNames.telephone.value
 }
+
+inv_rename = {v : k for k, v in rename_dict.items()}
