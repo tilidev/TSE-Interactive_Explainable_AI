@@ -3,6 +3,7 @@
     <info-card
       :instanceInfo="instanceInfo"
       :attributeData="attributeData"
+      :modifiable="true"
     ></info-card>
   </div>
 </template>

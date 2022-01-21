@@ -61,17 +61,26 @@
         :confidence="instanceInfo.NN_confidence"
         :explicit="true"
       />
+      <default-button class="col-start-1 mt-4" @click="modificationEnabled=true" v-if="modifiable && !modificationEnabled">Modify</default-button>
+      <default-button class="col-start-1 mt-4" @click="modificationEnabled=false" v-if="modificationEnabled">Reset</default-button>
     </div>
   </div>
 </template>
 
 <script>
+import DefaultButton from './buttons/DefaultButton.vue';
 import ConfidenceVis from "./ui/ConfidenceVis.vue";
 import RecommendationVis from "./ui/RecommendationVis.vue";
 
 export default {
-  components: { RecommendationVis, ConfidenceVis },
-  props: { instanceInfo: Object, attributeData: Object },
+  data() {
+    return {
+      modificationEnabled: false,
+      isModified: false,
+    }
+  },
+  components: { RecommendationVis, ConfidenceVis, DefaultButton },
+  props: { instanceInfo: Object, attributeData: Object, modifiable: Boolean },
   computed: {
     attributeCategories() {
       const attrCat = {
