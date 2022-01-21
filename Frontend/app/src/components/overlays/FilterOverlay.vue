@@ -1,6 +1,5 @@
 
 <template>
-    
 
     <transition name="fade">
       <div
@@ -74,6 +73,7 @@
         </div>
       </div>
     </transition>
+    
 </template>
 
 
