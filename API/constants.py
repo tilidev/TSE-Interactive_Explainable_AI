@@ -233,14 +233,17 @@ attribute_constraints = [
 
 rename_dict = {
     'balance_' : AttributeNames.balance.value,
+    'duration_' : AttributeNames.duration.value,
     'history_' : AttributeNames.history.value,
     'purpose_' : AttributeNames.purpose.value,
+    'amount_' : AttributeNames.amount.value,
     'savings_' : AttributeNames.savings.value,
     'employment_' : AttributeNames.employment.value,
     'available_income_' : AttributeNames.available_income.value,
     'other_debtors_' : AttributeNames.other_debtors.value,
     'residence_' : AttributeNames.residence.value,
     'assets_' : AttributeNames.assets.value,
+    'age_' : AttributeNames.age.value,
     'other_loans_' : AttributeNames.other_loans.value,
     'housing_' : AttributeNames.housing.value,
     'previous_loans_' : AttributeNames.previous_loans.value,

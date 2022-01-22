@@ -1,6 +1,6 @@
 from typing import DefaultDict
 import pandas as pd
-from API.constants import AttributeNames
+from constants import AttributeNames
 from DataLoader_ey import data_loader
 from tensorflow.keras.models import load_model
 from sklearn.compose import ColumnTransformer
@@ -26,16 +26,22 @@ class ShapPreprocess():
         preprocessor_shap.fit(data)
 
         self.pre = preprocessor_shap
-    
+
+        self.model = load_model('smote_ey.tf')
+
     def transform(self, df: pd.DataFrame):
         return self.pre.transform(df)
 
     def transform_API_response(self, instance: InstanceInfo):
-        needed_attrs = [e.value for e in AttributeNames if e not in [AttributeNames.NN_confidence, AttributeNames.NN_recommendation]]
+        '''Returns the API response for a dataset instance (loan application) as a transformed dataFrame preprocessed for Shap'''
+        needed_attrs = [e.value for e in AttributeNames if e not in [AttributeNames.NN_confidence, AttributeNames.NN_recommendation, AttributeNames.ident]]
         df_dict = {}
         # use correct attribute names for model
         for name in needed_attrs:
-            df_dict[inv_rename[name]] = instance.__dict__[name]
+            df_dict[inv_rename[name]] = [instance[name]] # avoid pandas valueError
+
+        df_dict['label'] = self.model(pd.DataFrame(df_dict))
+        df = pd.DataFrame(df_dict)
+        return self.transform(df)
         
-        # TODO continue here
         
