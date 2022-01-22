@@ -12,6 +12,7 @@ class ShapPreprocess():
     def __init__(self):
         # load dataset
         data = data_loader()
+        data = data.drop(columns="label")
         # numerical column names
         numericals = data.select_dtypes(include=['int64', 'float64']).columns.tolist()
         # categorical column names
@@ -38,10 +39,9 @@ class ShapPreprocess():
         df_dict = {}
         # use correct attribute names for model
         for name in needed_attrs:
-            df_dict[inv_rename[name]] = [instance[name]] # avoid pandas valueError
-
-        df_dict['label'] = self.model(pd.DataFrame(df_dict))
+            df_dict[inv_rename[name]] = [instance[name]]
         df = pd.DataFrame(df_dict)
+        print(df.shape)
         return self.transform(df)
         
         
