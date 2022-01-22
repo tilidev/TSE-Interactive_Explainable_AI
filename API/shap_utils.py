@@ -15,10 +15,16 @@ class ShapHelperV2:
         """TODO"""
         self.model = model
         self.data = data
+        self.X_train = None
+        self.train_data = None
+        self.test_data = None
+        self.X_train = None
+        self.X_test = None
+        self.preprocessor = None
         pass
 
-    def data_preprocess(self):
-        """TODO"""
+    def prepare_shap(self):
+        """TODO mainly taken from explanation_utils_ey"""
         self.data.rename(columns=rename_dict, inplace=True)
         X = self.data.drop(columns='label') # feature matrix
         y = self.data['label'] # target array
@@ -30,18 +36,31 @@ class ShapHelperV2:
         self.X_train = self.train_data.drop(columns='label')
         self.X_test = self.test_data.drop(columns='label')
 
-    def predict_proba(self, data: pd.DataFrame):
-        """TODO mainly taken from explanation_utils_ey"""
-        num_cols = data.select_dtypes(include=['int64', 'float64']).columns.tolist()
-        cat_cols = data.select_dtypes(include=['object', 'category']).columns.tolist()
+        num_cols = X_train.select_dtypes(include=['int64', 'float64']).columns.tolist()
+        cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
         preprocessor = ColumnTransformer(
             transformers=[('num', MinMaxScaler(), num_cols),
                           ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols)]
         )
-        preprocessor        
+        preprocessor.fit(X_train)
+        self.preprocessor = preprocessor
+
+    def get_pred_fn(self):
+        """TODO"""
+
+        def predict_fn(X):
+            X_df = pd.DataFrame(X.reshape((-1, 18)), columns=self.X_train.columns)
+            X_transformed = self.preprocessor.transform(X_df).toarray()
+            result = self.model.predict(X_transformed).flatten()
+            return result
+        
+        return predict_fn
 
 
-class ShapHelper:
+
+
+# Do not Use
+class OLD_ShapHelper:
     def __init__(self):
         # load dataset
         data = data_loader()
