@@ -6,9 +6,10 @@ from tensorflow.keras.models import load_model
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from models import InstanceInfo
-from constants import rename_dict, inv_rename
+from constants import inv_rename
+import shap
 
-class ShapPreprocess():
+class ShapHelper():
     def __init__(self):
         # load dataset
         data = data_loader()
@@ -28,7 +29,10 @@ class ShapPreprocess():
 
         self.pre = preprocessor_shap
 
-        self.model = load_model('smote_ey.tf')
+        model = load_model('smote_ey.tf')
+        def predict_fn_shap(X):
+            return model.predict(X).reshape(-1)
+        self.explainer = shap.KernelExplainer(predict_fn_shap, preprocessor_shap.transform(data))
 
     def transform(self, df: pd.DataFrame):
         return self.pre.transform(df)
@@ -41,7 +45,6 @@ class ShapPreprocess():
         for name in needed_attrs:
             df_dict[inv_rename[name]] = [instance[name]]
         df = pd.DataFrame(df_dict)
-        print(df.shape)
         return self.transform(df)
         
         
