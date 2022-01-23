@@ -9,6 +9,7 @@ from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
+from lime_utils import LimeHelper
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -32,7 +33,8 @@ app.add_middleware(
 )
 
 # TODO Load the explainers here
-
+l = LimeHelper()
+l.__init__()
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
