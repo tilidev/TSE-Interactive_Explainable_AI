@@ -253,3 +253,24 @@ rename_dict = {
 }
 
 inv_rename = {v : k for k, v in rename_dict.items()}
+
+lime_exp_mapping = {
+    0 : AttributeNames.balance.value,
+    1 : AttributeNames.duration.value,
+    2 : AttributeNames.history.value,
+    3 : AttributeNames.purpose.value,
+    4 : AttributeNames.amount.value,
+    5 : AttributeNames.savings.value,
+    6 : AttributeNames.employment.value,
+    7 : AttributeNames.available_income.value,
+    8 : AttributeNames.other_debtors.value,
+    9 : AttributeNames.residence.value,
+    10 : AttributeNames.assets.value,
+    11 : AttributeNames.age.value,
+    12 : AttributeNames.other_loans.value,
+    13 : AttributeNames.housing.value,
+    14 : AttributeNames.previous_loans.value,
+    15 : AttributeNames.job.value,
+    16 : AttributeNames.people_liable.value,
+    17 : AttributeNames.telephone.value
+}

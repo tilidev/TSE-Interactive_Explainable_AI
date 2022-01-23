@@ -12,7 +12,7 @@ from DataLoader_ey import preprocessX
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder
-from constants import rename_dict
+from constants import rename_dict, AttributeNames, lime_exp_mapping
 import json
 
 class LimeHelper():
@@ -93,68 +93,34 @@ class LimeHelper():
                 data.iloc[:, cat_idx] = le.transform(data.iloc[:, cat_idx])
             return data
 
-    def get_lime_exp(self, explainer, prediction_function, idx, data_source, **kwargs):
-        data_le = self.preprocess_new_data(data_source)
-        print(type(data_le))
-        print(data_le)
-        #print(type(data_le[0]))
-        lime_exp = explainer.explain_instance(data_le.values[idx], prediction_function, **kwargs)
+    def get_lime_exp(self, explainer, prediction_function, instance_df, **kwargs):
+        data_le = self.preprocess_new_data(instance_df)
+        lime_exp = explainer.explain_instance(data_le.values[0], prediction_function, **kwargs)
         return lime_exp
-
     
-l = LimeHelper()
-l.__init__()
+    def get_api_response(self,instance, num_features=6):
+        '''Instance info should be in json format
+        Returns a json with the keys predict_proba and explanations
+        Predict_proba contains an array with probabilities for approve and reject
+        Explanations contains a dict where the keys are the attribute names 
+        '''
+        instance_df = pd.DataFrame(instance, index = [0])
+        instance_df.drop(columns=[AttributeNames.ident.value,AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
+        exp = self.get_lime_exp(self.explainer, self.predict_fn,instance_df, num_features)
+        exp_dict = exp.__dict__
+        local_exp = exp_dict['local_exp']
+        predict_proba = exp_dict['predict_proba'] # numpy array containing probability for approve and reject
+        local_exp_list = local_exp[1] #get list with tuples from dict
+        explanations = {}
+        for tuple in local_exp_list:
+            explanations[lime_exp_mapping[tuple[0]]] = tuple[1]
+        return_dict = {}
+        return_dict['predict_proba'] = predict_proba
+        return_dict['explanations'] = explanations
+        return_json = json.dumps(return_dict)
+        return json.loads(return_json)
+        
 
-desc = {
-  "id": 100,
-  "balance": "no account",
-  "duration": 6,
-  "history": "delay payment of previous loans",
-  "purpose": "furniture",
-  "amount": 1000,
-  "savings": "no savings account at this bank",
-  "employment": "unemployed",
-  "available_income": "less than 20%",
-  "residence": "more than 7 years",
-  "assets": "none",
-  "age": 21,
-  "other_loans": "no additional loans",
-  "housing": "rent",
-  "previous_loans": "1",
-  "job": "unskilled (non-resident)",
-  "other_debtors": "none",
-  "people_liable": "0 to 2",
-  "telephone": "yes",
-  "NN_recommendation": "Approve",
-  "NN_confidence": 0.9
-}
-d = json.dumps(desc)
-d1 = json.loads(d)
-k = pd.DataFrame(d1, index = [0])
-print(l.X.iloc[6])
-element = l.data.drop(columns='label')
-k.drop(columns=['id','NN_recommendation','NN_confidence'], inplace=True)
-exp = l.get_lime_exp(l.explainer, l.predict_fn, 0,k, num_features=6)
-print(k)
-#data = l.prep.transform(k)
-'''
-element = l.data.drop(columns='label')
-exp = l.get_lime_exp(l.explainer, l.predict_fn, 0,element, num_features=6)
-dic = exp.__dict__
-print(dic)
-'''
-'''
-elements = l.data.drop(columns='label')
-e = elements.values[0]
-e2 = e.copy()
-#e3 =np.concatenate((e,e2), axis = 1)
-e3 = np.array([e,e2])
-print(pd.DataFrame(e3))
-e4 = pd.DataFrame(e)
-#data = l.prep.transform(e3)
-#lime_exp = l.explainer.explain_instance(data[0], l.predict_fn, num_features=6)
-exp = l.get_lime_exp(l.explainer, l.predict_fn, 0, e4, num_features=6)
-dic = exp.__dict__
-print(dic)
-dic.pop('random_state')
-'''
+
+
+
