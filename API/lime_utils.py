@@ -1,14 +1,9 @@
-from operator import index
 import pandas as pd
 import numpy as np
-import tensorflow as tf
 import lime
 import lime.lime_tabular
-from tensorflow import keras
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.models import load_model
 from DataLoader_ey import data_loader 
-from DataLoader_ey import preprocessX 
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder
