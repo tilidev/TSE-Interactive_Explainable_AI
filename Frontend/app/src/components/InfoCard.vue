@@ -20,13 +20,13 @@
         </span>
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-down"
           @click="dropdownAttribute = attribute"
         />
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-up"
           @click="dropdownAttribute = ''"
         />
@@ -57,13 +57,13 @@
         </span>
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-down"
           @click="dropdownAttribute = attribute"
         />
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-up"
           @click="dropdownAttribute = ''"
         />
@@ -94,13 +94,13 @@
         </span>
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-down"
           @click="dropdownAttribute = attribute"
         />
         <fa-icon
           v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2"
+          class="ml-2 cursor-pointer"
           icon="caret-up"
           @click="dropdownAttribute = ''"
         />
@@ -131,7 +131,7 @@
       >
       <default-button
         class="col-start-1 mt-4"
-        @click="modificationEnabled = false"
+        @click="resetInstance()"
         v-if="modificationEnabled"
         >Reset</default-button
       >
@@ -150,7 +150,6 @@ export default {
     return {
       dropdownAttribute: "",
       modificationEnabled: false,
-      isModified: false,
     };
   },
   components: { RecommendationVis, ConfidenceVis, DefaultButton, DropdownMenu },
@@ -161,6 +160,10 @@ export default {
     modifiedInstance: Object,
   },
   methods: {
+    resetInstance() {
+      this.modificationEnabled = false;
+      this.$emit("reset-instance")
+    },
     getValueStyling(attribute) {
       if (this.instanceInfo[attribute] != this.modifiedInstance[attribute]) {
         return "text-modified font-bold";

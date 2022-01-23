@@ -6,6 +6,7 @@
       :attributeData="attributeData"
       :modifiable="true"
       @apply-modification="applyModification"
+      @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
   </div>
 </template>
