@@ -9,17 +9,16 @@ from constants import inv_rename, rename_dict
 import shap
 
 class ShapHelperV2:
-    def __init__(self, model, data: pd.DataFrame):
+    def __init__(self):
         """TODO"""
-        self.model = model
-        self.data = data
+        self.model = load_model("smote_ey.tf")
+        self.data = data_loader()
         self.X_train = None
         self.train_data = None
         self.test_data = None
         self.X_train = None
         self.X_test = None
         self.preprocessor = None
-        pass
 
     def prepare_shap(self):
         """TODO mainly taken from explanation_utils_ey"""

@@ -7,11 +7,13 @@ import json
 from typing import Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body
+from shap_utils import ShapHelperV2
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
 from lime_utils import LimeHelper
+import shap
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -41,6 +43,13 @@ app.add_middleware(
 # TODO Load the explainers here
 l = LimeHelper()
 l.__init__()
+
+# Shap
+sh = ShapHelperV2()
+sh.prepare_shap()
+pred_fn = sh.get_pred_fn()
+shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
+
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
@@ -115,6 +124,7 @@ async def schedule_explanation_generation(
     '''
 
     # TODO implement background task generation, queue, etc.
+
     pass
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True)
@@ -137,7 +147,8 @@ async def dice_explanation(process_id: int):
 
 @app.get("/processes")
 async def get_processes():
-    return str(num_processes)
+    """Return the number of child processes started by the application."""
+    return num_processes
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
