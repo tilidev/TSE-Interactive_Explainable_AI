@@ -10,7 +10,7 @@ c = con.cursor()
 #con.commit()
 df = createDataframeForDB()
 df.to_sql('applicants', con, index_label = 'id', if_exists="replace")
-for key in rename_dict.keys:
+for key in rename_dict.keys():
     query = 'ALTER TABLE applicants RENAME COLUMN ' + key + ' TO ' + rename_dict[key] + ';'
     c.execute(query)
 con.close()
