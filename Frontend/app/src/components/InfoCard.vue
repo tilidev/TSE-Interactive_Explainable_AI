@@ -126,6 +126,8 @@
         :confidence="instanceInfo.NN_confidence"
         :explicit="true"
       />
+    </div>
+    <div class="flex">
       <default-button
         class="col-start-1 mt-4"
         @click="modificationEnabled = true"
@@ -134,9 +136,15 @@
       >
       <default-button
         class="col-start-1 mt-4"
+        @click="console.log('Generate Explanation')"
+        v-if="modificationEnabled"
+        >Generate Explanation</default-button
+      >
+      <clear-button
+        class="col-start-2 mt-4 ml-4"
         @click="resetInstance()"
         v-if="modificationEnabled"
-        >Reset</default-button
+        >Reset</clear-button
       >
     </div>
   </div>
@@ -147,6 +155,7 @@ import DefaultButton from "./buttons/DefaultButton.vue";
 import ConfidenceVis from "./ui/ConfidenceVis.vue";
 import DropdownMenu from "./ui/DropdownMenu.vue";
 import RecommendationVis from "./ui/RecommendationVis.vue";
+import ClearButton from "./buttons/ClearButton.vue";
 
 export default {
   data() {
@@ -155,7 +164,13 @@ export default {
       modificationEnabled: false,
     };
   },
-  components: { RecommendationVis, ConfidenceVis, DefaultButton, DropdownMenu },
+  components: {
+    RecommendationVis,
+    ConfidenceVis,
+    DefaultButton,
+    DropdownMenu,
+    ClearButton,
+  },
   props: {
     instanceInfo: Object,
     attributeData: Object,
@@ -165,7 +180,7 @@ export default {
   methods: {
     resetInstance() {
       this.modificationEnabled = false;
-      this.$emit("reset-instance")
+      this.$emit("reset-instance");
     },
     getValueStyling(attribute) {
       if (this.instanceInfo[attribute] != this.modifiedInstance[attribute]) {
