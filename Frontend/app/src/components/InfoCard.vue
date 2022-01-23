@@ -37,6 +37,7 @@
           :selectedValue="modifiedInstance[attribute]"
           :attribute="attribute"
           @apply-value="applyValue"
+          @cancel="dropdownAttribute = ''"
         ></dropdown-menu>
       </div>
       <div class="col-span-2 col-start-3 text-lg">Personal</div>
@@ -74,6 +75,7 @@
           :selectedValue="modifiedInstance[attribute]"
           :attribute="attribute"
           @apply-value="applyValue"
+          @cancel="dropdownAttribute = ''"
         ></dropdown-menu>
       </div>
       <div class="col-span-2 col-start-5 text-lg">Loan-specific</div>
@@ -111,6 +113,7 @@
           :selectedValue="modifiedInstance[attribute]"
           :attribute="attribute"
           @apply-value="applyValue"
+          @cancel="dropdownAttribute = ''"
         ></dropdown-menu>
       </div>
       <div class="col-span- col-start-7 pb-2 text-lg">AI Recommendation</div>

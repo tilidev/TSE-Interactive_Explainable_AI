@@ -18,8 +18,23 @@
       </div>
     </div>
     <div v-if="attributeData.types[attribute] == 'continuous'">
-      <slider class="mt-12" :min="attributeData.lowerBounds[attribute]" :max="attributeData.upperBounds[attribute]" v-model="sliderValue"></slider>
-      <default-button @click="applyValue(sliderValue)" class="mt-4">Apply</default-button>
+      <slider
+        class="mt-12"
+        :min="attributeData.lowerBounds[attribute]"
+        :max="attributeData.upperBounds[attribute]"
+        v-model="sliderValue"
+      ></slider>
+      <div class="flex mt-4 mb-1">
+        <default-button
+          @click="applyValue(sliderValue)"
+          class="mr-4"
+          :size="'sm'"
+          >Apply</default-button
+        >
+        <clear-button :size="'sm'" @click="this.$emit('cancel')"
+          >Cancel</clear-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -27,6 +42,7 @@
 <script>
 import Slider from "@vueform/slider";
 import DefaultButton from "@/components/buttons/DefaultButton";
+import ClearButton from "../buttons/ClearButton.vue";
 
 export default {
   data() {
@@ -37,6 +53,7 @@ export default {
   components: {
     DefaultButton,
     Slider,
+    ClearButton,
   },
   props: { originalValue: String, selectedValue: String, attribute: String },
   inject: ["attributeData"],
@@ -56,4 +73,5 @@ export default {
 
 <style
 src="@vueform/slider/themes/default.css">
+@import '../../../node_modules/@vueform/slider/themes/tailwind.scss'
 </style>
