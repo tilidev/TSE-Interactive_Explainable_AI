@@ -1,3 +1,5 @@
+import uvicorn
+import multiprocessing as mp
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -126,3 +128,7 @@ async def shap_explanation(process_id: int):
 async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
+
+if __name__ == "__main__":
+    # This is needed for multiprocessing to run correctly on windows
+    uvicorn.run(app, host="0.0.0.0", port=8000)

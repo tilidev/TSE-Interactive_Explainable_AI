@@ -1,6 +1,5 @@
 from typing import DefaultDict
 import pandas as pd
-from pkg_resources import register_namespace_handler
 from constants import AttributeNames
 from DataLoader_ey import data_loader
 from tensorflow.keras.models import load_model
@@ -104,5 +103,3 @@ class OLD_ShapHelper:
             df_dict[inv_rename[name]] = [instance[name]]
         df = pd.DataFrame(df_dict)
         return self.transform(df)
-        
-        
