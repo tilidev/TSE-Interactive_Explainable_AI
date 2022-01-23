@@ -1,4 +1,3 @@
-from typing import DefaultDict
 import pandas as pd
 from constants import AttributeNames
 from DataLoader_ey import data_loader

@@ -25,6 +25,10 @@ as the public aliases. This leads to a better separation between the python nami
 
 app = FastAPI(description=API_description)
 
+num_processes = mp.cpu_count() - 1
+task_queue = mp.Queue() # tasks will be inputted here
+result_queue = mp.Queue() # finished tasks will be inputted here
+
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
     CORSMiddleware,
@@ -109,6 +113,7 @@ async def schedule_explanation_generation(
     In that case, the server can handle the explanation generation using the values of the sent attributes.
     If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
+
     # TODO implement background task generation, queue, etc.
     pass
 
@@ -128,6 +133,11 @@ async def shap_explanation(process_id: int):
 async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
+
+
+@app.get("/processes")
+async def get_processes():
+    return str(num_processes)
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
