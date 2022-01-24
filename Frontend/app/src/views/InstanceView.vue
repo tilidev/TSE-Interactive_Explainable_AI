@@ -8,6 +8,7 @@
       @apply-modification="applyModification"
       @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
+    <div class=" my-4 px-8 py-4 shadow-md bg-white">Placeholder for explanation</div>
   </div>
 </template>
 
@@ -15,14 +16,9 @@
 import InfoCard from "../components/InfoCard.vue";
 
 export default {
-  mounted() {
-    this.sendInstanceRequest();
-  },
   data() {
     return {
-      instanceInfo: {},
       modifiedInstance: {},
-      id: this.$route.params.id,
     };
   },
   components: { InfoCard },
@@ -30,15 +26,19 @@ export default {
     applyModification(modification) {
       this.modifiedInstance[modification["attribute"]] = modification["value"];
     },
-    sendInstanceRequest() {
-      const axios = require("axios");
-      axios.get(this.apiUrl + "instance/" + this.id).then((response) => {
-        this.instanceInfo = response.data;
-        this.modifiedInstance = Object.assign({}, response.data);
-      });
-    },
   },
-  inject: ["apiUrl", "attributeData"],
+  watch: {
+    instanceInfo(newInstance) {
+      this.modifiedInstance = Object.assign({}, newInstance)
+    } 
+  },
+  inject: ["attributeData"],
+  props: {
+    instanceInfo : {
+      type: Object,
+      required: true,
+    },
+  }
 };
 </script>
 
