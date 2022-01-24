@@ -7,6 +7,9 @@ import json
 from typing import Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body
+from task_gen import Task
+from typing import Dict
+from uuid import UUID
 from shap_utils import ShapHelperV2
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
@@ -29,7 +32,7 @@ app = FastAPI(description=API_description)
 
 num_processes = mp.cpu_count() - 1
 task_queue = mp.Queue() # tasks will be inputted here
-result_queue = mp.Queue() # finished tasks will be inputted here
+results : Dict[UUID, Task] # finished tasks will be inputted here
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -83,7 +86,7 @@ async def attribute_informations():
 @app.post("explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
 async def schedule_explanation_generation(
     instance: InstanceInfo,
-    exp_method: ExplanationMethod,
+    exp_method: ExplanationType,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals"),

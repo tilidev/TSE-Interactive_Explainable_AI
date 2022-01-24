@@ -1,9 +1,9 @@
 from enum import Enum
 
-class ExplanationMethod(str, Enum):
+class ExplanationType(str, Enum):
     lime = "lime"
     shap = "shap"
-    dice_lvl3 = "dice_lvl3"
+    dice_lvl3 = "dice"
 
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
