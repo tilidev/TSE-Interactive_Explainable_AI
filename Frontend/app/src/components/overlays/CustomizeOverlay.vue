@@ -18,11 +18,11 @@
             <div class="grid grid-cols-3 gap-2 py-5">
               <div class="col-span-2">
                 <h4 class="text-lg font-bold flex flex-row pl-10">
-                {{this.customizationMemory}}
+                Select 5 Attributes to display in the table
               </h4>
               </div>
               <div class="pl-20">
-                <button @click="closeCustomize" class="
+                <button @click="close" class="
                 bg-white 
                 hover:bg-gray-light 
                 px-2
@@ -94,8 +94,8 @@ export default {
   },
 
   methods: {
-    closeCustomize() {
-        this.$emit('closeCustomize');
+    close() {
+        this.$emit('close');
       },
     
     addToCustomizations(attribute) {

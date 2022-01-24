@@ -12,7 +12,7 @@
 
     <customize-overlay
       v-show="this.toggleCustomize"
-      @closeCustomize="closeCustomizeModal"
+      @close="closeCustomizeModal"
     />
 
     <filter-overlay
@@ -44,10 +44,10 @@ export default {
   methods: {
     
     showCustomizeModal() {
-      this.toggleFilter = true;
+      this.toggleCustomize = true;
     },
     closeCustomizeModal() {
-      this.toggleFilter = false;
+      this.toggleCustomize = false;
     },
 
     showFilterModal() {
