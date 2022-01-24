@@ -7,7 +7,7 @@ import json
 from typing import Optional, List, Union
 from fastapi import FastAPI
 from fastapi.params import Body
-from task_gen import Task
+from task_gen import Job
 from typing import Dict
 from uuid import UUID
 from shap_utils import ShapHelperV2
@@ -30,9 +30,9 @@ as the public aliases. This leads to a better separation between the python nami
 
 app = FastAPI(description=API_description)
 
-num_processes = mp.cpu_count() - 1
-task_queue = mp.Queue() # tasks will be inputted here
-results : Dict[UUID, Task] # finished tasks will be inputted here
+num_processes = None
+task_queue = None # tasks will be inputted here
+results : Dict[UUID, Job] # finished tasks will be inputted here
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -155,4 +155,6 @@ async def get_processes():
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
+    num_processes = mp.cpu_count() - 2
+    task_queue = mp.Queue()
     uvicorn.run(app, host="0.0.0.0", port=8000)

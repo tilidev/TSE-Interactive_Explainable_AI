@@ -36,11 +36,10 @@ class AttributeNames(str, Enum):
 
 
 class ResponseStatus(str, Enum):
-    accepted = "accepted"
-    scheduled = "scheduled"
-    running = "running"
+    in_prog = "in progress"
     terminated = "terminated"
     timeout = "timeout"
+    error = "error"
 
 # standard configuration for table view
 standard_attributes = [
