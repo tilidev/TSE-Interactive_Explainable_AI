@@ -5,11 +5,11 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Optional, List, Union
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI
 from fastapi.params import Body
 from task_gen import Job
 from typing import Dict
-from uuid import UUID
+from uuid import UUID, uuid4
 from shap_utils import ShapHelperV2
 from constants import *
 from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
@@ -30,9 +30,10 @@ as the public aliases. This leads to a better separation between the python nami
 
 app = FastAPI(description=API_description)
 
+manager = None
 num_processes = None
 task_queue = None # tasks will be inputted here
-results : Dict[UUID, Job] # finished tasks will be inputted here
+results : Dict[UUID, Job] = {} # finished tasks will be inputted here
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -87,9 +88,10 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
+    background_tasks: BackgroundTasks,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
-    num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals"),
+    num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
 ):
     '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
     returns the information that the task has been started and returns a reference as well as a process id to check for & return the actual
@@ -126,6 +128,11 @@ async def schedule_explanation_generation(
     If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
 
+    job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
+    job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
+    results[job.uid] = job
+    task_queue.put(job)
+
     # TODO implement background task generation, queue, etc.
 
     pass
@@ -136,17 +143,18 @@ async def lime_explanation(process_id: int):
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
     pass
 
-@app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
-async def shap_explanation(process_id: int):
+@app.get("/explanations/shap/{uid}", response_model=ShapResponse, response_model_exclude_none=True)
+async def shap_explanation(uid: UUID):
     '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
+
+    # TODO don't forget to delete result after it was received
     pass
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
 async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
-
 
 @app.get("/processes")
 async def get_processes():
@@ -156,5 +164,8 @@ async def get_processes():
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
     num_processes = mp.cpu_count() - 2
-    task_queue = mp.Queue()
+    manager = mp.Manager()
+    results = manager.dict()
+    task_queue = manager.Queue()
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -53,8 +53,16 @@ class ShapHelperV2:
         
         return predict_fn
 
+def compute_response_shap(instance : InstanceInfo, explainer : shap.KernelExplainer, helper: ShapHelperV2):
+    cols = helper.X_train.columns.to_list()
 
+    data_dict = {col : [instance.__dict__[col]] for col in cols}
+    data_for_explainer = pd.DataFrame(data_dict)
+    
+    shap_vals = explainer.shap_values(data_for_explainer, nsamples=500, l1_reg="num_features(18)")
+    shap_bval = explainer.expected_value
 
+    return shap_bval, shap_vals
 
 # Do not Use
 class OLD_ShapHelper:
