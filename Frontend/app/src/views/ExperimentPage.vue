@@ -5,7 +5,7 @@
     </div>
     <div v-if="!done">
       <instance-view :instanceInfo="instanceInfo"></instance-view>
-      <div class="text-right space-x-4 justify-end mx-8 flex">
+      <div class="text-right space-x-4 justify-end flex">
         <default-button
           :color="'positive'"
           :hoverColor="'positive-dark'"
