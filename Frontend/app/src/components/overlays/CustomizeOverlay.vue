@@ -35,31 +35,31 @@
             </div>
             <div class="grid grid-cols-8 gap-y-2 gap-x-2 pr-10">
               <div class="col-span-4 pt-4 pr-40">Loan</div>
-              <div><gray-button @click="addToCustomizations('amount')">Amount</gray-button></div>
-              <div><gray-button @click="addToCustomizations('duration')">Duration</gray-button></div>
-              <div><gray-button @click="addToCustomizations('purpose')">Purpose</gray-button></div>
-              <div><gray-button @click="addToCustomizations('people liable')">People Liable</gray-button></div>
+              <div><gray-button ref="amount" @click="addToCustomizations('amount')">Amount</gray-button></div>
+              <div><gray-button ref="duration" @click="addToCustomizations('duration')">Duration</gray-button></div>
+              <div><gray-button ref="purpose" @click="addToCustomizations('purpose')">Purpose</gray-button></div>
+              <div><gray-button ref="people liable" @click="addToCustomizations('people liable')">People Liable</gray-button></div>
               <div class="col-span-6"></div>
-              <div ><gray-button @click="addToCustomizations('employment')">Employment</gray-button></div>
-              <div><gray-button @click="addToCustomizations('other debtors')">Other debtors</gray-button></div>
+              <div ><gray-button ref="employment" @click="addToCustomizations('employment')">Employment</gray-button></div>
+              <div><gray-button ref="other debtors" @click="addToCustomizations('other debtors')">Other debtors</gray-button></div>
 
               <div class="col-span-4 pt-4 pr-40 pl-5">Personal</div>
-              <div><gray-button @click="addToCustomizations('age')">Age</gray-button></div>
-              <div><gray-button @click="addToCustomizations('residence')">Residence</gray-button></div>
-              <div><gray-button @click="addToCustomizations('job')">Job</gray-button></div>
-              <div><gray-button @click="addToCustomizations('telephone')">Telephone</gray-button></div>
+              <div><gray-button ref="age" @click="addToCustomizations('age')">Age</gray-button></div>
+              <div><gray-button ref="residence" @click="addToCustomizations('residence')">Residence</gray-button></div>
+              <div><gray-button ref="job" @click="addToCustomizations('job')">Job</gray-button></div>
+              <div><gray-button ref="telephone" @click="addToCustomizations('telephone')">Telephone</gray-button></div>
               <div class="col-span-7"></div>
-              <div><gray-button @click="addToCustomizations('housing')">Housing</gray-button></div>
+              <div><gray-button ref="housing" @click="addToCustomizations('housing')">Housing</gray-button></div>
 
               <div class="col-span-4 pt-4 pr-40 pl-5">Financial</div>
-              <div><gray-button @click="addToCustomizations('savings')">Savings</gray-button></div>
-              <div><gray-button @click="addToCustomizations('assets')">Assets</gray-button></div>
-              <div><gray-button @click="addToCustomizations('balance')">Balance</gray-button></div>
-              <div><gray-button @click="addToCustomizations('available income')">Available Income</gray-button></div>
+              <div><gray-button ref="savings" @click="addToCustomizations('savings')">Savings</gray-button></div>
+              <div><gray-button ref="assets" @click="addToCustomizations('assets')">Assets</gray-button></div>
+              <div><gray-button ref="balance" @click="addToCustomizations('balance')">Balance</gray-button></div>
+              <div><gray-button ref="available income" @click="addToCustomizations('available income')">Available Income</gray-button></div>
               <div class="col-span-5"></div>
-              <div><gray-button @click="addToCustomizations('history')">History</gray-button></div>
-              <div><gray-button @click="addToCustomizations('other loans')">Other loans</gray-button></div>
-              <div><gray-button @click="addToCustomizations('previous loans')">Previous loans</gray-button></div>
+              <div><gray-button ref="history" @click="addToCustomizations('history')">History</gray-button></div>
+              <div><gray-button ref="other loans" @click="addToCustomizations('other loans')">Other loans</gray-button></div>
+              <div><gray-button ref="previous loans" @click="addToCustomizations('previous loans')">Previous loans</gray-button></div>
             </div>
             <div class="flex flex-row-reverse">
               <div class="basis-1/2">
@@ -115,6 +115,7 @@ export default {
     },
     cancelAttributes() {
       this.customizationMemory = [];
+      this.$refs
     }
   },
 }
