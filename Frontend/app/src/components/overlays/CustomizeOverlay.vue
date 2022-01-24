@@ -66,7 +66,7 @@
                 <outline-button @click="cancelAttributes()">Cancel</outline-button>
               </div>
               <div class="basis-1/2">
-                <default-button>Apply Changes</default-button>
+                <default-button @click="updateAttributes">Apply Changes</default-button>
               </div>
             </div>
           </div>
@@ -97,6 +97,11 @@ export default {
     close() {
         this.$emit('close');
       },
+    
+    updateAttributes() {
+        this.customization = this.customizationMemory;
+        this.$emit('updateAttributes', this.customization);
+    },
     
     addToCustomizations(attribute) {
     if(!(this.customizationMemory.includes(attribute))){

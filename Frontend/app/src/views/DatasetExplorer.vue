@@ -13,6 +13,7 @@
     <customize-overlay
       v-show="this.toggleCustomize"
       @close="closeCustomizeModal"
+      @updateAttributes="updateCustomizationAttributes($event)"
     />
 
     <filter-overlay
@@ -39,9 +40,15 @@ export default {
     return {
       toggleCustomize: false,
       toggleFilter: false,
+
+      customizationAttributes: [], 
     };
   },
   methods: {
+
+    updateCustomizationAttributes(attributes) {
+      this.customizationAttributes = attributes;
+    },
     
     showCustomizeModal() {
       this.toggleCustomize = true;
