@@ -21,29 +21,26 @@
         @click="scrollUp"
       />
     </div>
-      <div>
-    <div class="flex flex-row-reverse pr-20">
-    <outline-button @click="toggleCustomize = !toggleCustomize"
-      >Customize</outline-button
-    >
-    <outline-button @click="toggleFilter = !toggleFilter"
-      >Filter</outline-button
-    >
+    <div>
+      <div class="flex flex-row-reverse pr-20">
+        <outline-button @click="toggleCustomize = !toggleCustomize"
+          >Customize</outline-button
+        >
+        <outline-button @click="toggleFilter = !toggleFilter"
+          >Filter</outline-button
+        >
+      </div>
+      <customize-overlay
+        v-show="this.toggleCustomize"
+        @close="closeCustomizeModal"
+        @updateAttributes="updateCustomizationAttributes($event)"
+      />
+      <filter-overlay v-show="this.toggleFilter" @close="closeFilterModal" />
+      <div
+        v-if="toggleCustomize || toggleFilter"
+        class="absolute inset-0 z-40 opacity-25 bg-black"
+      ></div>
     </div>
-    <customize-overlay
-      v-show="this.toggleCustomize"
-      @close="closeCustomizeModal"
-      @updateAttributes="updateCustomizationAttributes($event)"
-    />
-    <filter-overlay
-      v-show="this.toggleFilter"
-      @close="closeFilterModal"
-    />
-    <div
-      v-if="toggleCustomize||toggleFilter"
-      class="absolute inset-0 z-40 opacity-25 bg-black"
-    ></div>
-  </div>
     <data-table
       @apply-sorting="applySorting"
       :tableRows="tableRows"
@@ -56,8 +53,8 @@
 <script>
 import DataTable from "../components/table/DataTable.vue";
 import OutlineButton from "../components/buttons/OutlineButton.vue";
-import FilterOverlay from '../components/overlays/FilterOverlay.vue';
-import CustomizeOverlay from '../components/overlays/CustomizeOverlay.vue';
+import FilterOverlay from "../components/overlays/FilterOverlay.vue";
+import CustomizeOverlay from "../components/overlays/CustomizeOverlay.vue";
 
 export default {
   data() {
@@ -84,6 +81,8 @@ export default {
   methods: {
     updateCustomizationAttributes(attributes) {
       this.requestBody.attributes = attributes;
+      this.sendTableRequest();
+      this.toggleCustomize = false;
     },
     showCustomizeModal() {
       this.toggleCustomize = true;
@@ -132,16 +131,8 @@ export default {
       this.requestBody.offset = 0;
       this.sendTableRequest();
     },
-    applyFilters(filters) {
-      console.log(filters);
-    },
-    applyCustomization(customization) {
-      console.log(customization);
-    },
   },
   components: { DataTable, OutlineButton, CustomizeOverlay, FilterOverlay },
   inject: ["apiUrl", "attributeData"],
 };
-
-
 </script>
