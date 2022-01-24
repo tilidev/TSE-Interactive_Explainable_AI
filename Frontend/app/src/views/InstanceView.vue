@@ -8,12 +8,13 @@
       @apply-modification="applyModification"
       @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
-    <div class=" my-4 px-8 py-4 shadow-md bg-white">Placeholder for explanation</div>
+    <dice-explanation class="my-4"></dice-explanation>
   </div>
 </template>
 
 <script>
 import InfoCard from "../components/InfoCard.vue";
+import DiceExplanation from "../components/explanations/DIceExplanation.vue"
 
 export default {
   data() {
@@ -21,7 +22,7 @@ export default {
       modifiedInstance: {},
     };
   },
-  components: { InfoCard },
+  components: { InfoCard, DiceExplanation },
   methods: {
     applyModification(modification) {
       this.modifiedInstance[modification["attribute"]] = modification["value"];
