@@ -21,6 +21,29 @@
         @click="scrollUp"
       />
     </div>
+      <div>
+    <div class="flex flex-row-reverse pr-20">
+    <outline-button @click="toggleCustomize = !toggleCustomize"
+      >Customize</outline-button
+    >
+    <outline-button @click="toggleFilter = !toggleFilter"
+      >Filter</outline-button
+    >
+    </div>
+    <customize-overlay
+      v-show="this.toggleCustomize"
+      @close="closeCustomizeModal"
+      @updateAttributes="updateCustomizationAttributes($event)"
+    />
+    <filter-overlay
+      v-show="this.toggleFilter"
+      @close="closeFilterModal"
+    />
+    <div
+      v-if="toggleCustomize||toggleFilter"
+      class="absolute inset-0 z-40 opacity-25 bg-black"
+    ></div>
+  </div>
     <data-table
       @apply-sorting="applySorting"
       :tableRows="tableRows"
@@ -32,10 +55,15 @@
 
 <script>
 import DataTable from "../components/table/DataTable.vue";
+import OutlineButton from "../components/buttons/OutlineButton.vue";
+import FilterOverlay from '../components/overlays/FilterOverlay.vue';
+import CustomizeOverlay from '../components/overlays/CustomizeOverlay.vue';
 
 export default {
   data() {
     return {
+      toggleCustomize: false,
+      toggleFilter: false,
       isAtPageTop: true,
       tableRows: [],
       requestBody: {
@@ -54,6 +82,22 @@ export default {
     this.loadMoreRows();
   },
   methods: {
+    updateCustomizationAttributes(attributes) {
+      this.requestBody.attributes = attributes;
+    },
+    showCustomizeModal() {
+      this.toggleCustomize = true;
+    },
+    closeCustomizeModal() {
+      this.toggleCustomize = false;
+    },
+
+    showFilterModal() {
+      this.toggleFilter = true;
+    },
+    closeFilterModal() {
+      this.toggleFilter = false;
+    },
     scrollUp() {
       window.scrollTo(0, 0);
     },
@@ -95,7 +139,9 @@ export default {
       console.log(customization);
     },
   },
-  components: { DataTable },
+  components: { DataTable, OutlineButton, CustomizeOverlay, FilterOverlay },
   inject: ["apiUrl", "attributeData"],
 };
+
+
 </script>
