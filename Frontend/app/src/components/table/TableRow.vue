@@ -8,25 +8,38 @@
       })
     "
   >
-    <td class="py-5 px-8 text-primary">{{ rowData.id }}</td>
+    <td v-if="rowData.id || rowData.id === 0" class="py-5 px-8 text-primary">{{ rowData.id }}</td>
     <td
       class="py-5 px-8"
       v-for="attrName in filteredAttributes"
       :key="attrName"
+      :class="getHighlightStyling(attrName)"
     >
       {{ rowData[attrName] }}
     </td>
-    <td class="py-5 px-7"><recommendation-vis :recommendation="rowData.NN_recommendation" /></td>
-    <td class ="py-5 px-7"><confidence-vis :confidence="rowData.NN_confidence" /></td>
+    <td class="py-5 px-7">
+      <recommendation-vis :recommendation="rowData.NN_recommendation" />
+    </td>
+    <td v-if="rowData.NN_confidence" class="py-5 px-7">
+      <confidence-vis :confidence="rowData.NN_confidence" />
+    </td>
   </tr>
 </template>
 
 <script>
 import router from "../../router/index.js";
 import RecommendationVis from "../ui/RecommendationVis.vue";
-import ConfidenceVis from "../ui/ConfidenceVis.vue"
+import ConfidenceVis from "../ui/ConfidenceVis.vue";
 
 export default {
+  methods: {
+    getHighlightStyling(attribute) {
+      if (this.highlight.has(attribute)) {
+        return "font-bold text-modified"
+      }
+      return ""
+    }
+  },
   components: { RecommendationVis, ConfidenceVis },
   data() {
     return {
@@ -46,7 +59,14 @@ export default {
     },
   },
   props: {
-    rowData: Object,
+    rowData: {
+      type: Object,
+      required: true,
+    },
+    highlight: { 
+      type: Set,
+      default: new Set([])
+       },
   },
 };
 </script>
