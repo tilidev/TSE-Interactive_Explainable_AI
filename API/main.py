@@ -4,9 +4,10 @@ import multiprocessing as mp
 from starlette.status import HTTP_202_ACCEPTED
 import json
 
-from typing import Optional, List, Union
+from typing import Any, Optional, List, Union
 from fastapi import BackgroundTasks, FastAPI
 from fastapi.params import Body
+from task_gen import explanation_worker
 from task_gen import Job
 from typing import Dict
 from uuid import UUID, uuid4
@@ -33,7 +34,7 @@ app = FastAPI(description=API_description)
 manager = None
 num_processes = None
 task_queue = None # tasks will be inputted here
-results : Dict[UUID, Job] = {} # finished tasks will be inputted here
+results : Dict[UUID, Any] = {} # finished tasks will be inputted here
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -148,6 +149,11 @@ async def shap_explanation(uid: UUID):
     '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
 
+    if uid in results.keys():
+        return results[uid]
+    else:
+        return ShapResponse(status=ResponseStatus.in_prog)
+
     # TODO don't forget to delete result after it was received
     pass
 
@@ -168,4 +174,7 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
+    p1 = mp.Process(name="myFirstWorkingProcess", target=explanation_worker, args=(task_queue, results, shap_explainer, sh))
+    p1.start()
+    
     uvicorn.run(app, host="0.0.0.0", port=8000)
