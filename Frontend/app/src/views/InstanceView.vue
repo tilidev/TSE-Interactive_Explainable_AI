@@ -8,7 +8,7 @@
       @apply-modification="applyModification"
       @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
-    <dice-explanation class="my-4"></dice-explanation>
+    <dice-explanation :instanceInfo="instanceInfo" class="my-4"></dice-explanation>
   </div>
 </template>
 
