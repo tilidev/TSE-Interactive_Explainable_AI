@@ -1,17 +1,55 @@
 <template>
-  <div class="px-8 py-4 shadow-md bg-white">
+  <div class="text-left px-8 py-4 shadow-md bg-white">
+    <h2 class="font-bold text-lg mb-4">Counterfactual Explanations</h2>
+    <table class="table-auto text-primary shadow-lg text-left">
+      <thead class="bg-primary text-white">
+        <table-header
+          :labels="attributeData.labels"
+          :descriptions="attributeData.descriptions"
+          :attributes="variedAttributes"
+        />
+      </thead>
+      <tbody class="divide-gray divide-y">
+        <table-row
+          :rowData="
+            variedAttributes.reduce(
+              (obj, key) => ({ ...obj, [key]: instanceInfo[key] }),
+              {}
+            )
+          "
+        ></table-row>
+        <table-row
+          v-for="row in filteredRows"
+          :key="row.NN_recommendation"
+          :rowData="row"
+          :highlight="getHighlightSet(row)"
+        />
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
+import TableHeader from "../table/TableHeader.vue";
+import TableRow from "../table/TableRow.vue";
 export default {
   inject: ["attributeData"],
-  components: { },
+  components: { TableHeader, TableRow },
   mounted() {},
   props: {
     instanceInfo: {
       type: Object,
       required: true,
+    },
+  },
+  methods: {
+    getHighlightSet(row) {
+      const attributeArray = Object.keys(row);
+      return new Set(
+        attributeArray.filter((el) => {
+          return row[el] != this.instanceInfo[el];
+        })
+      );
     },
   },
   watch: {
@@ -79,7 +117,7 @@ export default {
           job: "skilled",
           other_debtors: "none",
           people_liable: "0 to 2",
-          NN_recommendation: "Approve",
+          NN_recommendation: "Reject",
           NN_confidence: 0.9382685422897339,
         },
         {
@@ -101,7 +139,7 @@ export default {
           job: "skilled",
           other_debtors: "none",
           people_liable: "0 to 2",
-          NN_recommendation: "Approve",
+          NN_recommendation: "Reject",
           NN_confidence: 0.9382685422897339,
         },
         {
@@ -123,7 +161,7 @@ export default {
           job: "skilled",
           other_debtors: "none",
           people_liable: "0 to 2",
-          NN_recommendation: "Approve",
+          NN_recommendation: "Reject",
           NN_confidence: 0.9382685422897339,
         },
       ],
