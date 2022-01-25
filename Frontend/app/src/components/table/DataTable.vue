@@ -9,7 +9,11 @@
             :descriptions="attributeData.descriptions"
             :sort_by="optionsData.sort_by"
             :desc="optionsData.desc"
-            :attributes="optionsData.attributes"
+            :attributes="[
+              ...['id'],
+              ...optionsData.attributes,
+              ...['NN_recommendation', 'NN_confidence'],
+            ]"
           />
         </thead>
         <tbody class="divide-gray divide-y">
@@ -24,6 +28,7 @@
 import TableHeader from "./TableHeader.vue";
 import TableRow from "./TableRow.vue";
 export default {
+  mounted() {},
   props: {
     tableRows: Array,
     attributeData: Object,

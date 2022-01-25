@@ -2,7 +2,7 @@
   <tr>
     <th
       class="py-5 px-8 font-bold"
-      v-for="attribute in extendedAttributes"
+      v-for="attribute in attributes"
       :key="attribute"
     >
       <span @click="applySorting(attribute)" class="cursor-pointer">
@@ -50,6 +50,8 @@
 
 <script>
 export default {
+  mounted() {
+  },
   data() {
     return {
       hoverText: "",
@@ -64,16 +66,12 @@ export default {
     desc: Boolean,
   },
   computed: {
-    extendedAttributes() {
-      return [
-        ...["id"],
-        ...this.attributes,
-        ...["NN_recommendation", "NN_confidence"],
-      ];
-    },
   },
   methods: {
     applySorting(attribute) {
+      if (!this.sort_by) {
+        return;
+      }
       const newSorting = {
         sort_by: attribute,
         desc: this.desc == false && this.sort_by == attribute ? true : false,
