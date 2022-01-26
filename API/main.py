@@ -217,7 +217,9 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
-    p1 = mp.Process(name="myFirstWorkingProcess", target=explanation_worker, args=(task_queue, results, shap_explainer, sh))
-    # p1.start()
+    cols = sh.X_train.columns.to_list()
+    print(cols, "\n\n") # TODO remove
+    p1 = mp.Process(target=explanation_worker, args=(task_queue, results, shap_explainer, cols))
+    p1.start()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)

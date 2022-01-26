@@ -16,7 +16,7 @@ class Job(BaseModel):
     time_out : Optional[float] = Field(None)
 
 
-def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, shap_helper, explainer_lime=None): # currently, dice explainer is not needed due to precomputation
+def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, cols, explainer_lime=None): # currently, dice explainer is not needed due to precomputation
     """Takes one element (a job) out of the input queue (TODO BLOCKING), solves the task
     with the explanation function which takes in the args.
     The result is returned in the output queue.
@@ -32,9 +32,8 @@ def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, shap_he
         if job.exp_type == ExplanationType.shap:
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
-            shap_bval, shap_vals = compute_response_shap(job.task["instance"], explainer_shap, shap_helper)
+            shap_bval, shap_vals = compute_response_shap(job.task["instance"], explainer_shap, cols)
 
-            cols = shap_helper.X_train.columns.to_list()
             shap_attributes = [{"attribute" : cols[i], "influence" : shap_vals[i]} for i in range(len(cols))] # prepare format for response
 
             out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes)
