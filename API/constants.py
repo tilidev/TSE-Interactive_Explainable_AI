@@ -5,6 +5,9 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice_lvl3 = "dice"
 
+class RecommendationType(str, Enum):
+    approve = "approve"
+    reject = "reject"
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
     # attributes in the dataset

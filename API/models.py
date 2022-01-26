@@ -123,3 +123,13 @@ class GenerateClientID(BaseModel):
 class ClientIDResponse(BaseModel):
     """JSON format for cliend id generation response. Integer from 0 upwards"""
     client_id : int = Field(ge=0)
+
+class ExperimentResults(BaseModel):
+    """JSON format for experiment results"""
+    class SingleResult(BaseModel):
+        ident : int 
+        choice : RecommendationType
+
+    experiment_name : str
+    client_id : int
+    results : List[RecommendationType]

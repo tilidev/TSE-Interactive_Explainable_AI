@@ -84,7 +84,6 @@ async def attribute_informations():
     result = json.loads(result)
     return result
 
-
 @app.post("explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
 async def schedule_explanation_generation(
     instance: InstanceInfo,
@@ -188,6 +187,16 @@ async def experiment_by_name(name: str):
 @app.post("/experiment/generate_id", response_model=ClientIDResponse)
 async def generate_client_id(gen: GenerateClientID):
     #TODO create client id based on already existing ids in database. Should be integer from 0 upwards.
+    pass
+
+@app.post("experiment/results", status_code=HTTP_202_ACCEPTED)
+async def results_to_db(results: ExperimentResults):
+    #TODO 
+    pass
+
+@app.get("experiment/export/json", response_model=ExperimentResults)
+async def export_results_json():
+    # TODO
     pass
 
 if __name__ == "__main__":
