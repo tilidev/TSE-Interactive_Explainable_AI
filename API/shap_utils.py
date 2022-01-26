@@ -52,6 +52,21 @@ class ShapHelperV2:
             return result
         
         return predict_fn
+    
+    def please_work(self, X):
+        X_df = pd.DataFrame(X.reshape((-1, 18)), columns=self.X_train.columns)
+        X_transformed = self.preprocessor.transform(X_df).toarray()
+        result = self.model.predict(X_transformed).flatten()
+        return result
+
+def get_pred_fn_helper(helper: ShapHelperV2):
+    def predict_fn(X):
+        X_df = pd.DataFrame(X.reshape((-1, 18)), columns=helper.X_train.columns)
+        X_transformed = helper.preprocessor.transform(X_df).toarray()
+        result = helper.model.predict(X_transformed).flatten()
+        return result
+    return predict_fn
+
 
 def compute_response_shap(instance : InstanceInfo, explainer : shap.KernelExplainer, cols: list, num_features=18):
     data_dict = {col : [instance.__dict__[col]] for col in cols}

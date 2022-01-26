@@ -11,7 +11,7 @@ from task_gen import explanation_worker
 from task_gen import Job
 from typing import Dict
 from uuid import UUID, uuid4
-from shap_utils import ShapHelperV2
+from shap_utils import ShapHelperV2, get_pred_fn_helper
 from constants import *
 from models import *
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,10 +50,7 @@ l = LimeHelper()
 l.__init__()
 
 # Shap
-sh = ShapHelperV2()
-sh.prepare_shap()
-pred_fn = sh.get_pred_fn()
-shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
+
 
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
@@ -84,7 +81,7 @@ async def attribute_informations():
     result = json.loads(result)
     return result
 
-@app.post("explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
+@app.post("/explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
@@ -126,11 +123,13 @@ async def schedule_explanation_generation(
     In that case, the server can handle the explanation generation using the values of the sent attributes.
     If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
-
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
     results[job.uid] = job
     task_queue.put(job)
+
+
+    return ExplanationTaskScheduler(status=ResponseStatus.in_prog, process_id=69420, href=str(job.uid))
 
     # TODO implement background task generation, queue, etc.
 
@@ -148,12 +147,11 @@ async def shap_explanation(uid: UUID):
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
 
     if uid in results.keys():
-        return results[uid]
+        res = results[uid]
+        #TODO delete entry in dictionary
+        return res
     else:
         return ShapResponse(status=ResponseStatus.in_prog)
-
-    # TODO don't forget to delete result after it was received
-    pass
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
 async def dice_explanation(process_id: int):
@@ -217,9 +215,7 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
-    cols = sh.X_train.columns.to_list()
-    print(cols, "\n\n") # TODO remove
-    p1 = mp.Process(target=explanation_worker, args=(task_queue, results, shap_explainer, cols))
+    p1 = mp.Process(target=explanation_worker, args=(task_queue, results))
     p1.start()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)

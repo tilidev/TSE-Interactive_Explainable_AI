@@ -16,7 +16,7 @@ class Job(BaseModel):
     time_out : Optional[float] = Field(None)
 
 
-def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, cols, explainer_lime=None): # currently, dice explainer is not needed due to precomputation
+def explanation_worker(in_queue : Queue, res_out : dict, explainer_lime=None): # currently, dice explainer is not needed due to precomputation
     """Takes one element (a job) out of the input queue (TODO BLOCKING), solves the task
     with the explanation function which takes in the args.
     The result is returned in the output queue.
@@ -25,6 +25,15 @@ def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, cols, e
 
     :param in_queue: the multiprocessing.Manager Queue used for shared memory between processes. Tasks are in here.
     TODO """
+    # imports need to happen here, beause pickle can't do it in any other way
+    import shap
+    from shap_utils import ShapHelperV2
+    sh = ShapHelperV2()
+    sh.prepare_shap()
+    pred_fn = sh.please_work
+
+    shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
+    cols = sh.X_train.columns.to_list()
 
     while True: # repeat the process
         job : Job = in_queue.get(block=True) # explicitely wait until a job is available
@@ -32,9 +41,9 @@ def explanation_worker(in_queue : Queue, res_out : dict, explainer_shap, cols, e
         if job.exp_type == ExplanationType.shap:
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
-            shap_bval, shap_vals = compute_response_shap(job.task["instance"], explainer_shap, cols)
+            shap_bval, shap_vals = compute_response_shap(job.task["instance"], shap_explainer, cols)
 
-            shap_attributes = [{"attribute" : cols[i], "influence" : shap_vals[i]} for i in range(len(cols))] # prepare format for response
+            shap_attributes = [{"attribute" : cols[i], "influence" : shap_vals[0][i]} for i in range(len(cols))] # prepare format for response
 
             out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes)
             res_out[job.uid] = out
