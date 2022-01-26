@@ -5,6 +5,11 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice_lvl3 = "dice"
 
+class ExportFormat(str, Enum):
+    comma_separated = "csv"
+    js_object_notation = "json"
+    # Maybe other export formats? XML or something
+
 class RecommendationType(str, Enum):
     approve = "approve"
     reject = "reject"

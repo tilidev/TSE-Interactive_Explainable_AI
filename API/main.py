@@ -88,7 +88,6 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
-    background_tasks: BackgroundTasks,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
@@ -190,13 +189,25 @@ async def generate_client_id(gen: GenerateClientID):
     pass
 
 @app.post("experiment/results", status_code=HTTP_202_ACCEPTED)
-async def results_to_db(results: ExperimentResults):
+async def results_to_database(results: ExperimentResults):
     #TODO 
     pass
 
-@app.get("experiment/export/json", response_model=ExperimentResults)
-async def export_results_json():
+@app.get("experiment/results/export/{format}", response_model=List[ExperimentResults])
+async def export_results(format: ExportFormat):
     # TODO
+    pass
+
+@app.post("experiment/reset")
+async def reset_experiment_results(experiment_name: str):
+    # TODO what would be the best response model?
+    # TODO check if name in database
+    pass
+
+@app.post("experiment/delete")
+async def delete_experiment(experiment_name: str):
+    # TODO what would be the best response model
+    # TODO check if name in db
     pass
 
 if __name__ == "__main__":

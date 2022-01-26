@@ -108,7 +108,7 @@ class DiceCounterfactualResponse(BaseModel):
 
 class ExperimentInformation(BaseModel):
     '''JSON format for experiment creation.'''
-    applications : List[int]
+    loan_ids : List[int]
     ismodify : bool
     iswhatif : bool # Should only be True if ismodify is also true
     exp_type : ExplanationType
@@ -127,9 +127,9 @@ class ClientIDResponse(BaseModel):
 class ExperimentResults(BaseModel):
     """JSON format for experiment results"""
     class SingleResult(BaseModel):
-        ident : int 
+        loan_id : int 
         choice : RecommendationType
 
     experiment_name : str
     client_id : int
-    results : List[RecommendationType]
+    results : List[SingleResult]
