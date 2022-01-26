@@ -5,7 +5,7 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import BackgroundTasks, FastAPI
+from fastapi import FastAPI
 from fastapi.params import Body
 from task_gen import explanation_worker
 from task_gen import Job
@@ -177,7 +177,7 @@ async def experiment_list():
     #TODO return list of experiment names
     pass
 
-@app.get("/experiment/{name}", response_model=ExperimentInformation)
+@app.get("/experiment", response_model=ExperimentInformation)
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
     # TODO check if name exists in db, if yes return data
@@ -193,7 +193,7 @@ async def results_to_database(results: ExperimentResults):
     #TODO 
     pass
 
-@app.get("experiment/results/export/{format}", response_model=List[ExperimentResults])
+@app.get("experiment/results/export", response_model=List[ExperimentResults])
 async def export_results(format: ExportFormat):
     # TODO
     pass
