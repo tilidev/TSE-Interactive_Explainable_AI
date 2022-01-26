@@ -8,6 +8,9 @@ from constants import ExplanationType
 from typing import Optional
 from uuid import UUID, uuid4
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 class Job(BaseModel):
     exp_type : ExplanationType
     uid : UUID = Field(default_factory=uuid4)
@@ -35,6 +38,8 @@ def explanation_worker(in_queue : Queue, res_out : dict, explainer_lime=None): #
     shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
     cols = sh.X_train.columns.to_list()
 
+    print(f"Process with id {os.getpid()} started succesfully. Explainers loaded and ready.")
+    
     while True: # repeat the process
         job : Job = in_queue.get(block=True) # explicitely wait until a job is available
 

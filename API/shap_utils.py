@@ -8,6 +8,9 @@ from models import InstanceInfo
 from constants import inv_rename, rename_dict
 import shap
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 class ShapHelperV2:
     def __init__(self):
         """TODO"""

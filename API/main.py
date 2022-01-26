@@ -10,14 +10,13 @@ from fastapi.params import Body
 from task_gen import explanation_worker
 from task_gen import Job
 from typing import Dict
-from uuid import UUID, uuid4
-from shap_utils import ShapHelperV2, get_pred_fn_helper
+from uuid import UUID
 from constants import *
 from models import *
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
 from lime_utils import LimeHelper
-import shap
+
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -129,7 +128,7 @@ async def schedule_explanation_generation(
     task_queue.put(job)
 
 
-    return ExplanationTaskScheduler(status=ResponseStatus.in_prog, process_id=69420, href=str(job.uid))
+    return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
     # TODO implement background task generation, queue, etc.
 
@@ -141,7 +140,7 @@ async def lime_explanation(process_id: int):
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
     pass
 
-@app.get("/explanations/shap/{uid}", response_model=ShapResponse, response_model_exclude_none=True)
+@app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
 async def shap_explanation(uid: UUID):
     '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
@@ -149,6 +148,7 @@ async def shap_explanation(uid: UUID):
     if uid in results.keys():
         res = results[uid]
         #TODO delete entry in dictionary
+        #TODO make call to check all dict entries
         return res
     else:
         return ShapResponse(status=ResponseStatus.in_prog)
@@ -215,6 +215,8 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
+
+    # Make more processes here :)
     p1 = mp.Process(target=explanation_worker, args=(task_queue, results))
     p1.start()
     

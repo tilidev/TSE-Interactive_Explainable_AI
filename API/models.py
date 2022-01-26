@@ -76,7 +76,7 @@ class ExplanationTaskScheduler(BaseModel):
     '''This class gives a response to monitor the status of the explanations which might take a long time in computation.
     with the href and the process_id, the front-end can send requests to the api to get the explanation object back.'''
     status: ResponseStatus = Field(alias=status)
-    process_id: int = Field(alias=process_id)
+    process_id: Optional[int] = Field(None, alias=process_id)
     href: str = Field(alias=href)
 
 class LimeResponse(BaseModel):
