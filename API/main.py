@@ -13,7 +13,7 @@ from typing import Dict
 from uuid import UUID, uuid4
 from shap_utils import ShapHelperV2
 from constants import *
-from models import DiceCounterfactualResponse, ExplanationTaskScheduler, InstanceInfo, ContinuousInformation, CategoricalInformation, LimeResponse, ShapResponse, TableRequest
+from models import *
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
 from lime_utils import LimeHelper
@@ -163,9 +163,32 @@ async def dice_explanation(process_id: int):
     pass
 
 @app.get("/processes")
-async def get_processes():
+async def processes():
     """Return the number of child processes started by the application."""
     return num_processes
+
+@app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED)
+async def create_experiment(exp_info : ExperimentInformation):
+    """Create an experiment setup and save it to the database"""
+    #TODO check legal boolean combination, check unique name in db, ...
+    pass
+
+@app.get("/experiment/all", response_model=List[str])
+async def experiment_list():
+    """Returns a list of all experiment names, which can be used to access specific experiments."""
+    #TODO return list of experiment names
+    pass
+
+@app.get("/experiment/{name}", response_model=ExperimentInformation)
+async def experiment_by_name(name: str):
+    """Returns the experiment setup associated to the experiment name."""
+    # TODO check if name exists in db, if yes return data
+    pass
+
+@app.post("/experiment/generate_id", response_model=ClientIDResponse)
+async def generate_client_id(gen: GenerateClientID):
+    #TODO create client id based on already existing ids in database. Should be integer from 0 upwards.
+    pass
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
@@ -175,6 +198,6 @@ if __name__ == "__main__":
     task_queue = manager.Queue()
 
     p1 = mp.Process(name="myFirstWorkingProcess", target=explanation_worker, args=(task_queue, results, shap_explainer, sh))
-    p1.start()
+    # p1.start()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)

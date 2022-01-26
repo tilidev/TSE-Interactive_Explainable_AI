@@ -106,4 +106,20 @@ class DiceCounterfactualResponse(BaseModel):
     status: ResponseStatus = Field(alias=status)
     counterfactuals: Optional[List[InstanceInfo]] = Field(None, alias=counterfactuals, description="The <b>DICE</b> results. \n`None`, when process has not terminated.")
 
+class ExperimentInformation(BaseModel):
+    '''JSON format for experiment creation.'''
+    applications : List[int]
+    ismodify : bool
+    iswhatif : bool # Should only be True if ismodify is also true
+    exp_type : ExplanationType
+    experiment_name : str
+    survey_link : Optional[str] = Field(None, description="URL to a survey")
+    description : Optional[str] = Field(None, description="description for the experiment")
 
+class GenerateClientID(BaseModel):
+    """JSON format for client ID generation request"""
+    experiment_name : str
+
+class ClientIDResponse(BaseModel):
+    """JSON format for cliend id generation response. Integer from 0 upwards"""
+    client_id : int = Field(ge=0)
