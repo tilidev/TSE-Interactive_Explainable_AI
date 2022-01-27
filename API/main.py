@@ -179,7 +179,7 @@ async def dice_explanation(process_id: int):
 
 @app.get("/processes")
 async def processes():
-    """Return the number of child processes started by the application."""
+    """Return the number of child explanation processes started by the application."""
     return num_processes
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED)
