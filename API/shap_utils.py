@@ -11,7 +11,7 @@ import shap
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
-class ShapHelperV2:
+class ShapHelperV2: # TODO load model only once for each process (pass it to the explainers!)
     def __init__(self):
         """TODO"""
         self.model = load_model("smote_ey.tf")

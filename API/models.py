@@ -8,7 +8,6 @@ class InstanceInfo(BaseModel):
     '''Defines how a JSON model for an instance information should look like.
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
     
-    # TODO: change the types (most are strings now)
     ident : int = Field(alias=AttributeNames.ident.value, ge=-1, le=1000)
     balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
     duration : Optional[float] = Field(None, alias=AttributeNames.duration.value)
@@ -33,6 +32,35 @@ class InstanceInfo(BaseModel):
 
     class Config:
         orm_mode=True
+
+class ModelInstanceInfo(BaseModel):
+    '''Defines the JSON loan application model for all requests that need the tensorflow model to make a prediction.
+    All 18 features <b>must</b> be included.'''
+
+    balance : str = Field(alias=AttributeNames.balance.value)
+    duration : float = Field(alias=AttributeNames.duration.value)
+    history : str = Field(alias=AttributeNames.history.value)
+    purpose : str = Field(alias=AttributeNames.purpose.value)
+    amount : float = Field(alias=AttributeNames.amount.value)
+    savings : str = Field(alias=AttributeNames.savings.value)
+    employment : str = Field(alias=AttributeNames.employment.value)
+    available_income : str = Field(alias=AttributeNames.available_income.value)
+    residence : str = Field(alias=AttributeNames.residence.value)
+    assets : str = Field(alias=AttributeNames.assets.value)
+    age : float = Field(alias=AttributeNames.age.value)
+    other_loans : str = Field(alias=AttributeNames.other_loans.value)
+    housing : str = Field(alias=AttributeNames.housing.value)
+    previous_loans : str = Field(alias=AttributeNames.previous_loans.value)
+    job : str = Field(alias=AttributeNames.job.value)
+    other_debtors : str = Field(alias=AttributeNames.other_debtors.value)
+    people_liable : str = Field(alias=AttributeNames.people_liable.value)
+    telephone : str = Field(alias=AttributeNames.telephone.value)
+
+class PredictionResponse(BaseModel):
+    '''Defines the response format for a prediction call.'''
+
+    NN_recommendation : str = Field(alias=AttributeNames.NN_recommendation.value)
+    NN_confidence : float = Field(alias=AttributeNames.NN_confidence.value)
 
 class ContinuousFilter(BaseModel):
     '''Defines the JSON format for a continuous filter request body'''

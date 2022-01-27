@@ -261,7 +261,27 @@ rename_dict = {
 
 inv_rename = {v : k for k, v in rename_dict.items()}
 
-feature_names_model = list(rename_dict.keys())
+# MUST STAY IN THIS ORDER!
+feature_names_model_ordered = [
+    'balance_',
+    'duration_',
+    'history_',
+    'purpose_',
+    'amount_',
+    'savings_',
+    'employment_',
+    'available_income_',
+    'other_debtors_',
+    'residence_',
+    'assets_',
+    'age_',
+    'other_loans_',
+    'housing_',
+    'previous_loans_',
+    'job_',
+    'people_liable_',
+    'telephone_'
+]
 
 lime_exp_mapping = {
     0 : AttributeNames.balance.value,

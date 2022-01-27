@@ -3,6 +3,7 @@ import uvicorn
 import multiprocessing as mp
 from tensorflow.keras.models import load_model
 import pandas as pd
+import pickle
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -19,7 +20,6 @@ from models import *
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import get_applications_custom, create_connection, get_application
 from lime_utils import LimeHelper
-
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -38,6 +38,8 @@ num_processes = None
 task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
+
+preprocessor = pickle.load(open("preproc.pickle", "rb"))
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -72,14 +74,23 @@ async def entire_instance_by_id(id: int):
     output = get_application(con, id, json_str=True)
     return output 
 
-@app.post("/instance/predict", response_model=InstanceInfo) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
-async def predict_instance(instance: InstanceInfo):
+@app.post("/instance/predict", response_model=PredictionResponse) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
+async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
-    df = pd.DataFrame(instance.__dict__).rename(rename_dict)
-    prediction = tf_model.predict(df)
-    print(prediction)
-    # TODO compute recommendation and confidence, return it
-    pass
+    
+    data_dict = {col : [instance.__dict__[rename_dict[col]]] for col in feature_names_model_ordered}
+    df = pd.DataFrame(data_dict) # Only works when all attributes are provided correctly
+    data_to_predict = preprocessor.transform(df)
+    prediction = tf_model.predict(data_to_predict)[0][0] # list in list
+    if prediction < 0.5:
+        confidence = 1 - prediction
+        recommendation = "Approve"
+    else:
+        confidence = prediction
+        recommendation = "Reject"
+
+    res = PredictionResponse(NN_confidence=confidence, NN_recommendation=recommendation)
+    return res
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
 async def attribute_informations():

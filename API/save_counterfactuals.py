@@ -77,8 +77,3 @@ if __name__ == "test": # old code do not delete yet
 
     print(end_result[0][1])
     print(end_result[1][3])
-
-
-
-
-
