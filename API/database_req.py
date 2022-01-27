@@ -127,7 +127,7 @@ def create_order_query(sort:str):
         query += sort
     return query
 
-
+#TODO jeweils immer noch Antwortformate anpassen
 def exp_creation(con, exp_name:str, exp_info:json):
     insert_query = 'INSERT INTO experiments (name, information) VALUES (' + exp_name + ',' + exp_info + ')'
     c = con.cursor()
@@ -137,16 +137,40 @@ def exp_creation(con, exp_name:str, exp_info:json):
 def get_all_exp(con):
     query = 'SELECT name FROM experiments'
     c = con.cursor()
-    c.execute(query)
+    result = c.execute(query).fetchall()
 
 def get_exp_info(con, name:str):
     query = 'SELECT information FROM experiments WHERE name = '+ name
     c = con.cursor()
-    c.execute(query)
+    result = c.execute(query).fetchall()
 
 def delete_exp(con, exp_name: str):
     query = 'DELETE FROM experiments WHERE name = ' + exp_name
     c = con.cursor()
     c.execute(query)
+    con.commit()
 
+def add_res(con, results: List):
+    #TODO wie Liste in JSON Format?
+    pass
+
+def reset_exp_res(con, exp_name:str):
+    query = 'DELETE FROM results WHERE name = '+ exp_name
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
+
+def create_id(con, exp_name:str):
+    query_existing_id = 'SELECT cust_id FROM results WHERE name = ' + exp_name
+    c = con.cursor()
+    ids = c.execute(query_existing_id).fetchall()
+    return_id = 0
+    for id in ids:
+        if id >= return_id:
+            return_id = id + 1
+    #create entry with that id 
+    query_insert = 'INSERT INTO results (name, cust_id, user choices) VALUES(' + exp_name + ',' + return_id + ', NULL)'
+    c.execute(query_insert)
+    con.commit()
+    return return_id
 
