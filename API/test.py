@@ -1,4 +1,5 @@
 
+from turtle import resetscreen
 from matplotlib.font_manager import json_load
 from database_req import *
 import json
@@ -16,7 +17,22 @@ json1 = json.dumps(exp_info_dict)
 json_obj = json.loads(json1)
 #exp_creation(con, 'Test experiment', json_obj)
 
-delete_exp(con, 'Test experiment')
+exp_info_dict2 = {
+    "loan_ids" : [1,2,7,4,5],
+    "ismodify" : True,
+    "iswhatif" : False, # Should only be True if ismodify is also true
+    "exp_type" : "shap",
+    "experiment_name" : "Test experiment 2"
+}
+json12 = json.dumps(exp_info_dict2)
+json_obj2 = json.loads(json12)
+#exp_creation(con, 'Test experiment 2', json_obj2)
+res = get_exp_info(con, 'Test experiment 2')
+#res = get_all_exp(con)
+#r = res[0]
+print(type(res))
+
+#delete_exp(con, 'Test experiment')
 '''
 #res = get_application(con, 0)
 l = ["balance", "duration", "history", "amount"]
