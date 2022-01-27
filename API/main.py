@@ -2,6 +2,7 @@ import os
 import uvicorn
 import multiprocessing as mp
 from tensorflow.keras.models import load_model
+import pandas as pd
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -51,7 +52,6 @@ app.add_middleware(
 l = LimeHelper()
 l.__init__()
 
-
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
@@ -72,10 +72,13 @@ async def entire_instance_by_id(id: int):
     output = get_application(con, id, json_str=True)
     return output 
 
-@app.post("/instance/predict", response_model=InstanceInfo)
+@app.post("/instance/predict", response_model=InstanceInfo) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
 async def predict_instance(instance: InstanceInfo):
-    """Predict the provided instance using the `SMOTE` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
-    # TODO
+    """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
+    df = pd.DataFrame(instance.__dict__).rename(rename_dict)
+    prediction = tf_model.predict(df)
+    print(prediction)
+    # TODO compute recommendation and confidence, return it
     pass
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
