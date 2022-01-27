@@ -1,7 +1,7 @@
 import os
 import uvicorn
 import multiprocessing as mp
-import logging
+from tensorflow.keras.models import load_model
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -35,7 +35,8 @@ app = FastAPI(description=API_description)
 manager = None
 num_processes = None
 task_queue = None # tasks will be inputted here
-results : Dict[UUID, Any] = {} # finished tasks will be inputted here
+results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
+tf_model = load_model("smote_ey.tf")
 
 # This is necessary for allowing access to the API from different origins
 app.add_middleware(
@@ -46,12 +47,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO Load the explainers here
+# TODO move explainers to explanation_worker functions
 l = LimeHelper()
 l.__init__()
-
-# Shap
-
 
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
@@ -73,6 +71,11 @@ async def entire_instance_by_id(id: int):
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     return output 
+
+@app.post("/instance/predict", response_model=InstanceInfo)
+async def predict_instance(instance: InstanceInfo):
+    """Predict the provided instance using the `SMOTE` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
+    
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
 async def attribute_informations():

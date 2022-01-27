@@ -261,6 +261,8 @@ rename_dict = {
 
 inv_rename = {v : k for k, v in rename_dict.items()}
 
+feature_names_model = list(rename_dict.keys())
+
 lime_exp_mapping = {
     0 : AttributeNames.balance.value,
     1 : AttributeNames.duration.value,
