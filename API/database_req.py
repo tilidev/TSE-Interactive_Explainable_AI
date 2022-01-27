@@ -134,5 +134,19 @@ def exp_creation(con, exp_name:str, exp_info:json):
     c.execute(insert_query)
     con.commit()
 
+def get_all_exp(con):
+    query = 'SELECT name FROM experiments'
+    c = con.cursor()
+    c.execute(query)
+
+def get_exp_info(con, name:str):
+    query = 'SELECT information FROM experiments WHERE name = '+ name
+    c = con.cursor()
+    c.execute(query)
+
+def delete_exp(con, exp_name: str):
+    query = 'DELETE FROM experiments WHERE name = ' + exp_name
+    c = con.cursor()
+    c.execute(query)
 
 
