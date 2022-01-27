@@ -39,6 +39,8 @@ task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
 
+# This preprocessor was pickled in python 3.8.12.
+# It follows the steps from data_loader_ey, except that the preprocessor is returned
 preprocessor = pickle.load(open("preproc.pickle", "rb"))
 
 # This is necessary for allowing access to the API from different origins
