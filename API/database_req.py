@@ -2,6 +2,8 @@ import sqlite3 as sql
 import json
 from typing import List
 
+import json5
+
 from constants import *
 
 def create_connection(db: str):
@@ -131,7 +133,9 @@ def create_order_query(sort:str):
 
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:json):
-    insert_query = 'INSERT INTO experiments (name, information) VALUES (' + exp_name + ',' + exp_info + ')'
+    exp_info_str = str(exp_info)[1:-1] #curly brackets need to be cut away
+    insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name + '","' + exp_info_str + '")'
+    print(insert_query)
     c = con.cursor()
     c.execute(insert_query)
     con.commit()
@@ -167,10 +171,21 @@ def create_id(con, exp_name:str):
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List):
-    #TODO wie Liste in JSON Format?
-    pass
+    #get json for the results list, as sqllite cannot save lists
+    json_str = json.dumps(results)
+    query = 'UPDATE results SET user choices = ' + json_str + ' WHERE name = ' + exp_name + ' AND cust_id = ' + client_id
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
 
-#TODO export results
+#export results
+def export_results(exp_name, format):
+    if format == ExportFormat.comma_separated.value:
+        #TODO
+        pass
+    elif format == ExportFormat.js_object_notation.value:
+        #TODO
+        pass
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
@@ -181,7 +196,7 @@ def reset_exp_res(con, exp_name:str):
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
-    query = 'DELETE FROM experiments WHERE name = ' + exp_name
+    query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
     c = con.cursor()
     c.execute(query)
     con.commit()
