@@ -128,38 +128,29 @@ def create_order_query(sort:str):
     return query
 
 #TODO jeweils immer noch Antwortformate anpassen
+
+#for create_experiment
 def exp_creation(con, exp_name:str, exp_info:json):
     insert_query = 'INSERT INTO experiments (name, information) VALUES (' + exp_name + ',' + exp_info + ')'
     c = con.cursor()
     c.execute(insert_query)
     con.commit()
 
+#for experiment_list
 def get_all_exp(con):
     query = 'SELECT name FROM experiments'
     c = con.cursor()
     result = c.execute(query).fetchall()
+    return result
 
+#for experiment_by_name
 def get_exp_info(con, name:str):
     query = 'SELECT information FROM experiments WHERE name = '+ name
     c = con.cursor()
     result = c.execute(query).fetchall()
+    return result
 
-def delete_exp(con, exp_name: str):
-    query = 'DELETE FROM experiments WHERE name = ' + exp_name
-    c = con.cursor()
-    c.execute(query)
-    con.commit()
-
-def add_res(con, results: List):
-    #TODO wie Liste in JSON Format?
-    pass
-
-def reset_exp_res(con, exp_name:str):
-    query = 'DELETE FROM results WHERE name = '+ exp_name
-    c = con.cursor()
-    c.execute(query)
-    con.commit()
-
+#for generate_clientID
 def create_id(con, exp_name:str):
     query_existing_id = 'SELECT cust_id FROM results WHERE name = ' + exp_name
     c = con.cursor()
@@ -173,4 +164,30 @@ def create_id(con, exp_name:str):
     c.execute(query_insert)
     con.commit()
     return return_id
+
+#for results to database
+def add_res(con, exp_name:str, client_id: int, results: List):
+    #TODO wie Liste in JSON Format?
+    pass
+
+#TODO export results
+
+#for reset_experiment_results
+def reset_exp_res(con, exp_name:str):
+    query = 'DELETE FROM results WHERE name = '+ exp_name
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
+
+#for delete_experiment
+def delete_exp(con, exp_name: str):
+    query = 'DELETE FROM experiments WHERE name = ' + exp_name
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
+
+
+
+
+
 
