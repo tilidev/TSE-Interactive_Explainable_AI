@@ -128,4 +128,11 @@ def create_order_query(sort:str):
     return query
 
 
+def exp_creation(con, exp_name:str, exp_info:json):
+    insert_query = 'INSERT INTO experiments (name, information) VALUES (' + exp_name + ',' + exp_info + ')'
+    c = con.cursor()
+    c.execute(insert_query)
+    con.commit()
+
+
 
