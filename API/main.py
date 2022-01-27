@@ -75,7 +75,8 @@ async def entire_instance_by_id(id: int):
 @app.post("/instance/predict", response_model=InstanceInfo)
 async def predict_instance(instance: InstanceInfo):
     """Predict the provided instance using the `SMOTE` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
-    
+    # TODO
+    pass
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
 async def attribute_informations():
