@@ -217,8 +217,13 @@ if __name__ == "__main__":
     task_queue = manager.Queue()
 
     print(f"\nMain process with id {os.getpid()} started succesfully. Starting {num_processes} explainer processes.\n")
-    # Make more processes here :)
-    p1 = mp.Process(target=explanation_worker, args=(task_queue, results))
-    p1.start()
+    processes : List[mp.Process] = [mp.Process(target=explanation_worker, args=(task_queue, results)) for _ in range(num_processes)]
+    for process in processes:
+        process.start()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    for process in processes:
+        pid = process.pid
+        process.terminate()
+        print(f"\nSuccesfully terminated explainer process with id {pid}")
