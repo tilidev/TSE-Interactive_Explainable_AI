@@ -5,12 +5,19 @@ from constants import rename_dict
 
 con = sql.connect('database.db')
 c = con.cursor()
-#create_query ='CREATE TABLE applicants (id INT, balance TEXT,duration INT,history TEXT,purpose TEXT,amount REAL,savings TEXT,employment TEXT,available_income TEXT,other_debtors TEXT,residence TEXT,assets TEXT,age INT,other_loans TEXT,housing TEXT,previous_loans TEXT,job TEXT,people_liable TEXT,telephone TEXT, NN_recommendation TEXT, NN_confidence REAL)'
-#c.execute(create_query)
-#con.commit()
+#the create_query is only needed for initialisation not when just wanting to reset
+create_query_appl ='CREATE TABLE IF NOT EXISTS applicants (id INT, balance TEXT,duration INT,history TEXT,purpose TEXT,amount REAL,savings TEXT,employment TEXT,available_income TEXT,other_debtors TEXT,residence TEXT,assets TEXT,age INT,other_loans TEXT,housing TEXT,previous_loans TEXT,job TEXT,people_liable TEXT,telephone TEXT, NN_recommendation TEXT, NN_confidence REAL)'
+c.execute(create_query_appl)
+con.commit()
 df = createDataframeForDB()
 df.to_sql('applicants', con, index_label = 'id', if_exists="replace")
 for key in rename_dict.keys():
     query = 'ALTER TABLE applicants RENAME COLUMN ' + key + ' TO ' + rename_dict[key] + ';'
     c.execute(query)
+create_query_exp = 'CREATE TABLE IF NOT EXISTS experiments (name TEXT PRIMARY KEY, information JSON);'
+c.execute(create_query_exp)
+con.commit()
+create_query_res = 'CREATE TABLE IF NOT EXISTS results (name TEXT, cust_id INT, user choices JSON, PRIMARY KEY (name, cust_id));'
+c.execute(create_query_res)
+con.commit()
 con.close()
