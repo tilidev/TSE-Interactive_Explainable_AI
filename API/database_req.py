@@ -135,7 +135,6 @@ def create_order_query(sort:str):
 def exp_creation(con, exp_name:str, exp_info:json):
     exp_info_str = json.dumps(exp_info) 
     insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name + "','" + exp_info_str + "')"
-    #insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name + '","' + exp_info_str + '")'
     print(insert_query)
     c = con.cursor()
     c.execute(insert_query)
@@ -166,7 +165,7 @@ def get_exp_info(con, name:str):
 
 #for generate_clientID
 def create_id(con, exp_name:str):
-    query_existing_id = 'SELECT cust_id FROM results WHERE name = ' + exp_name
+    query_existing_id = 'SELECT cust_id FROM results WHERE name = "'+ exp_name + '"'
     c = con.cursor()
     ids = c.execute(query_existing_id).fetchall()
     return_id = 0
@@ -199,7 +198,7 @@ def export_results(exp_name, format):
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
-    query = 'DELETE FROM results WHERE name = '+ exp_name
+    query = 'DELETE FROM results WHERE name = "'+ exp_name + '"'
     c = con.cursor()
     c.execute(query)
     con.commit()
