@@ -1,3 +1,4 @@
+import os
 import uvicorn
 import multiprocessing as mp
 
@@ -215,7 +216,7 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
-
+    print(f"\nMain process with id {os.getpid()} started succesfully. Starting {num_processes} explainer processes.\n")
     # Make more processes here :)
     p1 = mp.Process(target=explanation_worker, args=(task_queue, results))
     p1.start()
