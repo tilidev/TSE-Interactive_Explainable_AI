@@ -133,11 +133,9 @@ def create_order_query(sort:str):
 
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:json):
-    #exp_info_str = json.dumps(exp_info) 
-    exp_info_str = str(exp_info)[1:-1]
-    #exp_without_b = exp_info_str[1:-1] #curly brackets need to be cut away
-    #insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name + "','" + exp_info_str + "')"
-    insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name + '","' + exp_info_str + '")'
+    exp_info_str = json.dumps(exp_info) 
+    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name + "','" + exp_info_str + "')"
+    #insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name + '","' + exp_info_str + '")'
     print(insert_query)
     c = con.cursor()
     c.execute(insert_query)
@@ -153,23 +151,17 @@ def get_all_exp(con):
         res_list.append(result[0]) #index 0 needed because result is in a tuple format
     return res_list
 
-#for experiment_by_name
+#for experiment_by_name 
 def get_exp_info(con, name:str):
     query = "SELECT information FROM experiments WHERE name = '"+ name + "'"
     c = con.cursor()
     results = c.execute(query).fetchall()
-    #for result in results:
-        #res = result[0].replace('\'', '\"')
-        #print(res)
-        #r = json.loads(res)
-        #print(r)
+    if results.len() == 0:
+        return {}
     result_tuple = results[0]
-    #result_str = result_tuple[0]
-    #print(result_str) 
-    result_json_str = json.dumps(results)
-    #print(result_json_str)
+    result_str = result_tuple[0]
+    result_json_str = json.dumps(result_str)
     result_json = json.loads(result_json_str)
-    #print(type(r))
     return result_json
 
 #for generate_clientID

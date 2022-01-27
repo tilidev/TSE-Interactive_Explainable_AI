@@ -26,12 +26,21 @@ exp_info_dict2 = {
 }
 json12 = json.dumps(exp_info_dict2)
 json_obj2 = json.loads(json12)
-#exp_creation(con, 'Test experiment 2', json_obj2)
-res = get_exp_info(con, 'Test experiment 2')
-#res = get_all_exp(con)
-#r = res[0]
-print(type(res))
 
+#exp_creation(con, 'Test experiment 2', json_obj2)
+#res = get_exp_info(con, 'Test experiment 2')
+#res = get_all_exp(con)
+
+
+str_repr = {
+    "loan_ids": [1, 2, 7, 4, 5], 
+    "ismodify": True, 
+    "iswhatif": False, 
+    "exp_type": "shap", 
+    "experiment_name": "Test experiment 2"
+}
+j1 = json.dumps(str_repr)
+j2 = json.loads(j1)
 #delete_exp(con, 'Test experiment')
 '''
 #res = get_application(con, 0)
