@@ -1,6 +1,7 @@
 import os
 import uvicorn
 import multiprocessing as mp
+import logging
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -65,7 +66,6 @@ async def table_view(request: TableRequest):
     attributes = attributes[1:] # TODO Keep this in mind
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
-
 
 @app.get("/instance/{id}", response_model=InstanceInfo)
 async def entire_instance_by_id(id: int):
@@ -211,7 +211,8 @@ async def delete_experiment(experiment_name: str):
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
-    num_processes = mp.cpu_count() - 2
+
+    num_processes = mp.cpu_count() - 2 # will raise NotImplementedError if count cannot be determined
     manager = mp.Manager()
     results = manager.dict()
     task_queue = manager.Queue()

@@ -28,6 +28,8 @@ def explanation_worker(in_queue : Queue, res_out : dict, explainer_lime=None): #
 
     :param in_queue: the multiprocessing.Manager Queue used for shared memory between processes. Tasks are in here.
     TODO """
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
     # imports need to happen here, beause pickle can't do it in any other way
     import shap
     from shap_utils import ShapHelperV2
