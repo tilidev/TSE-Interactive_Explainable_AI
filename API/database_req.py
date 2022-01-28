@@ -1,8 +1,7 @@
 import sqlite3 as sql
 import json
 from typing import List
-
-import json5
+import pandas as pd
 
 from constants import *
 
@@ -190,15 +189,24 @@ def add_res(con, exp_name:str, client_id: int, results: List):
 #export results
 def export_results(con, exp_name, format):
     query = 'SELECT * FROM results WHERE name = "' + exp_name + '"'
-    c = con.cursor()
-    results = c.execute(query).fetchall()
-    
     if format == ExportFormat.comma_separated.value:
-        #TODO
-        pass
+        #vorschlag von stackoverflow
+        #TODO threading?
+        con = sql.connect('database.db', isolation_level=None,
+                       detect_types=sql.PARSE_COLNAMES)
+        db_df = pd.read_sql_query(query, con)
+        db_df.to_csv('database.csv', index=False)
+        file = open('database.csv')
+        return file
     elif format == ExportFormat.js_object_notation.value:
-        #TODO
-        pass
+        con.row_factory = sql.Row
+        c = con.cursor()
+        results = c.execute(query).fetchall()
+        result = json.dumps([dict(ix) for ix in results])
+        result = json.loads(result)
+        return result
+
+    
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
