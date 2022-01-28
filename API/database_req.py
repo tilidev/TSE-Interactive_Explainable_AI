@@ -188,7 +188,11 @@ def add_res(con, exp_name:str, client_id: int, results: List):
     con.commit()
 
 #export results
-def export_results(exp_name, format):
+def export_results(con, exp_name, format):
+    query = 'SELECT * FROM results WHERE name = "' + exp_name + '"'
+    c = con.cursor()
+    results = c.execute(query).fetchall()
+    
     if format == ExportFormat.comma_separated.value:
         #TODO
         pass

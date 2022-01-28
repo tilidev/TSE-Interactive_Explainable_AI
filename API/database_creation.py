@@ -17,7 +17,7 @@ for key in rename_dict.keys():
 create_query_exp = 'CREATE TABLE IF NOT EXISTS experiments (name TEXT PRIMARY KEY, information TEXT);'
 c.execute(create_query_exp)
 con.commit()
-create_query_res = 'CREATE TABLE IF NOT EXISTS results (name TEXT, cust_id INT, user choices TEXT, PRIMARY KEY (name, cust_id));'
+create_query_res = 'CREATE TABLE IF NOT EXISTS results (experiment_name TEXT, client_id INT, results JSON, PRIMARY KEY (experiment_name, client_id));'
 c.execute(create_query_res)
 con.commit()
 con.close()
