@@ -1,4 +1,5 @@
 import os
+from importlib_metadata import NullFinder
 import uvicorn
 import multiprocessing as mp
 from tensorflow.keras.models import load_model
@@ -18,7 +19,7 @@ from uuid import UUID
 from constants import *
 from models import *
 from fastapi.middleware.cors import CORSMiddleware
-from database_req import get_applications_custom, create_connection, get_application
+from database_req import *
 from lime_utils import LimeHelper
 
 API_description = '''
@@ -187,47 +188,57 @@ async def processes():
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED)
 async def create_experiment(exp_info : ExperimentInformation):
     """Create an experiment setup and save it to the database"""
-    #TODO check legal boolean combination, check unique name in db, ...
-    pass
+    #check legal boolean combination
+    if exp_info.iswhatif:
+        if exp_info.ismodify == False:
+            #TODO should some error be thrown?
+            return
+    exp_info_str = str(exp_info).replace("<ExplanationType.lime: 'lime'>", "'lime'") #TODO find better solution
+    con = create_connection('database.db')
+    exp_creation(con, exp_info.experiment_name, exp_info_str)
+    #TODO check unique name in db, ...
 
 @app.get("/experiment/all", response_model=List[str])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
-    #TODO return list of experiment names
-    pass
+    con = create_connection('database.db')
+    return get_all_exp(con) # TODO format checken
 
 @app.get("/experiment", response_model=ExperimentInformation)
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
     # TODO check if name exists in db, if yes return data
-    pass
+    con = create_connection('database.db')
+    return get_exp_info(con, name)
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse)
 async def generate_client_id(gen: GenerateClientID):
-    #TODO create client id based on already existing ids in database. Should be integer from 0 upwards.
-    pass
+    con = create_connection('database.db')
+    return create_id(con, gen.experiment_name)
 
 @app.post("experiment/results", status_code=HTTP_202_ACCEPTED)
 async def results_to_database(results: ExperimentResults):
-    #TODO 
-    pass
+    con = create_connection('database.db')
+    add_res(con, results.experiment_name, results.client_id, results)
 
 @app.get("experiment/results/export", response_model=List[ExperimentResults])
 async def export_results(format: ExportFormat):
-    # TODO
-    pass
+    con = create_connection('database.db')
+    export_results_to(con, format.value)
 
 @app.post("experiment/reset")
 async def reset_experiment_results(experiment_name: str):
+    con = create_connection('database.db')
+    reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
     # TODO check if name in database
-    pass
 
 @app.post("experiment/delete")
 async def delete_experiment(experiment_name: str):
+    con = create_connection('database.db')
+    delete_exp(con, experiment_name)
     # TODO what would be the best response model
     # TODO check if name in db
-    pass
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows

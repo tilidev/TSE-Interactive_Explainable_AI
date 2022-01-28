@@ -131,9 +131,9 @@ def create_order_query(sort:str):
 #TODO jeweils immer noch Antwortformate anpassen
 
 #for create_experiment
-def exp_creation(con, exp_name:str, exp_info:json):
-    exp_info_str = json.dumps(exp_info) 
-    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name + "','" + exp_info_str + "')"
+def exp_creation(con, exp_name:str, exp_info:str):
+    #exp_info_str = json.dumps(exp_info) 
+    insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name +'","' + exp_info + '")'
     print(insert_query)
     c = con.cursor()
     c.execute(insert_query)
@@ -187,8 +187,8 @@ def add_res(con, exp_name:str, client_id: int, results: List):
     con.commit()
 
 #export results
-def export_results(con, exp_name, format):
-    query = 'SELECT * FROM results WHERE name = "' + exp_name + '"'
+def export_results_to(con, format):
+    query = 'SELECT * FROM results'
     if format == ExportFormat.comma_separated.value:
         #vorschlag von stackoverflow
         #TODO threading?
