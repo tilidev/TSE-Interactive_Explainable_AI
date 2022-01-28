@@ -173,7 +173,7 @@ def create_id(con, exp_name:str):
         if id >= return_id:
             return_id = id + 1
     #create entry with that id 
-    query_insert = 'INSERT INTO results (name, cust_id, user choices) VALUES(' + exp_name + ',' + return_id + ', NULL)'
+    query_insert = 'INSERT INTO results (name, cust_id, user choices) VALUES("' + exp_name + '",' + return_id + ', NULL)'
     c.execute(query_insert)
     con.commit()
     return return_id
@@ -182,7 +182,7 @@ def create_id(con, exp_name:str):
 def add_res(con, exp_name:str, client_id: int, results: List):
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(results)
-    query = 'UPDATE results SET user choices = ' + json_str + ' WHERE name = ' + exp_name + ' AND cust_id = ' + client_id
+    query = 'UPDATE results SET user choices = ' + json_str + ' WHERE name = "' + exp_name + '" AND cust_id = ' + client_id
     c = con.cursor()
     c.execute(query)
     con.commit()
