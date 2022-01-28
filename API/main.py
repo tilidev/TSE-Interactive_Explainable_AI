@@ -216,24 +216,24 @@ async def generate_client_id(gen: GenerateClientID):
     con = create_connection('database.db')
     return create_id(con, gen.experiment_name)
 
-@app.post("experiment/results", status_code=HTTP_202_ACCEPTED)
+@app.post("/experiment/results", status_code=HTTP_202_ACCEPTED)
 async def results_to_database(results: ExperimentResults):
     con = create_connection('database.db')
     add_res(con, results.experiment_name, results.client_id, results)
 
-@app.get("experiment/results/export", response_model=List[ExperimentResults])
+@app.get("/experiment/results/export", response_model=List[ExperimentResults])
 async def export_results(format: ExportFormat):
     con = create_connection('database.db')
     export_results_to(con, format.value)
 
-@app.post("experiment/reset")
+@app.post("/experiment/reset")
 async def reset_experiment_results(experiment_name: str):
     con = create_connection('database.db')
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
     # TODO check if name in database
 
-@app.post("experiment/delete")
+@app.post("/experiment/delete")
 async def delete_experiment(experiment_name: str):
     con = create_connection('database.db')
     delete_exp(con, experiment_name)
