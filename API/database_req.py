@@ -233,10 +233,16 @@ def reset_exp_res(con, exp_name:str):
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
-    query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
+    exists_query = 'SELECT * FROM experiments WHERE name = "' + exp_name + '"'
+    delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
     c = con.cursor()
-    c.execute(query)
-    con.commit()
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        c.execute(delete_query)
+        con.commit()
+
+    
+
 
 
 
