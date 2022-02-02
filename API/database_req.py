@@ -164,18 +164,24 @@ def get_exp_info(con, name:str):
 
 #for generate_clientID
 def create_id(con, exp_name:str):
-    query_existing_id = 'SELECT cust_id FROM results WHERE name = "'+ exp_name + '"'
+    query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
     ids = c.execute(query_existing_id).fetchall()
+    print(len(ids))
     return_id = 0
-    for id in ids:
-        if id >= return_id:
-            return_id = id + 1
+    if len(ids) > 0:
+        for id in ids:
+            if id[0] >= return_id: #index 0 because tuple is accessed
+                return_id = id[0] + 1
     #create entry with that id 
-    query_insert = 'INSERT INTO results (name, cust_id, user choices) VALUES("' + exp_name + '",' + return_id + ', NULL)'
+    query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
     c.execute(query_insert)
     con.commit()
-    return return_id
+    return_dict = {
+        "client_id": return_id
+    }
+    res = json.loads(json.dumps(return_dict))
+    return res
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List):
