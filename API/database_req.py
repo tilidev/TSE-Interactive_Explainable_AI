@@ -226,7 +226,7 @@ def export_results_to(con, format):
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
-    query = 'DELETE FROM results WHERE name = "'+ exp_name + '"'
+    query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
     c.execute(query)
     con.commit()
