@@ -219,7 +219,7 @@ async def generate_client_id(gen: GenerateClientID):
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED)
 async def results_to_database(results: ExperimentResults):
     con = create_connection('database.db')
-    add_res(con, results.experiment_name, results.client_id, results)
+    add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults])
 async def export_results(format: ExportFormat):

@@ -2,6 +2,7 @@ import sqlite3 as sql
 import json
 from typing import List
 import pandas as pd
+from models import ExperimentResults
 
 from constants import *
 
@@ -169,6 +170,7 @@ def create_id(con, exp_name:str):
     ids = c.execute(query_existing_id).fetchall()
     print(len(ids))
     return_id = 0
+    #TODO reicht es auch auf letztes tupel zuzugreifen?
     if len(ids) > 0:
         for id in ids:
             if id[0] >= return_id: #index 0 because tuple is accessed
@@ -184,10 +186,13 @@ def create_id(con, exp_name:str):
     return res
 
 #for results to database
-def add_res(con, exp_name:str, client_id: int, results: List):
+def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
+    for res in results:
+        res = res.json()
+        print(res)
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(results)
-    query = 'UPDATE results SET user choices = ' + json_str + ' WHERE name = "' + exp_name + '" AND cust_id = ' + client_id
+    query = 'UPDATE results SET results = ' + json_str + ' WHERE experiment_name = "' + exp_name + '" AND client_id = ' + client_id
     c = con.cursor()
     c.execute(query)
     con.commit()
