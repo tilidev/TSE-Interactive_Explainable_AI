@@ -6,8 +6,17 @@ import json
 from models import ExperimentInformation
 import models
 
-exp_info: ExperimentInformation
-print(exp_info)
+con = create_connection('database.db')
+query = "SELECT information FROM experiments WHERE name = 'string'"
+c = con.cursor()
+results = c.execute(query).fetchall()
+result_tuple = results[0]
+result_str = result_tuple[0]
+print(result_str)
+result_json_str = json.dumps(result_str)
+result_json = json.loads(result_str)
+print(result_json["loan_ids"])
+
 
 '''
 con = create_connection('database.db')

@@ -159,9 +159,7 @@ def get_exp_info(con, name:str):
         return {}
     result_tuple = results[0]
     result_str = result_tuple[0]
-    result_json_str = json.dumps(result_str)
-    result_json = json.loads(result_json_str)
-    print(result_json)
+    result_json = json.loads(result_str)
     return result_json
 
 #for generate_clientID
