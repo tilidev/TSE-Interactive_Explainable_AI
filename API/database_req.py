@@ -187,12 +187,17 @@ def create_id(con, exp_name:str):
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
+    dict = {}
+    #results_list = []
     for res in results:
-        res = res.json()
-        print(res)
+        dict[res.loan_id] = res.json()
+    print(dict)
     #get json for the results list, as sqllite cannot save lists
-    json_str = json.dumps(results)
-    query = 'UPDATE results SET results = ' + json_str + ' WHERE experiment_name = "' + exp_name + '" AND client_id = ' + client_id
+    json_str = json.dumps(dict)
+    #query = 'UPDATE results SET results = ' + json_str + ' WHERE experiment_name = "' + exp_name + '" AND client_id = ' + str(client_id)
+    query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
+
+    print(query)
     c = con.cursor()
     c.execute(query)
     con.commit()
