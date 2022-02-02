@@ -219,9 +219,10 @@ def export_results_to(con, format):
         con.row_factory = sql.Row
         c = con.cursor()
         results = c.execute(query).fetchall()
-        result = json.dumps([dict(ix) for ix in results])
-        result = json.loads(result)
-        return result
+        result = json.dumps([dict(res) for res in results])
+        result_json = json.loads(result)
+        print(result_json)
+        return result_json
 
     
 
