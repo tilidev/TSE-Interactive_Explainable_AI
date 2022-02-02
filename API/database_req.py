@@ -133,7 +133,8 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     #exp_info_str = json.dumps(exp_info) 
-    insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name +'","' + exp_info + '")'
+    #insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name +'","' + exp_info + '")'
+    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
     print(insert_query)
     c = con.cursor()
     c.execute(insert_query)
@@ -154,12 +155,13 @@ def get_exp_info(con, name:str):
     query = "SELECT information FROM experiments WHERE name = '"+ name + "'"
     c = con.cursor()
     results = c.execute(query).fetchall()
-    if results.len() == 0:
+    if len(results) == 0:
         return {}
     result_tuple = results[0]
     result_str = result_tuple[0]
     result_json_str = json.dumps(result_str)
     result_json = json.loads(result_json_str)
+    print(result_json)
     return result_json
 
 #for generate_clientID

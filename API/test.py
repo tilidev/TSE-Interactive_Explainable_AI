@@ -3,8 +3,13 @@ from turtle import resetscreen
 from matplotlib.font_manager import json_load
 from database_req import *
 import json
+from models import ExperimentInformation
+import models
 
+exp_info: ExperimentInformation
+print(exp_info)
 
+'''
 con = create_connection('database.db')
 exp_info_dict = {
     'loan_ids' : [1,2,3,4,5],
@@ -42,7 +47,7 @@ str_repr = {
 j1 = json.dumps(str_repr)
 j2 = json.loads(j1)
 #delete_exp(con, 'Test experiment')
-'''
+
 #res = get_application(con, 0)
 l = ["balance", "duration", "history", "amount"]
 #res = get_applications_custom(con, 0, l)

@@ -193,9 +193,9 @@ async def create_experiment(exp_info : ExperimentInformation):
         if exp_info.ismodify == False:
             #TODO should some error be thrown?
             return
-    exp_info_str = str(exp_info).replace("<ExplanationType.lime: 'lime'>", "'lime'") #TODO find better solution
+    exp = exp_info.json()
     con = create_connection('database.db')
-    exp_creation(con, exp_info.experiment_name, exp_info_str)
+    exp_creation(con, exp_info.experiment_name, exp)
     #TODO check unique name in db, ...
 
 @app.get("/experiment/all", response_model=List[str])
