@@ -196,18 +196,16 @@ async def create_experiment(exp_info : ExperimentInformation):
     exp = exp_info.json()
     con = create_connection('database.db')
     exp_creation(con, exp_info.experiment_name, exp)
-    #TODO check unique name in db, ...
 
 @app.get("/experiment/all", response_model=List[str])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
     con = create_connection('database.db')
-    return get_all_exp(con) # TODO format checken
+    return get_all_exp(con) 
 
 @app.get("/experiment", response_model=ExperimentInformation)
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
-    # TODO check if name exists in db, if yes return data
     con = create_connection('database.db')
     return get_exp_info(con, name)
 
@@ -224,21 +222,19 @@ async def results_to_database(results: ExperimentResults):
 @app.get("/experiment/results/export", response_model=List[ExperimentResults])
 async def export_results(format: ExportFormat):
     con = create_connection('database.db')
-    export_results_to(con, format.value)
+    return export_results_to(con, format.value)
 
 @app.post("/experiment/reset")
 async def reset_experiment_results(experiment_name: str):
     con = create_connection('database.db')
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
-    # TODO check if name in database
 
 @app.post("/experiment/delete")
 async def delete_experiment(experiment_name: str):
     con = create_connection('database.db')
     delete_exp(con, experiment_name)
     # TODO what would be the best response model
-    # TODO check if name in db
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows

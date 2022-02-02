@@ -1,3 +1,4 @@
+from genericpath import exists
 import sqlite3 as sql
 import json
 from typing import List
@@ -129,17 +130,17 @@ def create_order_query(sort:str):
         query += sort
     return query
 
-#TODO jeweils immer noch Antwortformate anpassen
 
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
-    #exp_info_str = json.dumps(exp_info) 
-    #insert_query = 'INSERT INTO experiments (name, information) VALUES ("' + exp_name +'","' + exp_info + '")'
+    exists_query = "SELECT name FROM experiments WHERE name = '" + exp_name + "'"
     insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
-    print(insert_query)
     c = con.cursor()
-    c.execute(insert_query)
-    con.commit()
+    c.execute(exists_query)
+    if len(c.fetchall() == 0):
+        c.execute(insert_query)
+        con.commit()
+    
 
 #for experiment_list
 def get_all_exp(con):
@@ -226,14 +227,17 @@ def export_results_to(con, format):
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
-    query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
+    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
-    c.execute(query)
-    con.commit()
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        c.execute(reset_query)
+        con.commit()
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
-    exists_query = 'SELECT * FROM experiments WHERE name = "' + exp_name + '"'
+    exists_query = 'SELECT name FROM experiments WHERE name = "' + exp_name + '"'
     delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
     c = con.cursor()
     c.execute(exists_query)
