@@ -96,13 +96,13 @@ class LimeHelper():
             data.iloc[:, cat_idx] = le.transform(data.iloc[:, cat_idx])
         return data
 
-    def get_lime_exp(self, explainer, prediction_function, instance_df, **kwargs):
+    def get_lime_exp(self, prediction_function, instance_df, *args):
         """Method to get the lime explanation
         :param instance_df: dataframe with instance information
         :return lime explanation object:
         """
         data_le = self.preprocess_new_data(instance_df)
-        lime_exp = explainer.explain_instance(data_le.values[0], prediction_function, **kwargs)
+        lime_exp = self.explainer.explain_instance(data_le.values[0], prediction_function, *args)
         return lime_exp
     
     def get_api_response(self,instance, num_features=6):
@@ -113,9 +113,10 @@ class LimeHelper():
         Predict_proba contains an array with probabilities for approve and reject
         Explanations contains a dict where the keys are the attribute names 
         """
+        print(instance)
         instance_df = pd.DataFrame(instance, index = [0])
-        instance_df.drop(columns=[AttributeNames.ident.value,AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
-        exp = self.get_lime_exp(self.explainer, self.predict_fn,instance_df, num_features)
+        instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
+        exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
         #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,class_names,top_labels that are not needed
         local_exp = exp_dict['local_exp']

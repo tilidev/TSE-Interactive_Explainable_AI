@@ -144,6 +144,8 @@ async def schedule_explanation_generation(
     In that case, the server can handle the explanation generation using the values of the sent attributes.
     If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
+
+    #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
     results[job.uid] = job
