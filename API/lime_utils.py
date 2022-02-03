@@ -81,13 +81,13 @@ class LimeHelper():
         """
         data = X_df.copy()
         # List of feature names
-        feature_names = self.X.columns.to_list()
+        feature_names = self.X.columns.to_list() 
 
         # Lists of categorical and numerical feature names (needed for preprocessing)
         cat_cols = self.X.select_dtypes(include=['object', 'category']).columns.to_list()
 
         # List of indices of categorical features
-        cat_indices = [feature_names.index(col) for col in cat_cols]
+        cat_indices = [feature_names.index(col) for col in cat_cols] # TODO change and work with names, as this assumes the same ordering in the api request and self.X
 
         # Label encoding
         for cat_idx in cat_indices:
