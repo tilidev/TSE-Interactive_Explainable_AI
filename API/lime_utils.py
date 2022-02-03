@@ -72,7 +72,7 @@ class LimeHelper():
         proba_predictions = np.array([1 - prob, prob]).transpose()
         return proba_predictions
 
-    def preprocess_new_data(self,X_df):
+    def preprocess_new_data(self, X_df):
         """
         Function to preprocess the given instance data for the lime explainer
         :param X_df: should be a pandas dataframe containing 18 attributes

@@ -149,12 +149,7 @@ async def schedule_explanation_generation(
     results[job.uid] = job
     task_queue.put(job)
 
-
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
-
-    # TODO implement background task generation, queue, etc.
-
-    pass
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True)
 async def lime_explanation(process_id: int):
