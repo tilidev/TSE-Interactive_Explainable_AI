@@ -33,6 +33,7 @@ class LimeHelper():
         num_cols = X_train.select_dtypes(include=['int64', 'float64']).columns.to_list()
         cat_indices = [feature_names.index(col) for col in cat_cols]
         cat_names = {}
+
         for cat_idx in cat_indices:
             # Fit label encoder on training data and transform respective column in training and test data
             le = LabelEncoder()
@@ -40,7 +41,7 @@ class LimeHelper():
             X_train.iloc[:, cat_idx] = le.transform(X_train.iloc[:, cat_idx])
             # Extend dictionary with array of categories and index as key
             cat_names[cat_idx] = le.classes_
-            
+                        
         preprocessor_le = ColumnTransformer(
                 transformers=[('num', MinMaxScaler(), num_cols),
                             ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols)])
@@ -113,7 +114,6 @@ class LimeHelper():
         Predict_proba contains an array with probabilities for approve and reject
         Explanations contains a dict where the keys are the attribute names 
         """
-        print(instance)
         instance_df = pd.DataFrame(instance, index = [0])
         instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
