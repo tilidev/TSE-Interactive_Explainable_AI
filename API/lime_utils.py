@@ -79,10 +79,9 @@ class LimeHelper():
     def preprocess_new_data(self, data):
         """
         Function to preprocess the given instance data for the lime explainer
-        :param X_df: should be a pandas dataframe containing 18 attributes
-        :return: label encoded data 
+        :param data: should be a pandas dataframe containing the attributes
+        :return: label encoded data as a numpy array
         """
-        #data = X_df.copy()
         feature_names = data.columns.to_list() 
 
         # Lists of categorical and numerical feature names (needed for preprocessing)
@@ -122,32 +121,29 @@ class LimeHelper():
         lime_exp = self.explainer.explain_instance(data_le, prediction_function, num_features=num_features)
         return lime_exp
     
-    def get_api_response(self,instance, num_features=6):
+    def get_lime_values(self,instance, num_features=6):
         """
         Method that can be called by the API after initializing the LimeHelper
         :param instance: given Instance info, should be in json format
-        :return: a lime explanation json with the keys predict_proba and explanations
-        Predict_proba contains an array with probabilities for approve and reject
-        Explanations contains a dict where the keys are the attribute names 
+        :return: a list of jsons with the keys attribute and influence
         """
         instance_df = pd.DataFrame(instance, index = [0])
         instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
-        print(exp_dict)
         #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,class_names,top_labels that are not needed
         local_exp = exp_dict['local_exp']
-        predict_proba = exp_dict['predict_proba'] # numpy array containing probability for approve and reject
+        #predict_proba = exp_dict['predict_proba'] # numpy array containing probability for approve and reject
         local_exp_list = local_exp[1] #get list with explanation tuples from dict
-        #create explanation dict with attribute names instead of numbers as keys
-        explanations = {}
+        #create list of values with attribute names instead of numbers that are returned by lime
+        value_list = []
         for tuple in local_exp_list:
-            explanations[lime_exp_mapping[tuple[0]]] = tuple[1] 
-        return_dict = {}
-        return_dict['predict_proba'] = predict_proba
-        return_dict['explanations'] = explanations
-        return_json = json.dumps(return_dict)
-        return json.loads(return_json)
+            dict = {}
+            dict["attribute"] = lime_exp_mapping[tuple[0]]
+            dict["influence"] = tuple[1]
+            value_list.append(json.loads(json.dumps(dict)))
+        return value_list
+         
         
 
 
