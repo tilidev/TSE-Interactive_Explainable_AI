@@ -1,3 +1,4 @@
+from operator import index
 import pandas as pd
 import numpy as np
 import lime
@@ -7,7 +8,7 @@ from DataLoader_ey import data_loader
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder
-from constants import rename_dict, AttributeNames, lime_exp_mapping
+from constants import rename_dict, AttributeNames, lime_exp_mapping, inverse_lime_map
 import json
 
 class LimeHelper():
@@ -33,7 +34,7 @@ class LimeHelper():
         num_cols = X_train.select_dtypes(include=['int64', 'float64']).columns.to_list()
         cat_indices = [feature_names.index(col) for col in cat_cols]
         cat_names = {}
-
+        encoders = {}
         for cat_idx in cat_indices:
             # Fit label encoder on training data and transform respective column in training and test data
             le = LabelEncoder()
@@ -41,11 +42,13 @@ class LimeHelper():
             X_train.iloc[:, cat_idx] = le.transform(X_train.iloc[:, cat_idx])
             # Extend dictionary with array of categories and index as key
             cat_names[cat_idx] = le.classes_
+            encoders[inverse_lime_map[feature_names[cat_idx]]] = le
                         
         preprocessor_le = ColumnTransformer(
                 transformers=[('num', MinMaxScaler(), num_cols),
                             ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols)])
         preprocessor_le.fit(X_train)
+        self.encoders = encoders
         self.prep = preprocessor_le
         self.X_train = X_train
         self.cat_names = cat_names
@@ -73,37 +76,50 @@ class LimeHelper():
         proba_predictions = np.array([1 - prob, prob]).transpose()
         return proba_predictions
 
-    def preprocess_new_data(self, X_df):
+    def preprocess_new_data(self, data):
         """
         Function to preprocess the given instance data for the lime explainer
         :param X_df: should be a pandas dataframe containing 18 attributes
         :return: label encoded data 
         """
-        data = X_df.copy()
-        # List of feature names
-        feature_names = self.X.columns.to_list() 
+        #data = X_df.copy()
+        feature_names = data.columns.to_list() 
 
         # Lists of categorical and numerical feature names (needed for preprocessing)
-        cat_cols = self.X.select_dtypes(include=['object', 'category']).columns.to_list()
+        cat_cols = data.select_dtypes(include=['object', 'category']).columns.to_list()
 
         # List of indices of categorical features
-        cat_indices = [feature_names.index(col) for col in cat_cols] # TODO change and work with names, as this assumes the same ordering in the api request and self.X
-
+        cat_indices = [feature_names.index(col) for col in cat_cols]
         # Label encoding
         for cat_idx in cat_indices:
             # Fit label encoder on training data and transform respective column
-            le = LabelEncoder()
-            le.fit(self.X.iloc[:, cat_idx])
+            #le = LabelEncoder()
+            #le.fit(self.X.iloc[:, cat_idx])
+            #print(cat_idx)
+            le = self.encoders[inverse_lime_map[feature_names[cat_idx]]]
+            print(inverse_lime_map[feature_names[cat_idx]])
+            print(le.classes_)
+            #print(data.iloc[:,cat_idx])
             data.iloc[:, cat_idx] = le.transform(data.iloc[:, cat_idx])
-        return data
+            #print(data.iloc[:,cat_idx])
 
-    def get_lime_exp(self, prediction_function, instance_df, *args):
+        dict = {}
+        for feature in feature_names:
+            dict[feature] = data.iloc[0,feature_names.index(feature)]
+        
+        #same order of columns as in the train data needs be assured
+        changed_order_array = np.empty(len(feature_names))
+        for key in lime_exp_mapping.keys():
+            changed_order_array[key] = dict[lime_exp_mapping[key]]
+        return changed_order_array
+
+    def get_lime_exp(self, prediction_function, instance_df, num_features):
         """Method to get the lime explanation
         :param instance_df: dataframe with instance information
         :return lime explanation object:
         """
         data_le = self.preprocess_new_data(instance_df)
-        lime_exp = self.explainer.explain_instance(data_le.values[0], prediction_function, *args)
+        lime_exp = self.explainer.explain_instance(data_le, prediction_function, num_features=num_features)
         return lime_exp
     
     def get_api_response(self,instance, num_features=6):
@@ -118,6 +134,7 @@ class LimeHelper():
         instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
+        print(exp_dict)
         #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,class_names,top_labels that are not needed
         local_exp = exp_dict['local_exp']
         predict_proba = exp_dict['predict_proba'] # numpy array containing probability for approve and reject
@@ -125,7 +142,7 @@ class LimeHelper():
         #create explanation dict with attribute names instead of numbers as keys
         explanations = {}
         for tuple in local_exp_list:
-            explanations[lime_exp_mapping[tuple[0]]] = tuple[1]
+            explanations[lime_exp_mapping[tuple[0]]] = tuple[1] 
         return_dict = {}
         return_dict['predict_proba'] = predict_proba
         return_dict['explanations'] = explanations

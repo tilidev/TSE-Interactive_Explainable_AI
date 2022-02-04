@@ -303,3 +303,5 @@ lime_exp_mapping = {
     16 : AttributeNames.people_liable.value,
     17 : AttributeNames.telephone.value
 }
+
+inverse_lime_map = {v : k for k, v in lime_exp_mapping.items()}
