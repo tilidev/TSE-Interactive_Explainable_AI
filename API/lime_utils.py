@@ -1,4 +1,3 @@
-from operator import index
 import pandas as pd
 import numpy as np
 import lime
@@ -17,7 +16,7 @@ class LimeHelper():
     """
     def __init__(self):
         """Initializes the LimeHelper() for usage by the API
-        Fits a preprocessor and lime explainer
+        Fits a preprocessor, label encoders and lime explainer
         """
         # Read credit data
         data = data_loader()
@@ -91,17 +90,11 @@ class LimeHelper():
         cat_indices = [feature_names.index(col) for col in cat_cols]
         # Label encoding
         for cat_idx in cat_indices:
-            # Fit label encoder on training data and transform respective column
-            #le = LabelEncoder()
-            #le.fit(self.X.iloc[:, cat_idx])
-            #print(cat_idx)
+            #use the label encoders trained in __init__ to transform data
             le = self.encoders[inverse_lime_map[feature_names[cat_idx]]]
-            print(inverse_lime_map[feature_names[cat_idx]])
-            print(le.classes_)
-            #print(data.iloc[:,cat_idx])
             data.iloc[:, cat_idx] = le.transform(data.iloc[:, cat_idx])
-            #print(data.iloc[:,cat_idx])
 
+        #add label encoded data to dict to access it for reordering
         dict = {}
         for feature in feature_names:
             dict[feature] = data.iloc[0,feature_names.index(feature)]
@@ -131,9 +124,8 @@ class LimeHelper():
         instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
-        #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,class_names,top_labels that are not needed
+        #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,predict_proba, class_names,top_labels that are not needed
         local_exp = exp_dict['local_exp']
-        #predict_proba = exp_dict['predict_proba'] # numpy array containing probability for approve and reject
         local_exp_list = local_exp[1] #get list with explanation tuples from dict
         #create list of values with attribute names instead of numbers that are returned by lime
         value_list = []
