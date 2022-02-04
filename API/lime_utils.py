@@ -7,7 +7,7 @@ from DataLoader_ey import data_loader
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder
-from constants import rename_dict, AttributeNames, lime_exp_mapping, inverse_lime_map
+from constants import rename_dict, AttributeNames, lime_exp_mapping
 import json
 
 class LimeHelper():
@@ -26,7 +26,6 @@ class LimeHelper():
         #steps from data_preprocess
         data.rename(columns=rename_dict, inplace=True)
         X_train = data.drop(columns='label')
-        X = X_train.copy()
         #steps from exp_preprocess
         feature_names = X_train.columns.to_list()
         cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.to_list()
@@ -41,7 +40,7 @@ class LimeHelper():
             X_train.iloc[:, cat_idx] = le.transform(X_train.iloc[:, cat_idx])
             # Extend dictionary with array of categories and index as key
             cat_names[cat_idx] = le.classes_
-            encoders[inverse_lime_map[feature_names[cat_idx]]] = le
+            encoders[feature_names[cat_idx]] = le
                         
         preprocessor_le = ColumnTransformer(
                 transformers=[('num', MinMaxScaler(), num_cols),
@@ -50,8 +49,6 @@ class LimeHelper():
         self.encoders = encoders
         self.prep = preprocessor_le
         self.X_train = X_train
-        self.cat_names = cat_names
-        self.X = X
         self.explainer = lime.lime_tabular.LimeTabularExplainer(X_train.values, feature_names=feature_names,
                                                     class_names=['Approved', 'Rejected'],
                                                     discretize_continuous=True, mode='classification',
@@ -91,19 +88,14 @@ class LimeHelper():
         # Label encoding
         for cat_idx in cat_indices:
             #use the label encoders trained in __init__ to transform data
-            le = self.encoders[inverse_lime_map[feature_names[cat_idx]]]
+            le = self.encoders[feature_names[cat_idx]]
             data.iloc[:, cat_idx] = le.transform(data.iloc[:, cat_idx])
-
-        #add label encoded data to dict to access it for reordering
-        dict = {}
-        for feature in feature_names:
-            dict[feature] = data.iloc[0,feature_names.index(feature)]
         
         #same order of columns as in the train data needs be assured
-        changed_order_array = np.empty(len(feature_names))
+        correct_order_array = np.empty(len(feature_names))
         for key in lime_exp_mapping.keys():
-            changed_order_array[key] = dict[lime_exp_mapping[key]]
-        return changed_order_array
+            correct_order_array[key] = data.iloc[0, feature_names.index(lime_exp_mapping[key])]
+        return correct_order_array
 
     def get_lime_exp(self, prediction_function, instance_df, num_features):
         """Method to get the lime explanation
