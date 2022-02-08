@@ -68,9 +68,9 @@ def explanation_worker(in_queue : Queue, res_out : dict):
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
 
-            lh_res = lh.get_api_response(job.task["instance"].__dict__, num_features) #pass the instance in the required format
-            print(lh_res)
-            pass
+            lh_res = lh.get_lime_values(job.task["instance"].__dict__, num_features) #pass the instance in the required format
+            out = lh_res
+            res_out[job.uid] = lh_res
 
             
 

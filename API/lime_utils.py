@@ -7,7 +7,7 @@ from DataLoader_ey import data_loader
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder
-from constants import rename_dict, AttributeNames, lime_exp_mapping
+from constants import rename_dict, AttributeNames, lime_exp_mapping, attr_name, influence
 import json
 
 class LimeHelper():
@@ -113,7 +113,7 @@ class LimeHelper():
         :return: a list of jsons with the keys attribute and influence
         """
         instance_df = pd.DataFrame(instance, index = [0])
-        instance_df.drop(columns=[AttributeNames.ident.value,AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
+        instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
         #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,predict_proba, class_names,top_labels that are not needed
@@ -123,8 +123,8 @@ class LimeHelper():
         value_list = []
         for tuple in local_exp_list:
             dict = {}
-            dict["attribute"] = lime_exp_mapping[tuple[0]]
-            dict["influence"] = tuple[1]
+            dict[attr_name] = lime_exp_mapping[tuple[0]]
+            dict[influence] = tuple[1]
             value_list.append(json.loads(json.dumps(dict)))
         return value_list
          

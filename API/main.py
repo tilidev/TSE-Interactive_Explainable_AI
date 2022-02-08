@@ -154,10 +154,16 @@ async def schedule_explanation_generation(
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True)
-async def lime_explanation(process_id: int):
+async def lime_explanation(uid: UUID):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
-    pass
+    if uid in results.keys():
+        res = results[uid]
+        #TODO delete entry in dictionary
+        #TODO make call to check all dict entries
+        return LimeResponse(status=ResponseStatus.terminated, values=res)
+    else:
+        return LimeResponse(status=ResponseStatus.in_prog)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
 async def shap_explanation(uid: UUID):
