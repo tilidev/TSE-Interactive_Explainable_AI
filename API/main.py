@@ -32,7 +32,26 @@ To change the key names, go to the file `constants.py`. This API uses the define
 as the public aliases. This leads to a better separation between the python naming norms and the API key names.
 '''
 
-app = FastAPI(description=API_description)
+tags_metadata = [
+    {
+        "name" : "Dataset",
+        "description" : "All requests related to the 'German Credit Dataset' and the tensorflow model for binary classification."
+    },
+    {
+        "name" : "Explanations",
+        "description" : "All requests using XAI methods."
+    },
+    {
+        "name" : "Debugging",
+        "description" : "Requests for debugging possibilities. Include basic diagnostics about all running processes."
+    },
+    {
+        "name" : "Experimentation",
+        "description" : "All requests related to XAI experimentation functionalities."
+    }
+]
+
+app = FastAPI(description=API_description, openapi_tags=tags_metadata)
 
 manager = None
 num_processes = None
@@ -53,11 +72,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO move explainers to explanation_worker functions
-l = LimeHelper()
-l.__init__()
+# api requests start here
 
-@app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True) # second parameter makes sure that unused stuff won't be included in the response
+@app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True, tags=["Dataset"]) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
     con = create_connection("database.db")
@@ -70,14 +87,14 @@ async def table_view(request: TableRequest):
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
 
-@app.get("/instance/{id}", response_model=InstanceInfo)
+@app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
 async def entire_instance_by_id(id: int):
     '''Returns an entire instance information for the lvl2 view'''
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     return output 
 
-@app.post("/instance/predict", response_model=PredictionResponse) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
+@app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"]) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
 async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
     
@@ -95,14 +112,14 @@ async def predict_instance(instance: ModelInstanceInfo):
     res = PredictionResponse(NN_confidence=confidence, NN_recommendation=recommendation)
     return res
 
-@app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True)
+@app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True, tags=["Dataset"])
 async def attribute_informations():
     '''Returns a JSON with the constraints for each attribute.'''
     result = json.dumps(attribute_constraints)
     result = json.loads(result)
     return result
 
-@app.post("/explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED)
+@app.post("/explanations/{exp_method}", response_model=ExplanationTaskScheduler, status_code=HTTP_202_ACCEPTED, tags=["Explanations"])
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
@@ -153,7 +170,7 @@ async def schedule_explanation_generation(
 
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
-@app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True)
+@app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
@@ -165,7 +182,7 @@ async def lime_explanation(uid: UUID):
     else:
         return LimeResponse(status=ResponseStatus.in_prog)
 
-@app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True)
+@app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
     '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
     Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
@@ -178,17 +195,17 @@ async def shap_explanation(uid: UUID):
     else:
         return ShapResponse(status=ResponseStatus.in_prog)
 
-@app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True)
+@app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(process_id: int):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
 
-@app.get("/processes")
+@app.get("/processes", tags=["Debugging"])
 async def processes():
     """Return the number of child explanation processes started by the application."""
     return num_processes
 
-@app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED)
+@app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
     """Create an experiment setup and save it to the database"""
     #check legal boolean combination
@@ -200,44 +217,46 @@ async def create_experiment(exp_info : ExperimentInformation):
     con = create_connection('database.db')
     exp_creation(con, exp_info.experiment_name, exp)
 
-@app.get("/experiment/all", response_model=List[str])
+@app.get("/experiment/all", response_model=List[str], tags=["Experimentation"])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
     con = create_connection('database.db')
     return get_all_exp(con) 
 
-@app.get("/experiment", response_model=ExperimentInformation)
+@app.get("/experiment", response_model=ExperimentInformation, tags=["Experimentation"])
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
     con = create_connection('database.db')
     return get_exp_info(con, name)
 
-@app.post("/experiment/generate_id", response_model=ClientIDResponse)
+@app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
     con = create_connection('database.db')
     return create_id(con, gen.experiment_name)
 
-@app.post("/experiment/results", status_code=HTTP_202_ACCEPTED)
+@app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
     con = create_connection('database.db')
     add_res(con, results.experiment_name, results.client_id, results.results)
 
-@app.get("/experiment/results/export", response_model=List[ExperimentResults])
+@app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results(format: ExportFormat):
     con = create_connection('database.db')
     return export_results_to(con, format.value)
 
-@app.post("/experiment/reset")
+@app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
     con = create_connection('database.db')
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
 
-@app.post("/experiment/delete")
+@app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
     con = create_connection('database.db')
     delete_exp(con, experiment_name)
     # TODO what would be the best response model
+
+
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows
