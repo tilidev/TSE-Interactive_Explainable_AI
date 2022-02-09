@@ -5,6 +5,7 @@ import multiprocessing as mp
 from tensorflow.keras.models import load_model
 import pandas as pd
 import pickle
+import psutil
 
 from starlette.status import HTTP_202_ACCEPTED
 import json
@@ -55,6 +56,7 @@ app = FastAPI(description=API_description, openapi_tags=tags_metadata)
 
 manager = None
 num_processes = None
+process_ids = []
 task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
@@ -201,9 +203,24 @@ async def dice_explanation(process_id: int):
     pass
 
 @app.get("/processes", tags=["Debugging"])
-async def processes():
-    """Return the number of child explanation processes started by the application."""
-    return num_processes
+async def process_information():
+    """Returns information about the python processes that should be running."""
+    return {
+        "parent_process_id" : os.getpid(),
+        "manager_pid" : manager._process.ident, # private variable, might not be supported for different versions
+        "num_exp_processes" : num_processes,
+        "exp_pids" : process_ids
+    }
+
+@app.get("/processes/status", tags=["Debugging"])
+async def process_status(p_id : int):
+    """Returns the current status of a running process based on the process id.
+    Will only return information about related python processes."""
+    if p_id not in [os.getpid(), manager._process.ident] + process_ids:
+        return "Provided process id not related to this application."
+    p = psutil.Process(p_id)
+    return p.as_dict()
+
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
@@ -270,6 +287,7 @@ if __name__ == "__main__":
     processes : List[mp.Process] = [mp.Process(target=explanation_worker, args=(task_queue, results)) for _ in range(num_processes)]
     for process in processes:
         process.start()
+        process_ids.append(process.pid)
     
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
