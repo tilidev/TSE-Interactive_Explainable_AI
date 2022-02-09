@@ -7,6 +7,7 @@ from constants import ResponseStatus
 from constants import ExplanationType
 from typing import Optional
 from uuid import UUID, uuid4
+import time
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
@@ -50,10 +51,13 @@ def explanation_worker(in_queue : Queue, res_out : dict):
     from lime_utils import LimeHelper
     lh = LimeHelper()
 
-    print(f"\nExplainer process with id {os.getpid()} started succesfully. Explainers loaded and ready.\n")
+    print(f"\n\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m started succesfully. Explainers loaded and ready.\n")
     
     while True: # repeat the process
         job : Job = in_queue.get(block=True) # explicitely wait until a job is available
+        start_time = time.time()
+        print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m starting exlanation computation. \
+            \n      Explanation type: \033[1m{job.exp_type.value}\033[0m")
 
         if job.exp_type == ExplanationType.shap:
             shap_bval, shap_vals = compute_response_shap(job.task["instance"], shap_explainer, cols)
@@ -71,6 +75,11 @@ def explanation_worker(in_queue : Queue, res_out : dict):
             lh_res = lh.get_lime_values(job.task["instance"].__dict__, num_features) #pass the instance in the required format
             out = lh_res
             res_out[job.uid] = lh_res
+        
+        end_time = time.time()
+
+        print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m finished \033[1m{job.exp_type.value}\033[0m computation.\n      Time taken: {end_time-start_time} seconds.")
+        print(f"      Result saved with uuid {job.uid}.")
 
             
 

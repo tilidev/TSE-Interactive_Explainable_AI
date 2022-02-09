@@ -21,7 +21,6 @@ from constants import *
 from models import *
 from fastapi.middleware.cors import CORSMiddleware
 from database_req import *
-from lime_utils import LimeHelper
 
 API_description = '''
 # TSE: Explainable Artificial Intelligence - API
@@ -221,7 +220,6 @@ async def process_status(p_id : int):
     p = psutil.Process(p_id)
     return p.as_dict()
 
-
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
     """Create an experiment setup and save it to the database"""
@@ -283,7 +281,7 @@ if __name__ == "__main__":
     results = manager.dict()
     task_queue = manager.Queue()
 
-    print(f"\nMain process with id {os.getpid()} started succesfully. Starting {num_processes} explainer processes.\n")
+    print(f"\nMain process with id \033[96m{os.getpid()}\033[0m started succesfully. Starting {num_processes} explainer processes.\n")
     processes : List[mp.Process] = [mp.Process(target=explanation_worker, args=(task_queue, results)) for _ in range(num_processes)]
     for process in processes:
         process.start()
@@ -294,4 +292,6 @@ if __name__ == "__main__":
     for process in processes:
         pid = process.pid
         process.terminate()
-        print(f"\nSuccesfully terminated explainer process with id {pid}")
+        print(f"\n\033[92mINFO:\033[0m Succesfully terminated explainer process with id \033[96m{pid}\033[0m")
+    
+    print("\n\033[92mINFO:\033[0m Application terminated.")
