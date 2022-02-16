@@ -14,7 +14,6 @@
 
 <script>
 import InfoCard from "../components/InfoCard.vue";
-import DiceExplanation from "../components/explanations/DiceExplanation.vue"
 
 export default {
   data() {
@@ -22,7 +21,7 @@ export default {
       modifiedInstance: {},
     };
   },
-  components: { InfoCard, DiceExplanation },
+  components: { InfoCard },
   methods: {
     applyModification(modification) {
       this.modifiedInstance[modification["attribute"]] = modification["value"];

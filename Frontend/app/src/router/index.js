@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import DatasetExplorer from "../views/DatasetExplorer.vue";
 import InstancePage from "../views/InstancePage.vue";
 import ExperimentPage from "../views/ExperimentPage.vue"
+import TreeMapTestView from "../views/TreeMapTestView.vue"
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     path:"/experiments/:experimentId",
     name:"Experiment Page",
     component: ExperimentPage
+  },
+  {
+    path: "/treemap",
+    name: "TreeMapTestView",
+    component: TreeMapTestView,
   }
 ];
 
