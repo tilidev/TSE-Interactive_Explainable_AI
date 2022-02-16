@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import DatasetExplorer from "../views/DatasetExplorer.vue";
 import InstancePage from "../views/InstancePage.vue";
 import ExperimentPage from "../views/ExperimentPage.vue"
+import AdminPage from "../views/AdminPage.vue"
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     path:"/experiments/:experimentId",
     name:"Experiment Page",
     component: ExperimentPage
+  },
+  {
+    path:"/admin",
+    name:"Admin Page",
+    component: AdminPage
   }
 ];
 
