@@ -3,7 +3,7 @@ from enum import Enum
 class ExplanationType(str, Enum):
     lime = "lime"
     shap = "shap"
-    dice_lvl3 = "dice"
+    dice = "dice"
 
 class ExportFormat(str, Enum):
     comma_separated = "csv"

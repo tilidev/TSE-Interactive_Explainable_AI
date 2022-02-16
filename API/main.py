@@ -164,9 +164,18 @@ async def schedule_explanation_generation(
     '''
 
     #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
+    #TODO: Check that instance id is provided and legal for dice requests
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
     task_queue.put(job)
+
+    response_mapping = {
+        ExplanationType.lime : LimeResponse,
+        ExplanationType.shap : ShapResponse,
+        ExplanationType.dice : DiceCounterfactualResponse
+    }
+
+    results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
 
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
@@ -198,7 +207,7 @@ async def shap_explanation(uid: UUID):
         return ShapResponse(status=ResponseStatus.in_prog)
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
-async def dice_explanation(process_id: int):
+async def dice_explanation(uid: UUID):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
 
@@ -221,7 +230,7 @@ async def process_status(p_id : int):
     p = psutil.Process(p_id)
     return p.as_dict()
 
-@app.get("/result_uids", tags=["debugging"])
+@app.get("/result_uids", tags=["Debugging"])
 async def explanation_uids():
     return results.keys()
 
