@@ -49,6 +49,7 @@ export default {
           duration: "Duration",
           balance: "Balance",
           age: "Age",
+          telephone: "Telephone",
           employment: "Employment",
           NN_recommendation: "AI Recommendation",
           NN_confidence: "AI Confidence",
