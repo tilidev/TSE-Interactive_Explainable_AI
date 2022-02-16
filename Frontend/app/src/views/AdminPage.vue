@@ -1,6 +1,7 @@
 <template>
   <div>
-      <login-screen v-if="!authenticated"></login-screen>
+      <login-screen v-if="!authenticated" @logged-in="authenticated = true"></login-screen>
+      <div v-if="authenticated">You're logged in</div>
   </div>
 </template>
 
