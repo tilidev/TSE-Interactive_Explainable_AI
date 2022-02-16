@@ -8,7 +8,6 @@ class InstanceInfo(BaseModel):
     '''Defines how a JSON model for an instance information should look like.
     Maps the predefined names for attributes as the alias of the pydantic class keys.'''
     
-    # TODO: change the types (most are strings now)
     ident : int = Field(alias=AttributeNames.ident.value, ge=-1, le=1000)
     balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
     duration : Optional[float] = Field(None, alias=AttributeNames.duration.value)
@@ -27,11 +26,41 @@ class InstanceInfo(BaseModel):
     job : Optional[str] = Field(None, alias=AttributeNames.job.value)
     other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
     people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
+    telephone : Optional[str] = Field(None, alias=AttributeNames.telephone.value)
     NN_recommendation : Optional[str] = Field(None, alias=AttributeNames.NN_recommendation.value)
     NN_confidence : Optional[float] = Field(None, le=1, ge=0, alias=AttributeNames.NN_confidence.value)
 
     class Config:
         orm_mode=True
+
+class ModelInstanceInfo(BaseModel):
+    '''Defines the JSON loan application model for all requests that need the tensorflow model to make a prediction.
+    All 18 features <b>must</b> be included.'''
+
+    balance : str = Field(alias=AttributeNames.balance.value)
+    duration : float = Field(alias=AttributeNames.duration.value)
+    history : str = Field(alias=AttributeNames.history.value)
+    purpose : str = Field(alias=AttributeNames.purpose.value)
+    amount : float = Field(alias=AttributeNames.amount.value)
+    savings : str = Field(alias=AttributeNames.savings.value)
+    employment : str = Field(alias=AttributeNames.employment.value)
+    available_income : str = Field(alias=AttributeNames.available_income.value)
+    residence : str = Field(alias=AttributeNames.residence.value)
+    assets : str = Field(alias=AttributeNames.assets.value)
+    age : float = Field(alias=AttributeNames.age.value)
+    other_loans : str = Field(alias=AttributeNames.other_loans.value)
+    housing : str = Field(alias=AttributeNames.housing.value)
+    previous_loans : str = Field(alias=AttributeNames.previous_loans.value)
+    job : str = Field(alias=AttributeNames.job.value)
+    other_debtors : str = Field(alias=AttributeNames.other_debtors.value)
+    people_liable : str = Field(alias=AttributeNames.people_liable.value)
+    telephone : str = Field(alias=AttributeNames.telephone.value)
+
+class PredictionResponse(BaseModel):
+    '''Defines the response format for a prediction call.'''
+
+    NN_recommendation : str = Field(alias=AttributeNames.NN_recommendation.value)
+    NN_confidence : float = Field(alias=AttributeNames.NN_confidence.value)
 
 class ContinuousFilter(BaseModel):
     '''Defines the JSON format for a continuous filter request body'''
@@ -75,7 +104,7 @@ class ExplanationTaskScheduler(BaseModel):
     '''This class gives a response to monitor the status of the explanations which might take a long time in computation.
     with the href and the process_id, the front-end can send requests to the api to get the explanation object back.'''
     status: ResponseStatus = Field(alias=status)
-    process_id: int = Field(alias=process_id)
+    process_id: Optional[int] = Field(None, alias=process_id)
     href: str = Field(alias=href)
 
 class LimeResponse(BaseModel):
@@ -105,4 +134,30 @@ class DiceCounterfactualResponse(BaseModel):
     status: ResponseStatus = Field(alias=status)
     counterfactuals: Optional[List[InstanceInfo]] = Field(None, alias=counterfactuals, description="The <b>DICE</b> results. \n`None`, when process has not terminated.")
 
+class ExperimentInformation(BaseModel):
+    '''JSON format for experiment creation.'''
+    loan_ids : List[int]
+    ismodify : bool
+    iswhatif : bool # Should only be True if ismodify is also true
+    exp_type : ExplanationType
+    experiment_name : str
+    survey_link : Optional[str] = Field(None, description="URL to a survey")
+    description : Optional[str] = Field(None, description="description for the experiment")
 
+class GenerateClientID(BaseModel):
+    """JSON format for client ID generation request"""
+    experiment_name : str
+
+class ClientIDResponse(BaseModel):
+    """JSON format for cliend id generation response. Integer from 0 upwards"""
+    client_id : int = Field(ge=0)
+
+class ExperimentResults(BaseModel):
+    """JSON format for experiment results"""
+    class SingleResult(BaseModel):
+        loan_id : int 
+        choice : RecommendationType
+
+    experiment_name : str
+    client_id : int
+    results : List[SingleResult]

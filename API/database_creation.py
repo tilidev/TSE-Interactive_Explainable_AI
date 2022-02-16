@@ -1,29 +1,23 @@
+from os import rename
 from DataLoader_ey import createDataframeForDB
 import sqlite3 as sql
+from constants import rename_dict
 
 con = sql.connect('database.db')
 c = con.cursor()
-#create_query ='CREATE TABLE applicants (id INT, balance TEXT,duration INT,history TEXT,purpose TEXT,amount REAL,savings TEXT,employment TEXT,available_income TEXT,other_debtors TEXT,residence TEXT,assets TEXT,age INT,other_loans TEXT,housing TEXT,previous_loans TEXT,job TEXT,people_liable TEXT,telephone TEXT, NN_recommendation TEXT, NN_confidence REAL)'
-#c.execute(create_query)
-#con.commit()
+#the create_query is only needed for initialisation not when just wanting to reset
+create_query_appl ='CREATE TABLE IF NOT EXISTS applicants (id INT, balance TEXT,duration INT,history TEXT,purpose TEXT,amount REAL,savings TEXT,employment TEXT,available_income TEXT,other_debtors TEXT,residence TEXT,assets TEXT,age INT,other_loans TEXT,housing TEXT,previous_loans TEXT,job TEXT,people_liable TEXT,telephone TEXT, NN_recommendation TEXT, NN_confidence REAL)'
+c.execute(create_query_appl)
+con.commit()
 df = createDataframeForDB()
-df.to_sql('applicants', con, index_label = 'ident', if_exists="replace")
-c.execute('ALTER TABLE applicants RENAME COLUMN balance_ TO balance;')
-c.execute('ALTER TABLE applicants RENAME COLUMN duration_ TO duration;')
-c.execute('ALTER TABLE applicants RENAME COLUMN history_ TO history;')
-c.execute('ALTER TABLE applicants RENAME COLUMN purpose_ TO purpose;')
-c.execute('ALTER TABLE applicants RENAME COLUMN amount_ TO amount;')
-c.execute('ALTER TABLE applicants RENAME COLUMN savings_ TO savings;')
-c.execute('ALTER TABLE applicants RENAME COLUMN employment_ TO employment;')
-c.execute('ALTER TABLE applicants RENAME COLUMN available_income_ TO available_income;')
-c.execute('ALTER TABLE applicants RENAME COLUMN other_debtors_ TO other_debtors;')
-c.execute('ALTER TABLE applicants RENAME COLUMN residence_ TO residence;')
-c.execute('ALTER TABLE applicants RENAME COLUMN assets_ TO assets;')
-c.execute('ALTER TABLE applicants RENAME COLUMN age_ TO age;')
-c.execute('ALTER TABLE applicants RENAME COLUMN other_loans_ TO other_loans;')
-c.execute('ALTER TABLE applicants RENAME COLUMN housing_ TO housing;')
-c.execute('ALTER TABLE applicants RENAME COLUMN previous_loans_ TO previous_loans;')
-c.execute('ALTER TABLE applicants RENAME COLUMN job_ TO job;')
-c.execute('ALTER TABLE applicants RENAME COLUMN people_liable_ TO people_liable;')
-c.execute('ALTER TABLE applicants RENAME COLUMN telephone_ TO telephone;')
+df.to_sql('applicants', con, index_label = 'id', if_exists="replace")
+for key in rename_dict.keys():
+    query = 'ALTER TABLE applicants RENAME COLUMN ' + key + ' TO ' + rename_dict[key] + ';'
+    c.execute(query)
+create_query_exp = 'CREATE TABLE IF NOT EXISTS experiments (name TEXT PRIMARY KEY, information TEXT);'
+c.execute(create_query_exp)
+con.commit()
+create_query_res = 'CREATE TABLE IF NOT EXISTS results (experiment_name TEXT, client_id INT, results JSON, PRIMARY KEY (experiment_name, client_id));'
+c.execute(create_query_res)
+con.commit()
 con.close()

@@ -1,6 +1,9 @@
+from genericpath import exists
 import sqlite3 as sql
 import json
 from typing import List
+import pandas as pd
+from models import ExperimentResults
 
 from constants import *
 
@@ -126,6 +129,128 @@ def create_order_query(sort:str):
     else:
         query += sort
     return query
+
+
+#for create_experiment
+def exp_creation(con, exp_name:str, exp_info:str):
+    exists_query = "SELECT name FROM experiments WHERE name = '" + exp_name + "'"
+    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
+    c = con.cursor()
+    c.execute(exists_query)
+    if len(c.fetchall() == 0):
+        c.execute(insert_query)
+        con.commit()
+    
+
+#for experiment_list
+def get_all_exp(con):
+    query = 'SELECT name FROM experiments'
+    c = con.cursor()
+    results = c.execute(query).fetchall()
+    res_list = []
+    for result in results:
+        res_list.append(result[0]) #index 0 needed because result is in a tuple format
+    return res_list
+
+#for experiment_by_name 
+def get_exp_info(con, name:str):
+    query = "SELECT information FROM experiments WHERE name = '"+ name + "'"
+    c = con.cursor()
+    results = c.execute(query).fetchall()
+    if len(results) == 0:
+        return {}
+    result_tuple = results[0]
+    result_str = result_tuple[0]
+    result_json = json.loads(result_str)
+    return result_json
+
+#for generate_clientID
+def create_id(con, exp_name:str):
+    query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
+    c = con.cursor()
+    ids = c.execute(query_existing_id).fetchall()
+    print(len(ids))
+    return_id = 0
+    #TODO reicht es auch auf letztes tupel zuzugreifen?
+    if len(ids) > 0:
+        for id in ids:
+            if id[0] >= return_id: #index 0 because tuple is accessed
+                return_id = id[0] + 1
+    #create entry with that id 
+    query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
+    c.execute(query_insert)
+    con.commit()
+    return_dict = {
+        "client_id": return_id
+    }
+    res = json.loads(json.dumps(return_dict))
+    return res
+
+#for results to database
+def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
+    dict = {}
+    #results_list = []
+    for res in results:
+        dict[res.loan_id] = res.json()
+    print(dict)
+    #get json for the results list, as sqllite cannot save lists
+    json_str = json.dumps(dict)
+    #query = 'UPDATE results SET results = ' + json_str + ' WHERE experiment_name = "' + exp_name + '" AND client_id = ' + str(client_id)
+    query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
+
+    print(query)
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
+
+#export results
+def export_results_to(con, format):
+    query = 'SELECT * FROM results'
+    if format == ExportFormat.comma_separated.value:
+        #vorschlag von stackoverflow
+        #TODO threading?
+        con = sql.connect('database.db', isolation_level=None,
+                       detect_types=sql.PARSE_COLNAMES)
+        db_df = pd.read_sql_query(query, con)
+        db_df.to_csv('database.csv', index=False)
+        file = open('database.csv')
+        return file
+    elif format == ExportFormat.js_object_notation.value:
+        con.row_factory = sql.Row
+        c = con.cursor()
+        results = c.execute(query).fetchall()
+        result = json.dumps([dict(res) for res in results])
+        result_json = json.loads(result)
+        print(result_json)
+        return result_json
+
+    
+
+#for reset_experiment_results
+def reset_exp_res(con, exp_name:str):
+    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
+    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+    c = con.cursor()
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        c.execute(reset_query)
+        con.commit()
+
+#for delete_experiment
+def delete_exp(con, exp_name: str):
+    exists_query = 'SELECT name FROM experiments WHERE name = "' + exp_name + '"'
+    delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
+    c = con.cursor()
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        c.execute(delete_query)
+        con.commit()
+
+    
+
+
+
+
 
 
 
