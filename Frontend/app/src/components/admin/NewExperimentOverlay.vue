@@ -2,12 +2,10 @@
   <div
     class="fixed overflow-y-auto inset-0 flex justify-center items-center z-50"
   >
-    <div class="relative mx-auto w-auto max-w-2xl">
+    <div class="relative mx-auto w-auto">
       <div class="bg-white w-100 rounded-lg shadow-md p-4">
-        <div class="flex">
-          <h4 class="text-lg font-bold">
-              Create new experiment
-          </h4>
+        <div class="flex justify-between mb-8">
+          <h4 class="text-lg font-bold">Create new experiment</h4>
           <button
             @click="this.$emit('close')"
             class="bg-white hover:bg-gray-light px-2 py-0.5 rounded-full"
@@ -15,17 +13,250 @@
             <fa-icon icon="times"></fa-icon>
           </button>
         </div>
+        <div
+          class="
+            grid grid-cols-auto grid-flow-col
+            gap-x-8 gap-y-2
+            auto-cols-max auto-rows-auto
+          "
+        >
+          <div class="col-start-1 col-span-2 pt-2">Experiment name</div>
+          <input
+            class="col-start-3 col-span-3 border rounded p-2"
+            v-model="name"
+            placeholder="Name for the experiment"
+          />
+          <div class="col-start-1"></div>
+          <div class="col-start-3 text-sm text-negative mb-2">
+            {{ errorMessages.name }}
+          </div>
+          <div class="col-start-1 col-span-2 row-span-2 pt-2">Description</div>
+          <textarea
+            placeholder="Describe your experiment"
+            v-model="description"
+            class="
+              col-start-3 col-span-3
+              row-span-2
+              border
+              rounded
+              resize-none
+              p-2
+            "
+          ></textarea>
+          <div class="col-start-1"></div>
+          <div class="col-start-3 text-sm text-negative mb-2">
+            {{ errorMessages.description }}
+          </div>
+          <div class="col-start-1 col-span-2 pt-2">
+            Applications the user is shown
+          </div>
+          <textarea
+            v-model="applications"
+            class="col-start-3 col-span-3 border rounded resize-none p-2"
+            placeholder="IDs of the applications the user is shown, separated by comma (must be between 0 and 999)"
+          ></textarea>
+          <div class="col-start-1"></div>
+          <div class="col-start-3 text-sm text-negative mb-2">
+            {{ errorMessages.applications }}
+          </div>
+          <div class="col-start-1 col-span-2">
+            Allow Modification and What-if analysis
+          </div>
+          <div class="col-start-3 col-span-3 space-x-4">
+            <span class="space-x-2">
+              <input
+                v-model="modwhatif"
+                type="radio"
+                id="both"
+                name="modwhatif"
+                value="both"
+              />
+              <label for="huey">Modification and What-if</label>
+            </span>
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="modonly"
+                name="modwhatif"
+                v-model="modwhatif"
+                value="modonly"
+              />
+              <label for="modonly">Modification only</label>
+            </span>
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="none"
+                name="modwhatif"
+                value="none"
+                v-model="modwhatif"
+              />
+              <label for="none">None</label>
+            </span>
+          </div>
+          <div class="col-start-1"></div>
+          <div class="col-start-3 col-span-3 text-sm text-negative mb-2">
+            {{ errorMessages.modwhatif }}
+          </div>
+          <div class="col-start-1 col-span-2">Explanation type</div>
+          <div class="col-start-3 col-span-3 space-x-4">
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="lime"
+                v-model="explanation"
+                name="explanation"
+                value="lime"
+              />
+              <label for="lime">Lime</label>
+            </span>
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="shap"
+                name="explanation"
+                v-model="explanation"
+                value="shap"
+              />
+              <label for="shap">SHAP</label>
+            </span>
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="dice"
+                name="explanation"
+                v-model="explanation"
+                value="dice"
+              />
+              <label for="dice">Dice</label>
+            </span>
+            <span class="space-x-2">
+              <input
+                type="radio"
+                id="none"
+                name="explanation"
+                v-model="explanation"
+                value="none"
+              />
+              <label for="none">None</label>
+            </span>
+          </div>
+          <div class="col-start-1"></div>
+          <div class="col-start-3 text-sm text-negative mb-2">
+            {{ errorMessages.explanation }}
+          </div>
+          <div class="col-start-1 col-span-2 pt-2">Survey link (optional)</div>
+          <div class="col-start-1"></div>
+          <input
+            v-model="surveyLink"
+            class="col-start-3 col-span-3 border rounded p-2"
+            placeholder="URL to your survey"
+          />
+          <div class="col-start-3 text-sm text-negative mb-2">
+            {{ errorMessages.surveyLink }}
+          </div>
+          <default-button
+            :color="'positive'"
+            :hoverColor="'positive-dark'"
+            class="col-start-1"
+            @click="validateInput"
+          >
+            Create
+          </default-button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import DefaultButton from "../buttons/DefaultButton.vue";
 export default {
+  data() {
+    return {
+      name: "",
+      description: "",
+      applications: "",
+      applicationArray: [],
+      surveyLink: "",
+      modwhatif: "both",
+      explanation: "lime",
+      errorMessages: {},
+    };
+  },
+  inject: ["apiUrl"],
+  components: { DefaultButton },
+  methods: {
+    createExperiment() {
+      const axios = require("axios");
+      let requestBody = {};
+      requestBody.experiment_name = this.name;
+      requestBody.description = this.description;
+      requestBody.loan_ids = this.applications.split(",").map((x) => {
+        return parseInt(x, 10);
+      });
+      if (this.surveyLink) {
+        requestBody.survey_link = this.surveyLink;
+      }
+      requestBody.ismodify = false;
+      requestBody.iswhatif = false;
+      if (this.modwhatif === "both") {
+        requestBody.ismodify = true;
+        requestBody.iswhatif = true;
+      }
+      else if (this.modwhatif === "modonly") {
+        requestBody.ismodify = true;
+      }
+      requestBody.exp_type = this.explanation;
+      axios
+            .post(this.apiUrl + "experiment/creation", requestBody)
+            .then(() => {
+              this.$emit("close");
+            });
+    },
+    validateInput() {
+      this.errorMessages = {};
 
-}
+      for (const attribute of ["name", "description", "applications"]) {
+        if (!this[attribute]) {
+          this.errorMessages[attribute] = "Error, field can't be empty";
+        }
+      }
+      if (this.name.length > 100) {
+        this.errorMessages.name =
+          "Error, name can't be longer than 100 characters";
+      }
+      if (this.description.length > 500) {
+        this.errorMessages.description =
+          "Error, description can't be longer than 500 characters";
+      }
+
+      this.applications.replace(" ", "");
+      const applicationsPattern = RegExp("^[0-9]{1,3}(,[0-9]{1,3})*$");
+      if (!applicationsPattern.test(this.applications) && this.applications) {
+        this.errorMessages.applications =
+          "Error, invalid format or application ids";
+      }
+      const urlPattern = RegExp(
+        "^[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_+.~#?&//=]*)$"
+      );
+      if (!urlPattern.test(this.surveyLink) && this.surveyLink) {
+        this.errorMessages.surveyLink = "Error, not a valid URL";
+      }
+      if (
+        this.modwhatif === "both" &&
+        (this.explanation === "dice" || this.explanation === "none")
+      ) {
+        this.errorMessages.modwhatif =
+          "Error, What-if analysis is not possible with this explanation type";
+      }
+      if (Object.keys(this.errorMessages).length === 0) {
+        this.createExperiment();
+      }
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>
