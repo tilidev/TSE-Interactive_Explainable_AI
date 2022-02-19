@@ -137,7 +137,7 @@ def exp_creation(con, exp_name:str, exp_info:str):
     insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
     c = con.cursor()
     c.execute(exists_query)
-    if len(c.fetchall() == 0):
+    if len(c.fetchall()) == 0:
         c.execute(insert_query)
         con.commit()
     
