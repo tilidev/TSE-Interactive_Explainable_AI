@@ -16,7 +16,7 @@
       <div class="relative mx-auto w-auto">
         <div class="bg-white w-100 rounded-lg shadow-md p-4">
           <div class="flex justify-between mb-8">
-            <h4 class="text-lg font-bold">Create new experiment</h4>
+            <h4 class="text-xl font-bold">Create new experiment</h4>
             <button
               @click="this.$emit('close')"
               class="bg-white hover:bg-gray-light px-2 py-0.5 rounded-full"
@@ -31,7 +31,7 @@
               auto-cols-max auto-rows-auto
             "
           >
-            <div class="col-start-1 col-span-2 pt-2">Experiment name</div>
+            <div class="col-start-1 col-span-2 font-bold pt-2">Experiment name</div>
             <input
               class="col-start-3 col-span-3 rounded p-2"
               :class="getBorderStyling('name')"
@@ -42,7 +42,7 @@
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.name }}
             </div>
-            <div class="col-start-1 col-span-2 row-span-2 pt-2">
+            <div class="col-start-1 col-span-2 font-bold row-span-2 pt-2">
               Description
             </div>
             <textarea
@@ -55,7 +55,7 @@
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.description }}
             </div>
-            <div class="col-start-1 col-span-2 pt-2">
+            <div class="col-start-1 col-span-2 font-bold pt-2">
               Applications the user is shown
             </div>
             <textarea
@@ -68,7 +68,7 @@
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.applications }}
             </div>
-            <div class="col-start-1 col-span-2">
+            <div class="col-start-1 col-span-2 font-bold">
               Allow Modification and What-if analysis
             </div>
             <div class="col-start-3 col-span-3 space-x-4">
@@ -107,7 +107,7 @@
             <div class="col-start-3 col-span-3 text-sm text-negative mb-2">
               {{ errorMessages.modwhatif }}
             </div>
-            <div class="col-start-1 col-span-2">Explanation type</div>
+            <div class="col-start-1 col-span-2 font-bold">Explanation type</div>
             <div class="col-start-3 col-span-3 space-x-4">
               <span class="space-x-2">
                 <input
@@ -154,7 +154,7 @@
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.explanation }}
             </div>
-            <div class="col-start-1 col-span-2 pt-2">
+            <div class="col-start-1 col-span-2 font-bold pt-2">
               Survey link (optional)
             </div>
             <div class="col-start-1"></div>
