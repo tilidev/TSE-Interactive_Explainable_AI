@@ -259,12 +259,6 @@ export default {
         this.errorMessages.applications =
           "Error, invalid format or application ids";
       }
-      const urlPattern = RegExp(
-        "^[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_+.~#?&//=]*)$"
-      );
-      if (!urlPattern.test(this.surveyLink) && this.surveyLink) {
-        this.errorMessages.surveyLink = "Error, not a valid URL";
-      }
       if (
         this.modwhatif === "both" &&
         (this.explanation === "dice" || this.explanation === "none")
