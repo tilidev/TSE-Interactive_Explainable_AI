@@ -4,6 +4,9 @@
     v-if="this.clicked == false"
       class="
         btn
+        border
+        border-gray-light
+        hover:border-gray
         bg-gray-light 
         hover:bg-gray
         px-2
