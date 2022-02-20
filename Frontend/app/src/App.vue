@@ -87,9 +87,11 @@ export default {
           this.attributeData.values[element.attribute] = element.values;
         }
         for (const attr of Object.keys(this.attributeData.categories)) {
-          this.attributeCategories[this.attributeData.categories[attr]].push(
-            attr
-          );
+          if (this.attributeCategories[this.attributeData.categories[attr]]) {
+            this.attributeCategories[this.attributeData.categories[attr]].push(
+              attr
+            );
+          }
         }
       });
     },
