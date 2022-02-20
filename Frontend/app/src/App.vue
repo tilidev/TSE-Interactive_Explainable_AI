@@ -85,11 +85,11 @@ export default {
           this.attributeData.upperBounds[element.attribute] =
             element.upper_bound;
           this.attributeData.values[element.attribute] = element.values;
-          for (const attr of Object.keys(this.attributeData.categories)) {
-            this.attributeCategories[this.attributeData.categories[attr]].push(
-              attr
-            );
-          }
+        }
+        for (const attr of Object.keys(this.attributeData.categories)) {
+          this.attributeCategories[this.attributeData.categories[attr]].push(
+            attr
+          );
         }
       });
     },
