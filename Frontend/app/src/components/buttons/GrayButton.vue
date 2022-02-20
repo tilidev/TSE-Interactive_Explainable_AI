@@ -5,13 +5,11 @@
       class="
         btn
         bg-gray-light 
-        hover:bg-gray 
-        text-primary-text
-        px-1
+        hover:bg-gray
+        px-2
         py-1
         rounded-md
-        text-xs
-        font-extralight
+        text-sm
         m-4
       "
     >
@@ -23,14 +21,13 @@
         btn
         bg-gray-light 
         hover:bg-gray 
-        text-blue-800
-        px-1
+        text-primary-light
+        px-2
         py-1
         rounded-md
-        text-xs
-        font-extralight
+        text-sm
         border
-        border-blue-800
+        border-primary-light
         m-4
       "
     >
