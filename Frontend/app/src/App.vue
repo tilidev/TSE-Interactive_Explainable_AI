@@ -30,6 +30,11 @@ export default {
   data() {
     return {
       apiUrl: "http://localhost:8000/",
+      attributeCategories: {
+        financial: [],
+        personal: [],
+        loan: [],
+      },
       attributeData: {
         descriptions: {},
         labels: {
@@ -63,19 +68,6 @@ export default {
       },
     };
   },
-  computed: {
-    attributeCategories() {
-      const attrCat = {
-        financial: [],
-        personal: [],
-        loan: [],
-      };
-      for (const attr of Object.keys(this.attributeData.categories)) {
-        attrCat[this.attributeData.categories[attr]].push(attr);
-      }
-      return attrCat;
-    },
-  },
   mounted() {
     this.sendAttributeRequest();
   },
@@ -93,6 +85,11 @@ export default {
           this.attributeData.upperBounds[element.attribute] =
             element.upper_bound;
           this.attributeData.values[element.attribute] = element.values;
+          for (const attr of Object.keys(this.attributeData.categories)) {
+            this.attributeCategories[this.attributeData.categories[attr]].push(
+              attr
+            );
+          }
         }
       });
     },
