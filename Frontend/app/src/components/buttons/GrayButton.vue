@@ -13,7 +13,6 @@
         py-1
         rounded-md
         text-sm
-        m-4
       "
     >
     <slot />
@@ -31,7 +30,6 @@
         text-sm
         border
         border-primary-light
-        m-4
       "
     >
     <slot />
