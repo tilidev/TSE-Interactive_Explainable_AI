@@ -32,8 +32,9 @@
       </div>
       <customize-overlay
         v-show="this.toggleCustomize"
-        @close="closeCustomizeModal"
-        @updateAttributes="updateCustomizationAttributes($event)"
+        :currentAttributes="requestBody.attributes"
+        @close="toggleCustomize = false"
+        @apply="this.applyCustomization"
       />
       <filter-overlay v-show="this.toggleFilter" @close="closeFilterModal" />
       <div
@@ -79,29 +80,17 @@ export default {
     this.loadMoreRows();
   },
   methods: {
-    updateCustomizationAttributes(attributes) {
+    applyCustomization(attributes) {
       this.requestBody.attributes = attributes;
       this.sendTableRequest();
       this.toggleCustomize = false;
-    },
-    showCustomizeModal() {
-      this.toggleCustomize = true;
-    },
-    closeCustomizeModal() {
-      this.toggleCustomize = false;
-    },
-
-    showFilterModal() {
-      this.toggleFilter = true;
-    },
-    closeFilterModal() {
-      this.toggleFilter = false;
     },
     scrollUp() {
       window.scrollTo(0, 0);
     },
     sendTableRequest() {
       const axios = require("axios");
+      console.log(this.requestBody);
       axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
         this.tableRows = response.data;
       });

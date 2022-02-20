@@ -1,51 +1,42 @@
 <template>
   <div>
-    <button @click="this.clicked = !this.clicked"
-    v-if="this.clicked == false"
+    <button
+      v-if="!this.selected"
       class="
         btn
-        border
-        border-gray-light
+        border border-gray-light
         hover:border-gray
-        bg-gray-light 
+        bg-gray-light
         hover:bg-gray
         px-2
         py-1
         rounded-md
-        text-sm
       "
     >
-    <slot />
-      </button>
-    <button @click="this.clicked = !this.clicked"
-    v-else-if="this.clicked == true"
+      <slot />
+    </button>
+    <button
+      v-else
       class="
         btn
-        bg-gray-light 
-        hover:bg-gray 
+        bg-gray-light
+        hover:bg-gray
         text-primary-light
         px-2
         py-1
         rounded-md
-        text-sm
-        border
-        border-primary-light
+        border border-primary-light
       "
     >
-    <slot />
-      </button>
-    
+      <slot />
+    </button>
   </div>
 </template>
 
 <script>
 export default {
-
-
-  data() {
-    return {
-       clicked: false
-    }
-  }
-}
+  props: {
+    selected: Boolean,
+  },
+};
 </script>
