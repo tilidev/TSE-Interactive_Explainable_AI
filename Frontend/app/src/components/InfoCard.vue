@@ -194,20 +194,7 @@ export default {
       this.$emit("apply-modification", modification);
     },
   },
-  computed: {
-    attributeCategories() {
-      const attrCat = {
-        financial: [],
-        personal: [],
-        loan: [],
-        other: [],
-      };
-      for (const attr of Object.keys(this.attributeData.categories)) {
-        attrCat[this.attributeData.categories[attr]].push(attr);
-      }
-      return attrCat;
-    },
-  },
+  inject: ["attributeCategories"],
 };
 </script>
 

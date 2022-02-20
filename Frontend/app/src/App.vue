@@ -63,6 +63,19 @@ export default {
       },
     };
   },
+  computed: {
+    attributeCategories() {
+      const attrCat = {
+        financial: [],
+        personal: [],
+        loan: [],
+      };
+      for (const attr of Object.keys(this.attributeData.categories)) {
+        attrCat[this.attributeData.categories[attr]].push(attr);
+      }
+      return attrCat;
+    },
+  },
   mounted() {
     this.sendAttributeRequest();
   },
@@ -87,6 +100,7 @@ export default {
   provide() {
     return {
       attributeData: this.attributeData,
+      attributeCategories: this.attributeCategories,
       apiUrl: this.apiUrl,
     };
   },
