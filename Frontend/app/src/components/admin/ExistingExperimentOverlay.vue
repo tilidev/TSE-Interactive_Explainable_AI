@@ -15,7 +15,7 @@
       <div class="relative mx-auto w-auto max-w-2xl">
         <div class="bg-white w-100 rounded-lg shadow-md p-4">
           <div class="flex mb-8 justify-between">
-            <h4 class="text-lg font-bold">
+            <h4 class="text-xl font-bold">
               {{ experimentName }}
             </h4>
             <button
@@ -28,22 +28,26 @@
           <div
             class="
               grid grid-cols-auto grid-flow-col
-              gap-x-8 gap-y-2
+              gap-x-8 gap-y-8
               auto-cols-max auto-rows-auto
             "
           >
-            <div class="col-start-1 col-span-2 ">Description</div>
+            <div class="col-start-1 col-span-2 font-bold">Description</div>
             <div class="col-start-3 col-span-3">{{experimentData.description}}</div>
-            <div class="col-start-1 col-span-2 ">Applications the user is shown</div>
+            <div class="col-start-1 col-span-2 font-bold">Applications the user is shown</div>
             <div class="col-start-3 col-span-3">{{experimentData.loan_ids}}</div>
-            <div class="col-start-1 col-span-2 ">Modification enabled</div>
+            <div class="col-start-1 col-span-2 font-bold">Modification enabled</div>
             <div class="col-start-3 col-span-3 capitalize">{{experimentData.ismodify}}</div>
-            <div class="col-start-1 col-span-2 ">What-if analysis enabled</div>
+            <div class="col-start-1 col-span-2 font-bold">What-if analysis enabled</div>
             <div class="col-start-3 col-span-3 capitalize">{{experimentData.iswhatif}}</div>
-            <div class="col-start-1 col-span-2 " v-if="experimentData.survey_link">Survey link</div>
+            <div class="col-start-1 col-span-2 font-bold" v-if="experimentData.survey_link">Survey link</div>
             <a class="col-start-3 col-span-3" :href="experimentData.survey_link" v-if="experimentData.survey_link"></a>
-            <div class="col-start-1 col-span-2 ">Experiment link</div>
+            <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
             <a class="col-start-3 col-span-3 text-primary-light" :href="experimentLink">{{experimentLink}}</a>
+            <div class="col-start-1 col-span-5 flex gap-x-4">
+              <default-button>Download results (CSV)</default-button>
+              <default-button>Download results (JSON)</default-button>
+            </div>
           </div>
         </div>
       </div>
@@ -52,7 +56,9 @@
 </template>
 
 <script>
+import DefaultButton from '../buttons/DefaultButton.vue';
 export default {
+  components: {DefaultButton  },
   mounted() {
     this.sendExperimentRequest();
   },
