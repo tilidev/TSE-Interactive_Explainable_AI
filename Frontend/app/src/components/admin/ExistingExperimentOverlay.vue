@@ -61,13 +61,13 @@
               Survey link
             </div>
             <a
-              class="col-start-3 col-span-3"
+              class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentData.survey_link"
               v-if="experimentData.survey_link"
             ></a>
             <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
             <a
-              class="col-start-3 col-span-3 text-primary-light"
+              class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentLink"
               >{{ experimentLink }}</a
             >
