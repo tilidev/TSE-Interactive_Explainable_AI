@@ -33,21 +33,50 @@
             "
           >
             <div class="col-start-1 col-span-2 font-bold">Description</div>
-            <div class="col-start-3 col-span-3">{{experimentData.description}}</div>
-            <div class="col-start-1 col-span-2 font-bold">Applications the user is shown</div>
-            <div class="col-start-3 col-span-3">{{experimentData.loan_ids}}</div>
-            <div class="col-start-1 col-span-2 font-bold">Modification enabled</div>
-            <div class="col-start-3 col-span-3 capitalize">{{experimentData.ismodify}}</div>
-            <div class="col-start-1 col-span-2 font-bold">What-if analysis enabled</div>
-            <div class="col-start-3 col-span-3 capitalize">{{experimentData.iswhatif}}</div>
-            <div class="col-start-1 col-span-2 font-bold" v-if="experimentData.survey_link">Survey link</div>
-            <a class="col-start-3 col-span-3" :href="experimentData.survey_link" v-if="experimentData.survey_link"></a>
-            <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
-            <a class="col-start-3 col-span-3 text-primary-light" :href="experimentLink">{{experimentLink}}</a>
-            <div class="col-start-1 col-span-5 flex gap-x-4">
-              <default-button>Download results (CSV)</default-button>
-              <default-button>Download results (JSON)</default-button>
+            <div class="col-start-3 col-span-3">
+              {{ experimentData.description }}
             </div>
+            <div class="col-start-1 col-span-2 font-bold">
+              Applications the user is shown
+            </div>
+            <div class="col-start-3 col-span-3">
+              {{ experimentData.loan_ids }}
+            </div>
+            <div class="col-start-1 col-span-2 font-bold">
+              Modification enabled
+            </div>
+            <div class="col-start-3 col-span-3 capitalize">
+              {{ experimentData.ismodify }}
+            </div>
+            <div class="col-start-1 col-span-2 font-bold">
+              What-if analysis enabled
+            </div>
+            <div class="col-start-3 col-span-3 capitalize">
+              {{ experimentData.iswhatif }}
+            </div>
+            <div
+              class="col-start-1 col-span-2 font-bold"
+              v-if="experimentData.survey_link"
+            >
+              Survey link
+            </div>
+            <a
+              class="col-start-3 col-span-3"
+              :href="experimentData.survey_link"
+              v-if="experimentData.survey_link"
+            ></a>
+            <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
+            <a
+              class="col-start-3 col-span-3 text-primary-light"
+              :href="experimentLink"
+              >{{ experimentLink }}</a
+            >
+            <default-button class="col-start-1 col-span-2"
+              >Download results (CSV)</default-button
+            >
+            <default-button class="col-start-3 col-span-2"
+              >Download results (JSON)</default-button
+            >
           </div>
         </div>
       </div>
@@ -56,36 +85,41 @@
 </template>
 
 <script>
-import DefaultButton from '../buttons/DefaultButton.vue';
+import DefaultButton from "../buttons/DefaultButton.vue";
 export default {
-  components: {DefaultButton  },
+  components: { DefaultButton },
   mounted() {
     this.sendExperimentRequest();
   },
   data() {
     return {
       experimentData: {},
-    }
+    };
   },
   computed: {
     experimentLink() {
-      return window.location.href.replace("admin", "") + "experiments/" + this.experimentName;
-    }
+      return (
+        window.location.href.replace("admin", "") +
+        "experiments/" +
+        this.experimentName
+      );
+    },
   },
   methods: {
     sendExperimentRequest() {
       const axios = require("axios");
-      axios.get(this.apiUrl + "experiment?name=" + this.experimentName).then((response) => {
-        this.experimentData = response.data;
-        console.log(this.experimentData);
-
-      });
+      axios
+        .get(this.apiUrl + "experiment?name=" + this.experimentName)
+        .then((response) => {
+          this.experimentData = response.data;
+          console.log(this.experimentData);
+        });
     },
   },
   props: {
     experimentName: String,
   },
-  inject: ["apiUrl"]
+  inject: ["apiUrl"],
 };
 </script>
 
