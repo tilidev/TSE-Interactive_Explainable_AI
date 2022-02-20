@@ -55,13 +55,14 @@ export default {
   },
   methods: {
     closeOverlay() {
-      this.showExistingOverlay = '';
+      this.showExistingOverlay = "";
       this.showNewOverlay = false;
-      this.sendExperimentRequest;
+      this.sendExperimentRequest();
     },
     sendExperimentRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "experiment/all").then((response) => {
+        console.log(response.data);
         this.experimentList = response.data;
       });
     },
