@@ -183,6 +183,9 @@ export default {
   },
   inject: ["apiUrl"],
   components: { DefaultButton },
+  props: {
+    existingExperiments: Array
+  },
   methods: {
     getBorderStyling(attribute) {
       if (this.errorMessages[attribute]) {
@@ -225,6 +228,9 @@ export default {
       if (this.name.length > 100) {
         this.errorMessages.name =
           "Error, name can't be longer than 100 characters";
+      }
+      else if (this.existingExperiments.includes(this.name)) {
+        this.errorMessages.name = "Error, an experiment with this name already exists"
       }
       if (this.description.length > 500) {
         this.errorMessages.description =

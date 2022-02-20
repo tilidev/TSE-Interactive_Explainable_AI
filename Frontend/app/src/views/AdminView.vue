@@ -26,6 +26,7 @@
     ></existing-experiment-overlay>
     <new-experiment-overlay
       v-if="showNewOverlay"
+      :existingExperiments="experimentList"
       @close="showNewOverlay = false"
     >
     </new-experiment-overlay>
