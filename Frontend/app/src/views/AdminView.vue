@@ -4,7 +4,7 @@
     <h4 class="pb-4">Click on an experiment to see details</h4>
     <ul>
       <li
-        class="bg-primary text-white font-bold mb-1 p-2"
+        class="text-primary-light font-bold mb-1 cursor-pointer"
         @click="showExistingOverlay = experiment"
         v-for="experiment in experimentList"
         :key="experiment"
@@ -13,7 +13,7 @@
       </li>
     </ul>
     <default-button
-      class="mt-4"
+      class="mt-6"
       :color="'positive'"
       :hoverColor="'positive-dark'"
       @click="showNewOverlay = true"
@@ -21,13 +21,13 @@
     >
     <existing-experiment-overlay
       v-if="showExistingOverlay"
-      @close="showExistingOverlay = ''"
+      @close="closeOverlay"
       :experimentName="showExistingOverlay"
     ></existing-experiment-overlay>
     <new-experiment-overlay
       v-if="showNewOverlay"
       :existingExperiments="experimentList"
-      @close="showNewOverlay = false"
+      @close="closeOverlay"
     >
     </new-experiment-overlay>
   </div>
@@ -54,6 +54,11 @@ export default {
     };
   },
   methods: {
+    closeOverlay() {
+      this.showExistingOverlay = '';
+      this.showNewOverlay = false;
+      this.sendExperimentRequest;
+    },
     sendExperimentRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "experiment/all").then((response) => {
