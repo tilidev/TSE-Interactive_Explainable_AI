@@ -58,7 +58,6 @@ export default {
       const axios = require("axios");
       axios.get(this.apiUrl + "experiment/all").then((response) => {
         this.experimentList = response.data;
-        console.log(response.data);
       });
     },
   },
