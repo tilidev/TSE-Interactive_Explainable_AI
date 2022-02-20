@@ -12,7 +12,7 @@
         z-50
       "
     >
-      <div class="relative mx-auto w-auto max-w-2xl">
+      <div class="relative mx-auto w-auto">
         <div class="bg-white w-100 rounded-lg shadow-md p-4">
           <div class="flex mb-8 justify-between">
             <h4 class="text-xl font-bold">
@@ -74,9 +74,23 @@
             <default-button class="col-start-1 col-span-2"
               >Download results (CSV)</default-button
             >
-            <default-button class="col-start-3 col-span-2"
+            <default-button class="col-start-3 col-span-1"
               >Download results (JSON)</default-button
             >
+            <default-button
+              @click="resetExperiment()"
+              :color="'positive'"
+              :hoverColor="'positive-dark'"
+              class="col-start-4"
+              ><fa-icon icon="undo"></fa-icon
+            ></default-button>
+            <default-button
+              @click="deleteExperiment()"
+              :color="'negative'"
+              :hoverColor="'negative-dark'"
+              class="col-start-5"
+              ><fa-icon icon="trash"></fa-icon
+            ></default-button>
           </div>
         </div>
       </div>
@@ -106,6 +120,36 @@ export default {
     },
   },
   methods: {
+    resetExperiment() {
+      if (
+        confirm(
+          "This will reset the experiment and permanently delete all recorded answers. \n\nThis action can not be undone. \n\nAre you sure you wish to proceed?"
+        )
+      ) {
+        const axios = require("axios");
+        axios.post(
+          this.apiUrl +
+            "experiment/reset?experiment_name=" +
+            this.experimentName
+        );
+        this.sendExperimentRequest();
+      }
+    },
+    deleteExperiment() {
+      if (
+        confirm(
+          "This will permanently delete the experiment and all recorded answers. \n\nThis action can not be undone. \n\nAre you sure you wish to proceed?"
+        )
+      ) {
+        const axios = require("axios");
+        axios.post(
+          this.apiUrl +
+            "experiment/delete?experiment_name=" +
+            this.experimentName
+        );
+        this.$emit("close");
+      }
+    },
     sendExperimentRequest() {
       const axios = require("axios");
       axios
