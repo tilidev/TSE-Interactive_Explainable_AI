@@ -22,7 +22,8 @@
         >
           <div class="col-start-1 col-span-2 pt-2">Experiment name</div>
           <input
-            class="col-start-3 col-span-3 border rounded p-2"
+            class="col-start-3 col-span-3 rounded p-2"
+            :class="getBorderStyling('name')"
             v-model="name"
             placeholder="Name for the experiment"
           />
@@ -34,14 +35,8 @@
           <textarea
             placeholder="Describe your experiment"
             v-model="description"
-            class="
-              col-start-3 col-span-3
-              row-span-2
-              border
-              rounded
-              resize-none
-              p-2
-            "
+            :class="getBorderStyling('description')"
+            class="col-start-3 col-span-3 row-span-2 rounded resize-none p-2"
           ></textarea>
           <div class="col-start-1"></div>
           <div class="col-start-3 text-sm text-negative mb-2">
@@ -52,7 +47,8 @@
           </div>
           <textarea
             v-model="applications"
-            class="col-start-3 col-span-3 border rounded resize-none p-2"
+            class="col-start-3 col-span-3 rounded resize-none p-2"
+            :class="getBorderStyling('applications')"
             placeholder="IDs of the applications the user is shown, separated by comma (must be between 0 and 999)"
           ></textarea>
           <div class="col-start-1"></div>
@@ -71,7 +67,7 @@
                 name="modwhatif"
                 value="both"
               />
-              <label for="huey">Modification and What-if</label>
+              <label for="both">Modification and What-if</label>
             </span>
             <span class="space-x-2">
               <input
@@ -149,7 +145,8 @@
           <div class="col-start-1"></div>
           <input
             v-model="surveyLink"
-            class="col-start-3 col-span-3 border rounded p-2"
+            class="col-start-3 col-span-3 rounded p-2"
+            :class="getBorderStyling('surveyLink')"
             placeholder="URL to your survey"
           />
           <div class="col-start-3 text-sm text-negative mb-2">
@@ -187,6 +184,12 @@ export default {
   inject: ["apiUrl"],
   components: { DefaultButton },
   methods: {
+    getBorderStyling(attribute) {
+      if (this.errorMessages[attribute]) {
+        return "border-2 border-negative";
+      }
+      return "border";
+    },
     createExperiment() {
       const axios = require("axios");
       let requestBody = {};
@@ -203,16 +206,13 @@ export default {
       if (this.modwhatif === "both") {
         requestBody.ismodify = true;
         requestBody.iswhatif = true;
-      }
-      else if (this.modwhatif === "modonly") {
+      } else if (this.modwhatif === "modonly") {
         requestBody.ismodify = true;
       }
       requestBody.exp_type = this.explanation;
-      axios
-            .post(this.apiUrl + "experiment/creation", requestBody)
-            .then(() => {
-              this.$emit("close");
-            });
+      axios.post(this.apiUrl + "experiment/creation", requestBody).then(() => {
+        this.$emit("close");
+      });
     },
     validateInput() {
       this.errorMessages = {};
