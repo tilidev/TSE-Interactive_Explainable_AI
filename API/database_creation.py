@@ -19,5 +19,7 @@ c.execute(create_query_exp)
 con.commit()
 create_query_res = 'CREATE TABLE IF NOT EXISTS results (experiment_name TEXT, client_id INT, results JSON, PRIMARY KEY (experiment_name, client_id));'
 c.execute(create_query_res)
+create_query_cf = 'CREATE TABLE IF NOT EXISTS dice (instance_id INT PRIMARY KEY, counterfactuals JSON);'
+c.execute(create_query_cf)
 con.commit()
 con.close()
