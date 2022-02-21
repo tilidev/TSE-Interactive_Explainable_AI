@@ -48,17 +48,35 @@
           ></dropdown-menu>
         </div>
       </div>
-      <div class="flex flex-col space-y-6">
-        <div class="text-lg">AI Recommendation</div>
-        <recommendation-vis
-          class=""
-          :recommendation="instanceInfo.NN_recommendation"
-        />
-        <confidence-vis
-          class=""
-          :confidence="instanceInfo.NN_confidence"
-          :explicit="true"
-        />
+      <div class="flex flex-col justify-between">
+        <div class="flex flex-col space-y-4">
+          <div class="text-lg">AI Recommendation</div>
+          <div class="flex space-x-4">
+            <recommendation-vis
+              class=""
+              :recommendation="instanceInfo.NN_recommendation"
+            />
+            <confidence-vis
+              class=""
+              :confidence="instanceInfo.NN_confidence"
+              :explicit="true"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col space-y-4" v-if="newPrediction != null">
+          <div class="text-lg">New Recommendation</div>
+          <div class="flex space-x-4">
+            <recommendation-vis
+              class=""
+              :recommendation="newPrediction.NN_recommendation"
+            />
+            <confidence-vis
+              class=""
+              :confidence="newPrediction.NN_confidence"
+              :explicit="true"
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class="flex">
@@ -96,6 +114,7 @@ export default {
     return {
       dropdownAttribute: "",
       modificationEnabled: false,
+      newPrediction: null,
     };
   },
   components: {
@@ -112,8 +131,20 @@ export default {
     modifiedInstance: Object,
   },
   methods: {
+    sendPredictionRequest() {
+      // eslint-disable-next-line no-unused-vars
+      const { id, NN_recommendation, NN_confidence, ...reducedInstance } =
+        this.modifiedInstance;
+      const axios = require("axios");
+      axios
+        .post(this.apiUrl + "instance/predict", reducedInstance)
+        .then((response) => {
+          this.newPrediction = response.data;
+        });
+    },
     resetInstance() {
       this.modificationEnabled = false;
+      this.newPrediction = null;
       this.$emit("reset-instance");
     },
     getValueStyling(attribute) {
@@ -126,9 +157,10 @@ export default {
       const modification = { attribute: this.dropdownAttribute, value: value };
       this.dropdownAttribute = "";
       this.$emit("apply-modification", modification);
+      this.sendPredictionRequest();
     },
   },
-  inject: ["attributeCategories"],
+  inject: ["attributeCategories", "apiUrl"],
 };
 </script>
 
