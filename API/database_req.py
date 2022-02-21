@@ -256,10 +256,8 @@ def delete_exp(con, exp_name: str):
         c.execute(delete_query)
         con.commit()
 
-    
 
-def cf_to_db():
-    con = sql.connect('database.db')
+def cf_to_db(con):
     c = con.cursor()
     with open('cfs_0_to_99.json','r') as file:
         cf = json.load(file)
@@ -284,6 +282,19 @@ def cf_to_db():
         print(query)
         c.execute(query)
     con.commit()
+    con.close()
+
+def get_cf(con, instance_id: int):
+    query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
+    c = con.cursor()
+    results = c.execute(query).fetchall()
+    result = results[0]
+    res_str = result[0]
+    res_json = json.loads(res_str)
+    cf_list = res_json["counterfactuals"]
+    print(cf_list)
+    return cf_list
+
 
 
 
