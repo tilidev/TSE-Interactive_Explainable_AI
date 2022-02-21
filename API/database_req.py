@@ -258,6 +258,32 @@ def delete_exp(con, exp_name: str):
 
     
 
+def cf_to_db():
+    con = sql.connect('database.db')
+    c = con.cursor()
+    with open('cfs_0_to_99.json','r') as file:
+        cf = json.load(file)
+    print(cf.keys())
+    for key in cf.keys():
+        print(key)
+        instance = cf[key]
+        list_of_cf = instance[0]
+        list_to_return = []
+        d = {}
+        for single_cf in list_of_cf:
+            instance_dict = {}
+            #TODO lime-exp-mapping iwi umbennen damit sinnvoll
+            for index in lime_exp_mapping.keys():
+                instance_dict[lime_exp_mapping[index]] = single_cf[index]
+                instance_dict['NN_Recommendation'] = single_cf[18]
+            list_to_return.append(instance_dict)
+            #print(single_cf)
+        d["counterfactuals"] = list_to_return
+        #query = 'INSERT INTO dice (instance_id, counterfactuals) VALUES(' + str(key) + ', "' + json.dumps(d) + '");'
+        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
+        print(query)
+        c.execute(query)
+    con.commit()
 
 
 
