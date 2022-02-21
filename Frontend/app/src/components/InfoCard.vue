@@ -1,131 +1,65 @@
 <template>
   <div class="bg-white shadow-md px-8 py-4 text-left">
     <h2 class="font-bold text-lg pb-4">Current Loan Application</h2>
-    <div class="grid grid-cols-auto grid-flow-col text-sm">
-      <div class="col-span-2 col-start-1 text-lg">Financial</div>
+    <div class="flex space-x-8 text-sm justify-between">
       <div
-        class="col-start-1 text-primary-light font-bold"
-        v-for="attribute in attributeCategories.financial"
-        :key="attribute"
+        class="grid grid-cols-auto grid-flow-col gap-x-8"
+        v-for="category in Object.keys(attributeCategories)"
+        :key="category"
       >
-        {{ attributeData.labels[attribute] }}:
+        <div class="col-span-2 col-start-1 text-lg capitalize">
+          {{ category }}
+        </div>
+        <div
+          class="col-start-1 text-primary-light font-bold"
+          v-for="attribute in attributeCategories[category]"
+          :key="attribute"
+        >
+          {{ attributeData.labels[attribute] }}:
+        </div>
+        <div
+          class="col-start-2 capitalize"
+          v-for="attribute in attributeCategories[category]"
+          :key="attribute"
+        >
+          <span :class="getValueStyling(attribute)">
+            {{ modifiedInstance[attribute] }}
+          </span>
+          <fa-icon
+            v-if="modificationEnabled && dropdownAttribute != attribute"
+            class="ml-2 cursor-pointer"
+            icon="caret-down"
+            @click="dropdownAttribute = attribute"
+          />
+          <fa-icon
+            v-if="modificationEnabled && dropdownAttribute == attribute"
+            class="ml-2 cursor-pointer"
+            icon="caret-up"
+            @click="dropdownAttribute = ''"
+          />
+          <dropdown-menu
+            class="absolute mt-1"
+            v-if="attribute == dropdownAttribute"
+            :originalValue="instanceInfo[attribute]"
+            :selectedValue="modifiedInstance[attribute]"
+            :attribute="attribute"
+            @apply-value="applyValue"
+            @cancel="dropdownAttribute = ''"
+          ></dropdown-menu>
+        </div>
       </div>
-      <div
-        class="col-start-2 capitalize"
-        v-for="attribute in attributeCategories.financial"
-        :key="attribute"
-      >
-        <span :class="getValueStyling(attribute)">
-          {{ modifiedInstance[attribute] }}
-        </span>
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-down"
-          @click="dropdownAttribute = attribute"
+      <div class="flex flex-col space-y-6">
+        <div class="text-lg">AI Recommendation</div>
+        <recommendation-vis
+          class=""
+          :recommendation="instanceInfo.NN_recommendation"
         />
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-up"
-          @click="dropdownAttribute = ''"
+        <confidence-vis
+          class=""
+          :confidence="instanceInfo.NN_confidence"
+          :explicit="true"
         />
-        <dropdown-menu
-          class="absolute mt-1"
-          v-if="attribute == dropdownAttribute"
-          :originalValue="instanceInfo[attribute]"
-          :selectedValue="modifiedInstance[attribute]"
-          :attribute="attribute"
-          @apply-value="applyValue"
-          @cancel="dropdownAttribute = ''"
-        ></dropdown-menu>
       </div>
-      <div class="col-span-2 col-start-3 text-lg">Personal</div>
-      <div
-        class="col-start-3 text-primary-light font-bold font-bold"
-        v-for="attribute in attributeCategories.personal"
-        :key="attribute"
-      >
-        {{ attributeData.labels[attribute] }}:
-      </div>
-      <div
-        class="col-start-4 capitalize"
-        v-for="attribute in attributeCategories.personal"
-        :key="attribute"
-      >
-        <span :class="getValueStyling(attribute)">
-          {{ modifiedInstance[attribute] }}
-        </span>
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-down"
-          @click="dropdownAttribute = attribute"
-        />
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-up"
-          @click="dropdownAttribute = ''"
-        />
-        <dropdown-menu
-          class="absolute mt-1"
-          v-if="attribute == dropdownAttribute"
-          :originalValue="instanceInfo[attribute]"
-          :selectedValue="modifiedInstance[attribute]"
-          :attribute="attribute"
-          @apply-value="applyValue"
-          @cancel="dropdownAttribute = ''"
-        ></dropdown-menu>
-      </div>
-      <div class="col-span-2 col-start-5 text-lg">Loan-specific</div>
-      <div
-        class="col-start-5 text-primary-light font-bold"
-        v-for="attribute in attributeCategories.loan"
-        :key="attribute"
-      >
-        {{ attributeData.labels[attribute] }}:
-      </div>
-      <div
-        class="col-start-6 capitalize"
-        v-for="attribute in attributeCategories.loan"
-        :key="attribute"
-      >
-        <span :class="getValueStyling(attribute)">
-          {{ modifiedInstance[attribute] }}
-        </span>
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute != attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-down"
-          @click="dropdownAttribute = attribute"
-        />
-        <fa-icon
-          v-if="modificationEnabled && dropdownAttribute == attribute"
-          class="ml-2 cursor-pointer"
-          icon="caret-up"
-          @click="dropdownAttribute = ''"
-        />
-        <dropdown-menu
-          class="absolute mt-1"
-          v-if="attribute == dropdownAttribute"
-          :originalValue="instanceInfo[attribute]"
-          :selectedValue="modifiedInstance[attribute]"
-          :attribute="attribute"
-          @apply-value="applyValue"
-          @cancel="dropdownAttribute = ''"
-        ></dropdown-menu>
-      </div>
-      <div class="col-span- col-start-7 pb-2 text-lg">AI Recommendation</div>
-      <recommendation-vis
-        class="col-start-7 row-span-2"
-        :recommendation="instanceInfo.NN_recommendation"
-      />
-      <confidence-vis
-        class="col-start-7 row-span-2"
-        :confidence="instanceInfo.NN_confidence"
-        :explicit="true"
-      />
     </div>
     <div class="flex">
       <default-button
