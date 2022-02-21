@@ -64,6 +64,7 @@ row_limit = 20
 
 # strings to use throughout the entire code (important for coherence in response-key names)
 attr_name = "attribute"
+attr_name_abr = "attr_name"
 type = "type"
 values = "values"
 categorical = "categorical"
@@ -91,6 +92,11 @@ href = "href"
 lime_result = "lime_result"
 display_name = "display_name"
 sort_ascending = "sort_ascending"
+counterfactuals = "counterfactuals"
+type = "type"
+values = "values"
+db_path = "database.db"
+csv_path = "results.csv"
 
 attribute_constraints = [
     {

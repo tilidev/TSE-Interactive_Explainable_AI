@@ -55,7 +55,7 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     c = con.cursor()
     view_query = 'CREATE VIEW custom AS '
     #add customize values
-    chosen = 'id'
+    chosen = AttributeNames.ident.value
     if len(attributes) > 0:
         chosen += ','
         for i in range(0,len(attributes)):
@@ -90,10 +90,10 @@ def create_filter_query(filters):
     filter_str = " WHERE "
     for i in range(0,len(filters)):
             filter_dict = vars(filters[i])
-            attribute = filter_dict['attr_name']
-            if ("values" in filter_dict):
+            attribute = filter_dict[attr_name_abr]
+            if (values in filter_dict):
                 #categorical filter
-                selected = filter_dict["values"]
+                selected = filter_dict[values]
                 filter_str += "("
                 for j in range(0,len(selected)):
                     filter_str += attribute + " = " + "'"+ selected[j] + "'"
@@ -102,7 +102,7 @@ def create_filter_query(filters):
                 filter_str += ")"
             else:
                 #numerical
-                filter_str += "(" + attribute + " >= " + str(filter_dict["lower_bound"]) + " AND " + attribute + " <= " + str(filter_dict["upper_bound"]) + ")"
+                filter_str += "(" + attribute + " >= " + str(filter_dict[lower_bound]) + " AND " + attribute + " <= " + str(filter_dict[upper_bound]) + ")"
             if i < len(filters) - 1:
                 filter_str += " AND "
     return filter_str
@@ -112,17 +112,17 @@ def create_order_query(sort:str):
     """Creates a string for the ordering query in sql for a given attribute name as a string"""
     query = '(ORDER BY '
     attr_dict = {}
-    if (sort == 'id'):
+    if (sort == AttributeNames.ident.value):
         query += sort 
         return query
     for i in attribute_constraints:
-        if i['attribute'] == sort:
+        if i[attr_name] == sort:
             attr_dict = i
             break
-    if (attr_dict['type'] == 'categorical'):
+    if (attr_dict[type] == categorical):
         query += 'CASE'
         count = 1
-        for i in attr_dict['values']:
+        for i in attr_dict[values]:
             query += " WHEN "+ sort + " = '" + i + "' THEN " + str(count)
             count += 1
         query += ' END'
@@ -169,7 +169,6 @@ def create_id(con, exp_name:str):
     query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
     ids = c.execute(query_existing_id).fetchall()
-    print(len(ids))
     return_id = 0
     #TODO reicht es auch auf letztes tupel zuzugreifen?
     if len(ids) > 0:
@@ -189,16 +188,11 @@ def create_id(con, exp_name:str):
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
     dict = {}
-    results_list = []
     for res in results:
         dict[res.loan_id] = res.json()
-    print(dict)
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
-    #query = 'UPDATE results SET results = ' + json_str + ' WHERE experiment_name = "' + exp_name + '" AND client_id = ' + str(client_id)
     query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
-
-    print(query)
     c = con.cursor()
     c.execute(query)
     con.commit()
@@ -231,7 +225,7 @@ def export_results_to(con, format):
             res['results'] = results_list
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
-        df.to_csv('database.csv', index=False)
+        df.to_csv(csv_path, index=False)
     return result_json
 
     
@@ -257,13 +251,11 @@ def delete_exp(con, exp_name: str):
         con.commit()
 
 
-def cf_to_db(con):
+def cf_to_db(con, path:str):
     c = con.cursor()
-    with open('cfs_0_to_99.json','r') as file:
+    with open(path,'r') as file:
         cf = json.load(file)
-    print(cf.keys())
     for key in cf.keys():
-        print(key)
         instance = cf[key]
         list_of_cf = instance[0]
         list_to_return = []
@@ -273,13 +265,10 @@ def cf_to_db(con):
             #TODO lime-exp-mapping iwi umbennen damit sinnvoll
             for index in lime_exp_mapping.keys():
                 instance_dict[lime_exp_mapping[index]] = single_cf[index]
-                instance_dict['NN_Recommendation'] = single_cf[18]
+            instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
             list_to_return.append(instance_dict)
-            #print(single_cf)
-        d["counterfactuals"] = list_to_return
-        #query = 'INSERT INTO dice (instance_id, counterfactuals) VALUES(' + str(key) + ', "' + json.dumps(d) + '");'
+        d[counterfactuals] = list_to_return
         query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
-        print(query)
         c.execute(query)
     con.commit()
     con.close()
@@ -291,8 +280,7 @@ def get_cf(con, instance_id: int):
     result = results[0]
     res_str = result[0]
     res_json = json.loads(res_str)
-    cf_list = res_json["counterfactuals"]
-    print(cf_list)
+    cf_list = res_json[counterfactuals]
     return cf_list
 
 

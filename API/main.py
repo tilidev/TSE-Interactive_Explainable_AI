@@ -78,12 +78,12 @@ app.add_middleware(
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True, tags=["Dataset"]) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
-    con = create_connection("database.db")
+    con = create_connection(db_path)
     attributes = [str]
     for i in request.attributes:
         attributes.append(i.value)
-    attributes.append("NN_recommendation")
-    attributes.append("NN_confidence")
+    attributes.append(AttributeNames.NN_recommendation.value)
+    attributes.append(AttributeNames.NN_confidence.value)
     attributes = attributes[1:] # TODO Keep this in mind
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
@@ -243,45 +243,45 @@ async def create_experiment(exp_info : ExperimentInformation):
             #TODO should some error be thrown?
             return
     exp = exp_info.json()
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     exp_creation(con, exp_info.experiment_name, exp)
 
 @app.get("/experiment/all", response_model=List[str], tags=["Experimentation"])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return get_all_exp(con) 
 
 @app.get("/experiment", response_model=ExperimentInformation, tags=["Experimentation"])
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return get_exp_info(con, name)
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return create_id(con, gen.experiment_name)
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results(format: ExportFormat):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return export_results_to(con, format.value)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     delete_exp(con, experiment_name)
     # TODO what would be the best response model
 
