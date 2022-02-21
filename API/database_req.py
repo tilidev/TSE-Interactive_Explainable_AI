@@ -206,6 +206,7 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 #export results
 def export_results_to(con, format):
     query = 'SELECT * FROM results'
+    '''
     if format == ExportFormat.comma_separated.value:
         #vorschlag von stackoverflow
         #TODO threading?
@@ -215,20 +216,23 @@ def export_results_to(con, format):
         db_df.to_csv('database.csv', index=False)
         file = open('database.csv')
         return file
-    elif format == ExportFormat.js_object_notation.value:
-        con.row_factory = sql.Row
-        c = con.cursor()
-        results = c.execute(query).fetchall()
-        result = json.dumps([dict(res) for res in results])
-        result_json = json.loads(result)
-        for res in result_json:
-            results_list = []
-            results = json.loads(res['results'])
-            print(results)
-            for key in results.keys():
-                results_list.append(json.loads(results[key]))
-                res['results'] = results_list
-        return result_json
+    '''
+    con.row_factory = sql.Row
+    c = con.cursor()
+    results = c.execute(query).fetchall()
+    result = json.dumps([dict(res) for res in results])
+    result_json = json.loads(result)
+    for res in result_json:
+        results_list = []
+        results = json.loads(res['results'])
+        print(results)
+        for key in results.keys():
+            results_list.append(json.loads(results[key]))
+            res['results'] = results_list
+    if format == ExportFormat.comma_separated.value:
+        df = pd.DataFrame(result_json)
+        df.to_csv('database.csv', index=False)
+    return result_json
 
     
 
