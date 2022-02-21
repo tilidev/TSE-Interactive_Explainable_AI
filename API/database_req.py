@@ -189,7 +189,7 @@ def create_id(con, exp_name:str):
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
     dict = {}
-    #results_list = []
+    results_list = []
     for res in results:
         dict[res.loan_id] = res.json()
     print(dict)
@@ -221,7 +221,13 @@ def export_results_to(con, format):
         results = c.execute(query).fetchall()
         result = json.dumps([dict(res) for res in results])
         result_json = json.loads(result)
-        print(result_json)
+        for res in result_json:
+            results_list = []
+            results = json.loads(res['results'])
+            print(results)
+            for key in results.keys():
+                results_list.append(json.loads(results[key]))
+                res['results'] = results_list
         return result_json
 
     
