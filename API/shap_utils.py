@@ -56,7 +56,7 @@ class ShapHelperV2: # TODO load model only once for each process (pass it to the
         
         return predict_fn
     
-    def please_work(self, X): # TODO rename
+    def predict_shap(self, X): # TODO rename
         X_df = pd.DataFrame(X.reshape((-1, 18)), columns=self.X_train.columns)
         X_transformed = self.preprocessor.transform(X_df).toarray()
         result = self.model.predict(X_transformed).flatten()

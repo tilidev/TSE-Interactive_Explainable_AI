@@ -41,7 +41,7 @@ def explanation_worker(in_queue : Queue, res_out : dict):
     from shap_utils import ShapHelperV2
     sh = ShapHelperV2()
     sh.prepare_shap()
-    pred_fn = sh.please_work #TODO rename :)
+    pred_fn = sh.predict_shap #TODO rename :)
 
 
     shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
