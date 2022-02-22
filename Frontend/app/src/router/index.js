@@ -4,6 +4,9 @@ import DatasetExplorer from "../views/DatasetExplorer.vue";
 import InstancePage from "../views/InstancePage.vue";
 import ExperimentPage from "../views/ExperimentPage.vue"
 import TreeMapTestView from "../views/TreeMapTestView.vue"
+import TreeMapTestView2 from "../views/TreeMapTestView2.vue"
+import TreeMapTestView3 from "../views/TreeMapTestView3.vue"
+import TreeMapTestView4 from "../views/TreeMapTestView4.vue"
 
 const routes = [
   {
@@ -33,7 +36,23 @@ const routes = [
     path: "/treemap",
     name: "TreeMapTestView",
     component: TreeMapTestView,
+  },
+  {
+    path: "/treemap2",
+    name: "TreeMapTestView2",
+    component: TreeMapTestView2,
+  },
+  {
+    path: "/treemap3",
+    name: "TreeMapTestView3",
+    component: TreeMapTestView3,
+  },
+  {
+    path: "/treemap4",
+    name: "TreeMapTestView4",
+    component: TreeMapTestView4,
   }
+
 ];
 
 const router = createRouter({
