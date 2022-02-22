@@ -31,12 +31,13 @@
         >
       </div>
       <customize-overlay
-        v-show="this.toggleCustomize"
+        v-if="this.toggleCustomize"
         :currentAttributes="requestBody.attributes"
         @close="toggleCustomize = false"
         @apply="this.applyCustomization"
       />
-      <filter-overlay v-show="this.toggleFilter" @close="closeFilterModal" />
+      <filter-overlay v-if="this.toggleFilter" @update-filter="updateFilter" @close="toggleFilter = false" :currentFilters="requestBody.filter"
+       />
       <div
         v-if="toggleCustomize || toggleFilter"
         class="absolute inset-0 z-40 opacity-25 bg-black"
@@ -80,6 +81,11 @@ export default {
     this.loadMoreRows();
   },
   methods: {
+    updateFilter(newFilter) {
+      this.requestBody.filter = newFilter;
+      this.scrollUp();
+      this.sendTableRequest();
+    },
     applyCustomization(attributes) {
       this.requestBody.attributes = attributes;
       this.sendTableRequest();
