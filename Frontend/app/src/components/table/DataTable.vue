@@ -9,7 +9,9 @@
             :descriptions="attributeData.descriptions"
             :sort_by="optionsData.sort_by"
             :desc="optionsData.desc"
-            :attributes="optionsData.attributes"
+            :attributes="
+              tableRows[0] ? Object.keys(tableRows[0]) : []
+            "
           />
         </thead>
         <tbody class="divide-gray divide-y">
@@ -24,6 +26,7 @@
 import TableHeader from "./TableHeader.vue";
 import TableRow from "./TableRow.vue";
 export default {
+  mounted() {},
   props: {
     tableRows: Array,
     attributeData: Object,

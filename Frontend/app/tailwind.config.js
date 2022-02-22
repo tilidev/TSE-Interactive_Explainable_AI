@@ -12,11 +12,15 @@ module.exports = {
         'float' : '0 6px 10px rgb(0 0 0 / 0.3)' // For floating action buttons
       },
       colors: {
+        'modified': '#F9A825', //Color that indicates that an item/value has been modified
         'primary': '#283252', // Primary accent color, currently blue
+        'primary-light' : '#6578b4',
         'primary-dark' : '#050F2D', // Used for hovering over a button
         'positive': '#16C784', // Green, used to communicate approval
+        'positive-dark' : '#129f6a',
         'positive-light' : '#ABE2AB', // Lighter version of positive, should be used in table & charts
         'negative' : '#EA3943', // Red, used to communicate rejection
+        'negative-dark' : '#bb2e36',
         'negative-light' : '#FF8888', // Lighter version of negative, should be used in table & charts
         'gray' : '#DFDFDF', // Used in table header
         'gray-light' : '#F2F2F2', // Used for background in table rows & chosen loan application section

@@ -1,35 +1,45 @@
 <template>
-  <div class="mx-8">
+  <div>
     <info-card
       :instanceInfo="instanceInfo"
+      :modifiedInstance="modifiedInstance"
       :attributeData="attributeData"
+      :modifiable="true"
+      @apply-modification="applyModification"
+      @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
+    <dice-explanation :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
   </div>
 </template>
 
 <script>
 import InfoCard from "../components/InfoCard.vue";
+import DiceExplanation from "../components/explanations/DiceExplanation.vue"
 
 export default {
-  mounted() {
-    this.sendInstanceRequest();
-  },
   data() {
     return {
-      instanceInfo: {},
-      id: this.$route.params.id,
+      modifiedInstance: {},
     };
   },
-  components: { InfoCard },
+  components: { InfoCard, DiceExplanation },
   methods: {
-    sendInstanceRequest() {
-      const axios = require("axios");
-      axios.get(this.apiUrl + "instance/" + this.id).then((response) => {
-        this.instanceInfo = response.data;
-      });
+    applyModification(modification) {
+      this.modifiedInstance[modification["attribute"]] = modification["value"];
     },
   },
-  inject: ["apiUrl", "attributeData"],
+  watch: {
+    instanceInfo(newInstance) {
+      this.modifiedInstance = Object.assign({}, newInstance)
+    } 
+  },
+  inject: ["attributeData"],
+  props: {
+    instanceInfo : {
+      type: Object,
+      required: true,
+    },
+  }
 };
 </script>
 

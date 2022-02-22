@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <div>
     <div
       v-if="!isAtPageTop"
       class="
@@ -21,21 +21,48 @@
         @click="scrollUp"
       />
     </div>
+    <div>
+      <div class="flex flex-row-reverse pr-20 gap-x-4 pb-4">
+        <outline-button @click="toggleCustomize = !toggleCustomize"
+          ><fa-icon icon="table" class="mr-2" />Customize</outline-button
+        >
+        <outline-button @click="toggleFilter = !toggleFilter"
+          ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
+        >
+      </div>
+      <customize-overlay
+        v-if="this.toggleCustomize"
+        :currentAttributes="requestBody.attributes"
+        @close="toggleCustomize = false"
+        @apply="this.applyCustomization"
+      />
+      <filter-overlay v-if="this.toggleFilter" @update-filter="updateFilter" @close="toggleFilter = false" :currentFilters="requestBody.filter"
+       />
+      <div
+        v-if="toggleCustomize || toggleFilter"
+        class="absolute inset-0 z-40 opacity-25 bg-black"
+      ></div>
+    </div>
     <data-table
       @apply-sorting="applySorting"
       :tableRows="tableRows"
       :attributeData="attributeData"
       :optionsData="requestBody"
     />
-  </span>
+  </div>
 </template>
 
 <script>
 import DataTable from "../components/table/DataTable.vue";
+import OutlineButton from "../components/buttons/OutlineButton.vue";
+import FilterOverlay from "../components/overlays/FilterOverlay.vue";
+import CustomizeOverlay from "../components/overlays/CustomizeOverlay.vue";
 
 export default {
   data() {
     return {
+      toggleCustomize: false,
+      toggleFilter: false,
       isAtPageTop: true,
       tableRows: [],
       requestBody: {
@@ -54,11 +81,22 @@ export default {
     this.loadMoreRows();
   },
   methods: {
+    updateFilter(newFilter) {
+      this.requestBody.filter = newFilter;
+      this.scrollUp();
+      this.sendTableRequest();
+    },
+    applyCustomization(attributes) {
+      this.requestBody.attributes = attributes;
+      this.sendTableRequest();
+      this.toggleCustomize = false;
+    },
     scrollUp() {
       window.scrollTo(0, 0);
     },
     sendTableRequest() {
       const axios = require("axios");
+      console.log(this.requestBody);
       axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
         this.tableRows = response.data;
       });
@@ -88,14 +126,8 @@ export default {
       this.requestBody.offset = 0;
       this.sendTableRequest();
     },
-    applyFilters(filters) {
-      console.log(filters);
-    },
-    applyCustomization(customization) {
-      console.log(customization);
-    },
   },
-  components: { DataTable },
+  components: { DataTable, OutlineButton, CustomizeOverlay, FilterOverlay },
   inject: ["apiUrl", "attributeData"],
 };
 </script>

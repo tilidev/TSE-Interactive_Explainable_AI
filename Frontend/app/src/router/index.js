@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import DatasetExplorer from "../views/DatasetExplorer.vue";
-import InstanceView from "../views/InstanceView.vue";
+import InstancePage from "../views/InstancePage.vue";
+import ExperimentPage from "../views/ExperimentPage.vue"
+import AdminPage from "../views/AdminPage.vue"
 
 const routes = [
   {
@@ -20,8 +22,18 @@ const routes = [
   {
     path: "/applications/:id",
     name: "Application View",
-    component: InstanceView,
+    component: InstancePage,
   },
+  {
+    path:"/experiments/:experimentId",
+    name:"Experiment Page",
+    component: ExperimentPage
+  },
+  {
+    path:"/admin",
+    name:"Admin Page",
+    component: AdminPage
+  }
 ];
 
 const router = createRouter({

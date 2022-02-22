@@ -1,0 +1,167 @@
+
+<template>
+  <transition name="fade">
+    <div class="fixed inset-0 flex justify-center items-center z-50">
+      <div class="relative mx-auto w-auto">
+        <div class="bg-white w-100 rounded-lg shadow-md p-4">
+          <div class="flex mb-8 justify-between">
+            <h4 class="text-xl font-bold">
+              Click on an attribute to add a filter
+            </h4>
+            <button
+              @click="this.$emit('close')"
+              class="bg-white hover:bg-gray-light px-2 py-0.5 rounded-full"
+            >
+              <fa-icon icon="times"></fa-icon>
+            </button>
+          </div>
+          <div class="flex flex-col space-y-8 mb-8">
+            <div
+              class="
+                font-bold
+                flex
+                capitalize
+                justify-between
+                space-x-16
+                items-center
+              "
+              v-for="category in Object.keys(attributeCategories)"
+              :key="category"
+            >
+              <div>
+                {{ category }}
+              </div>
+              <div class="flex space-x-4">
+                <div
+                  v-for="attribute of attributeCategories[category]"
+                  :key="attribute"
+                >
+                  <gray-button
+                    @click="filterAttribute = attribute"
+                    :selected="false"
+                    v-if="!findFilter(attribute)"
+                    >{{ attributeData.labels[attribute] }}</gray-button
+                  >
+                  <gray-button :selected="true" v-else>
+                    <span @click="filterAttribute = attribute">
+                      {{ attributeData.labels[attribute] }}
+                    </span>
+                    <fa-icon
+                      @click="removeFilter(attribute)"
+                      icon="times"
+                      size="sm"
+                      class="ml-2 align-center inset-x-2/4 text-primary-light"
+                    ></fa-icon
+                  ></gray-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <filter-menu
+        @apply="addFilter"
+        @cancel="filterAttribute = ''"
+        v-if="filterAttribute && findFilter(filterAttribute) != null"
+        :currentFilter="findFilter(filterAttribute)"
+        :attribute="filterAttribute"
+      ></filter-menu>
+      <filter-menu
+        @apply="addFilter"
+        @cancel="filterAttribute = ''"
+        v-else-if="filterAttribute"
+        :currentFilter="{}"
+        :attribute="filterAttribute"
+      ></filter-menu>
+      <div
+        v-if="filterAttribute"
+        class="absolute inset-0 z-40 opacity-25 bg-black"
+      ></div>
+    </div>
+  </transition>
+</template>
+
+<script>
+import GrayButton from "../buttons/GrayButton.vue";
+import FilterMenu from "../ui/FilterMenu.vue";
+export default {
+  components: { GrayButton, FilterMenu },
+  props: {
+    currentFilters: Array,
+  },
+  data() {
+    return {
+      newFilters: this.currentFilters,
+      filterAttribute: "",
+    };
+  },
+  inject: ["attributeData", "attributeCategories"],
+
+  methods: {
+    addFilter(filter) {
+      if (this.findFilter(filter.attribute)) {
+        this.removeFilter(filter.attribute);
+      }
+      if (
+        filter.values ||
+        filter.lower_bound !=
+          this.attributeData.lowerBounds[filter.attribute] ||
+        filter.upper_bound != this.attributeData.upperBounds[filter.attribute]
+      ) {
+        this.newFilters.push(filter);
+      }
+      this.filterAttribute = "";
+      this.$emit("update-filter", this.newFilters);
+    },
+    removeFilter(attribute) {
+      for (const i in this.newFilters) {
+        if (Object.values(this.newFilters[i]).indexOf(attribute) > -1) {
+          this.newFilters.splice(i, 1);
+          this.$emit("update-filter", this.newFilters);
+          break;
+        }
+      }
+    },
+    findFilter(attribute) {
+      // This is inefficient
+      for (const filter of this.currentFilters) {
+        if (Object.values(filter).indexOf(attribute) > -1) {
+          return filter;
+        }
+      }
+      return null;
+    },
+    addAttribute(attr) {
+      if (this.selectedAttributes.length < 5) {
+        this.selectedAttributes.push(attr);
+      }
+    },
+    applyChanges() {
+      this.$emit("apply", this.selectedAttributes);
+    },
+  },
+};
+</script>
+
+<style scoped>
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-to {
+  opacity: 1;
+}
+.fade-enter-active {
+  transition: all 1s ease;
+}
+.fade-leave-from {
+  opacity: 1;
+}
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-leave-active {
+  transition: all 1s ease;
+}
+</style>
+
+
