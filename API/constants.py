@@ -118,7 +118,7 @@ attribute_constraints = [
         attr_name : AttributeNames.history,
         type : categorical,
         category : financial_cat,
-        values : ['delay payment of previous loans', 'paid back all previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
+        values : ['delay payment of previous loans', 'paid back previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
         attr_description : "How reliably the applicant handled previous or current loans"
     },
     {
@@ -161,7 +161,7 @@ attribute_constraints = [
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
-        values : ['less than 1 year', 'between 1 and 4 years', ' between 4 and 7 years', 'more than 7 years'],
+        values : ['less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
         attr_description : "How long the applicant has lived in current housing"
     },
     {
