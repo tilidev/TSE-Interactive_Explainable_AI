@@ -134,7 +134,7 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 250,
         upper_bound : 11792.5,
-        attr_description : "How much money the applicant wants to lend (in euros)"
+        attr_description : "How much money the applicant wants to borrow (in Euro)"
     },
     {
         attr_name : AttributeNames.savings,
