@@ -227,7 +227,7 @@ attribute_constraints = [
         category : "other",
         lower_bound : 0,
         upper_bound : 1,
-        attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
+        attr_description : "Indicates how confident the AI is in it's decision."
     },
     {
         attr_name : AttributeNames.NN_recommendation,
