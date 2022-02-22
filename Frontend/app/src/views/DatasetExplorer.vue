@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <div>
     <div
       v-if="!isAtPageTop"
       class="
@@ -22,12 +22,12 @@
       />
     </div>
     <div>
-      <div class="flex flex-row-reverse pr-20">
+      <div class="flex flex-row-reverse pr-20 gap-x-4 pb-4">
         <outline-button @click="toggleCustomize = !toggleCustomize"
-          >Customize</outline-button
+          ><fa-icon icon="table" class="mr-2" />Customize</outline-button
         >
         <outline-button @click="toggleFilter = !toggleFilter"
-          >Filter</outline-button
+          ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
         >
       </div>
       <customize-overlay
@@ -49,7 +49,7 @@
       :attributeData="attributeData"
       :optionsData="requestBody"
     />
-  </span>
+  </div>
 </template>
 
 <script>
