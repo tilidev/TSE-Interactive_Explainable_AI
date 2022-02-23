@@ -191,7 +191,6 @@ async def lime_explanation(uid: UUID):
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
-        #TODO make call to check all dict entries
         return res
     else: # In this case, there is no dict entry with this uuid
         return LimeResponse(status=ResponseStatus.not_existing)

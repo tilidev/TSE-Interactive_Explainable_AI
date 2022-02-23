@@ -1,4 +1,3 @@
-from os import rename
 from DataLoader_ey import createDataframeForDB
 import sqlite3 as sql
 from constants import rename_dict

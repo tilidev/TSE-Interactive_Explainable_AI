@@ -1,4 +1,3 @@
-from genericpath import exists
 import sqlite3 as sql
 import json
 from typing import List
