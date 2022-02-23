@@ -49,6 +49,7 @@ class ResponseStatus(str, Enum):
     terminated = "terminated"
     timeout = "timeout"
     error = "error"
+    not_existing = "No request with corresponding uuid"
 
 # standard configuration for table view
 standard_attributes = [

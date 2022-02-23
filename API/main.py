@@ -192,7 +192,7 @@ async def lime_explanation(uid: UUID):
         #TODO make call to check all dict entries
         return LimeResponse(status=ResponseStatus.terminated, values=res)
     else:
-        return LimeResponse(status=ResponseStatus.in_prog)
+        return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
@@ -205,7 +205,7 @@ async def shap_explanation(uid: UUID):
         #TODO make call to check all dict entries
         return res
     else:
-        return ShapResponse(status=ResponseStatus.in_prog)
+        return ShapResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
