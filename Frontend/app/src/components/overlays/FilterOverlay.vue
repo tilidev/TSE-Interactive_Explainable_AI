@@ -57,6 +57,9 @@
               </div>
             </div>
           </div>
+          <div class="flex flex-row-reverse">
+            <outline-button @click="removeAllFilters">Reset all</outline-button>
+          </div>
         </div>
       </div>
       <filter-menu
@@ -82,10 +85,11 @@
 </template>
 
 <script>
+import OutlineButton from "../buttons/OutlineButton.vue";
 import GrayButton from "../buttons/GrayButton.vue";
 import FilterMenu from "../ui/FilterMenu.vue";
 export default {
-  components: { GrayButton, FilterMenu },
+  components: { GrayButton, FilterMenu, OutlineButton },
   props: {
     currentFilters: Array,
   },
@@ -98,15 +102,24 @@ export default {
   inject: ["attributeData", "attributeCategories"],
 
   methods: {
+    removeAllFilters() {
+      this.newFilters = [];
+      this.$emit("update-filter", this.newFilters);
+    },
     addFilter(filter) {
       if (this.findFilter(filter.attribute)) {
         this.removeFilter(filter.attribute);
       }
       if (
-        filter.values ||
-        filter.lower_bound !=
-          this.attributeData.lowerBounds[filter.attribute] ||
-        filter.upper_bound != this.attributeData.upperBounds[filter.attribute]
+        (filter.values &&
+          filter.values.length &&
+          filter.values.length <
+            this.attributeData.values[filter.attribute].length) ||
+        (filter.lower_bound != null &&
+          (filter.lower_bound !=
+            this.attributeData.lowerBounds[filter.attribute] ||
+            filter.upper_bound !=
+              this.attributeData.upperBounds[filter.attribute]))
       ) {
         this.newFilters.push(filter);
       }
@@ -130,14 +143,6 @@ export default {
         }
       }
       return null;
-    },
-    addAttribute(attr) {
-      if (this.selectedAttributes.length < 5) {
-        this.selectedAttributes.push(attr);
-      }
-    },
-    applyChanges() {
-      this.$emit("apply", this.selectedAttributes);
     },
   },
 };

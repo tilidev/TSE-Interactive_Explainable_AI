@@ -9,7 +9,7 @@
       shadow-md
       bg-white
       px-6
-      py-3
+      py-4
       text-left
       rounded-md
     "
@@ -38,7 +38,7 @@
         v-model="allowedRange"
       ></slider>
     </div>
-    <div class="flex space-x-4 mt-4">
+    <div class="flex space-x-4 mt-4 justify-between">
       <default-button @click="applyChanges">Apply</default-button>
       <clear-button @click="this.$emit('cancel')">Cancel</clear-button>
     </div>

@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white shadow-md px-8 py-4 text-left">
     <h2 class="font-bold text-lg pb-4">Current Loan Application</h2>
-    <div class="flex space-x-8 text-sm justify-between">
+    <div class="flex text-sm justify-between">
       <div
-        class="grid grid-cols-auto grid-flow-col gap-x-8"
+        class="grid grid-cols-auto grid-flow-col gap-x-6"
         v-for="category in Object.keys(attributeCategories)"
         :key="category"
       >
