@@ -82,9 +82,11 @@ def explanation_worker(in_queue : Queue, res_out : dict):
         print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m finished \033[1m{job.exp_type.value}\033[0m computation.\n      Time taken: {end_time-start_time} seconds.")
         print(f"      Result saved with uuid {job.uid}.")
 
-            
 
-            
+def timeout_explanation(uid: UUID, results_dict: dict):
+    '''Will remove the generated explanation a certain amount of time after its generation.'''
+    timeout_exp = 300
+    time.sleep(timeout_exp)
+    timeouted = results_dict.pop(uid)
 
-    
-    
+    print(f"\033[92mINFO:\033[0m Explanation with uuid {uid} has been deleted due to timeout.")   

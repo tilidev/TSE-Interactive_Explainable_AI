@@ -11,9 +11,9 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import FastAPI, Query
+from fastapi import BackgroundTasks, FastAPI, Query
 from fastapi.params import Body
-from task_gen import explanation_worker
+from task_gen import explanation_worker, timeout_explanation
 from task_gen import Job
 from typing import Dict
 from uuid import UUID
@@ -124,6 +124,7 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
+    background_tasks: BackgroundTasks,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
@@ -149,18 +150,6 @@ async def schedule_explanation_generation(
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
     Note that this method can thus be used for existing as well as modified instances.
     ___
-    <h1>DICE</h1>
-
-    Only the modified attributes are set in the response items of the `counterfactuals` list.
-    Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
-    If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
-    As this computation process may take a lot of time, the process will be handled in a seperate background process.
-    The Front-End should implement some kind of information for the user, that a long computation should be expected. The number of counterfactuals
-    is limited to 15
-    ___
-    <b>Notice</b> that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
-    In that case, the server can handle the explanation generation using the values of the sent attributes.
-    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
 
     #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
@@ -178,6 +167,7 @@ async def schedule_explanation_generation(
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
 
+    background_tasks.add_task(timeout_explanation, job.uid, results) # Will remove the object in the results dictionary after a certain time has expired
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 # TODO add check for XAI-method differentiation when getting the results
