@@ -52,6 +52,8 @@ const routes = [
     path: "/treemap4",
     name: "TreeMapTestView4",
     component: TreeMapTestView4,
+  },
+    {
     path:"/admin",
     name:"Admin Page",
     component: AdminPage
