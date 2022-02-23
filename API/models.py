@@ -56,9 +56,30 @@ class ModelInstanceInfo(BaseModel):
     people_liable : str = Field(alias=AttributeNames.people_liable.value)
     telephone : str = Field(alias=AttributeNames.telephone.value)
 
+class CounterFactual(BaseModel):
+    """Defines the JSON model for a counterfactual, where only attributes are set,
+    that have changed in relation to the original instance"""
+    balance : Optional[str] = Field(None, alias=AttributeNames.balance.value)
+    duration : Optional[float] = Field(None, alias=AttributeNames.duration.value)
+    history : Optional[str] = Field(None, alias=AttributeNames.history.value)
+    purpose : Optional[str] = Field(None, alias=AttributeNames.purpose.value)
+    amount : Optional[float] = Field(None, alias=AttributeNames.amount.value)
+    savings : Optional[str] = Field(None, alias=AttributeNames.savings.value)
+    employment : Optional[str] = Field(None, alias=AttributeNames.employment.value)
+    available_income : Optional[str] = Field(None, alias=AttributeNames.available_income.value)
+    residence : Optional[str] = Field(None, alias=AttributeNames.residence.value)
+    assets : Optional[str] = Field(None, alias=AttributeNames.assets.value)
+    age : Optional[float] = Field(None, alias=AttributeNames.age.value)
+    other_loans : Optional[str] = Field(None, alias=AttributeNames.other_loans.value)
+    housing : Optional[str] = Field(None, alias=AttributeNames.housing.value)
+    previous_loans : Optional[str] = Field(None, alias=AttributeNames.previous_loans.value)
+    job : Optional[str] = Field(None, alias=AttributeNames.job.value)
+    other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
+    people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
+    telephone : Optional[str] = Field(None, alias=AttributeNames.telephone.value)
+
 class PredictionResponse(BaseModel):
     '''Defines the response format for a prediction call.'''
-
     NN_recommendation : str = Field(alias=AttributeNames.NN_recommendation.value)
     NN_confidence : float = Field(alias=AttributeNames.NN_confidence.value)
 
@@ -130,7 +151,7 @@ class DiceCounterfactualResponse(BaseModel):
     '''JSON format for `DICE` model response.
     The counterfactuals only contain changed attributes.'''
     original_Instance: InstanceInfo = Field(alias=original_instance)
-    counterfactuals: List[ModelInstanceInfo] = Field(alias=counterfactuals, description="The <b>DICE</b> counterfactuals.")
+    counterfactuals: List[CounterFactual] = Field(alias=counterfactuals, description="The <b>DICE</b> counterfactuals.")
 
 class ExperimentInformation(BaseModel):
     '''JSON format for experiment creation.'''
