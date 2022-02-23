@@ -26,8 +26,8 @@ export default {
   },
   methods: {
       generateArc() {
-      const w = 500;
-      const h = 500;
+      const w = 350;
+      const h = 350;
 
       const svg = d3
         .select("#arc")
