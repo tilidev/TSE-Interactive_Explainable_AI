@@ -9,11 +9,9 @@
             :descriptions="attributeData.descriptions"
             :sort_by="optionsData.sort_by"
             :desc="optionsData.desc"
-            :attributes="[
-              ...['id'],
-              ...optionsData.attributes,
-              ...['NN_recommendation', 'NN_confidence'],
-            ]"
+            :attributes="
+              tableRows[0] ? Object.keys(tableRows[0]) : []
+            "
           />
         </thead>
         <tbody class="divide-gray divide-y">

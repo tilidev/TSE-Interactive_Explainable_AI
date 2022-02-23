@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <div>
     <div
       v-if="!isAtPageTop"
       class="
@@ -22,20 +22,22 @@
       />
     </div>
     <div>
-      <div class="flex flex-row-reverse pr-20">
+      <div class="flex flex-row-reverse pr-20 gap-x-4 pb-4">
         <outline-button @click="toggleCustomize = !toggleCustomize"
-          >Customize</outline-button
+          ><fa-icon icon="table" class="mr-2" />Customize</outline-button
         >
         <outline-button @click="toggleFilter = !toggleFilter"
-          >Filter</outline-button
+          ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
         >
       </div>
       <customize-overlay
-        v-show="this.toggleCustomize"
-        @close="closeCustomizeModal"
-        @updateAttributes="updateCustomizationAttributes($event)"
+        v-if="this.toggleCustomize"
+        :currentAttributes="requestBody.attributes"
+        @close="toggleCustomize = false"
+        @apply="this.applyCustomization"
       />
-      <filter-overlay v-show="this.toggleFilter" @close="closeFilterModal" />
+      <filter-overlay v-if="this.toggleFilter" @update-filter="updateFilter" @close="toggleFilter = false" :currentFilters="requestBody.filter"
+       />
       <div
         v-if="toggleCustomize || toggleFilter"
         class="absolute inset-0 z-40 opacity-25 bg-black"
@@ -47,7 +49,7 @@
       :attributeData="attributeData"
       :optionsData="requestBody"
     />
-  </span>
+  </div>
 </template>
 
 <script>
@@ -79,29 +81,22 @@ export default {
     this.loadMoreRows();
   },
   methods: {
-    updateCustomizationAttributes(attributes) {
+    updateFilter(newFilter) {
+      this.requestBody.filter = newFilter;
+      this.scrollUp();
+      this.sendTableRequest();
+    },
+    applyCustomization(attributes) {
       this.requestBody.attributes = attributes;
       this.sendTableRequest();
       this.toggleCustomize = false;
-    },
-    showCustomizeModal() {
-      this.toggleCustomize = true;
-    },
-    closeCustomizeModal() {
-      this.toggleCustomize = false;
-    },
-
-    showFilterModal() {
-      this.toggleFilter = true;
-    },
-    closeFilterModal() {
-      this.toggleFilter = false;
     },
     scrollUp() {
       window.scrollTo(0, 0);
     },
     sendTableRequest() {
       const axios = require("axios");
+      console.log(this.requestBody);
       axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
         this.tableRows = response.data;
       });

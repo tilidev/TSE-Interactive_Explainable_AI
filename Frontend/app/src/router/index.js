@@ -3,10 +3,14 @@ import Home from "../views/Home.vue";
 import DatasetExplorer from "../views/DatasetExplorer.vue";
 import InstancePage from "../views/InstancePage.vue";
 import ExperimentPage from "../views/ExperimentPage.vue"
+<<<<<<< HEAD
 import TreeMapTestView from "../views/TreeMapTestView.vue"
 import TreeMapTestView2 from "../views/TreeMapTestView2.vue"
 import TreeMapTestView3 from "../views/TreeMapTestView3.vue"
 import TreeMapTestView4 from "../views/TreeMapTestView4.vue"
+=======
+import AdminPage from "../views/AdminPage.vue"
+>>>>>>> explanations
 
 const routes = [
   {
@@ -51,6 +55,9 @@ const routes = [
     path: "/treemap4",
     name: "TreeMapTestView4",
     component: TreeMapTestView4,
+    path:"/admin",
+    name:"Admin Page",
+    component: AdminPage
   }
 
 ];

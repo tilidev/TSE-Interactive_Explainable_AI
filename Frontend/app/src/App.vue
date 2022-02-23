@@ -30,6 +30,11 @@ export default {
   data() {
     return {
       apiUrl: "http://localhost:8000/",
+      attributeCategories: {
+        financial: [],
+        personal: [],
+        loan: [],
+      },
       attributeData: {
         descriptions: {},
         labels: {
@@ -49,6 +54,7 @@ export default {
           duration: "Duration",
           balance: "Balance",
           age: "Age",
+          telephone: "Telephone",
           employment: "Employment",
           NN_recommendation: "AI Recommendation",
           NN_confidence: "AI Confidence",
@@ -80,12 +86,20 @@ export default {
             element.upper_bound;
           this.attributeData.values[element.attribute] = element.values;
         }
+        for (const attr of Object.keys(this.attributeData.categories)) {
+          if (this.attributeCategories[this.attributeData.categories[attr]]) {
+            this.attributeCategories[this.attributeData.categories[attr]].push(
+              attr
+            );
+          }
+        }
       });
     },
   },
   provide() {
     return {
       attributeData: this.attributeData,
+      attributeCategories: this.attributeCategories,
       apiUrl: this.apiUrl,
     };
   },

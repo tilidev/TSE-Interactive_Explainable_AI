@@ -1,10 +1,19 @@
 from enum import Enum
 
-class ExplanationMethod(str, Enum):
+class ExplanationType(str, Enum):
     lime = "lime"
     shap = "shap"
-    dice_lvl3 = "dice_lvl3"
+    dice = "dice"
+    none = "none"
 
+class ExportFormat(str, Enum):
+    comma_separated = "csv"
+    js_object_notation = "json"
+    # Maybe other export formats? XML or something
+
+class RecommendationType(str, Enum):
+    approve = "approve"
+    reject = "reject"
 class AttributeNames(str, Enum):
     '''This class is used to have a central definition of how the attributes are referenced'''
     # attributes in the dataset
@@ -24,7 +33,7 @@ class AttributeNames(str, Enum):
     housing = "housing"
     previous_loans = "previous_loans"
     job = "job"
-    #telephone = "telephone"
+    telephone = "telephone"
     #foreign_worker = "foreign_worker"
     other_debtors = "other_debtors"
     people_liable = "people_liable"
@@ -36,11 +45,10 @@ class AttributeNames(str, Enum):
 
 
 class ResponseStatus(str, Enum):
-    accepted = "accepted"
-    scheduled = "scheduled"
-    running = "running"
+    in_prog = "in progress"
     terminated = "terminated"
     timeout = "timeout"
+    error = "error"
 
 # standard configuration for table view
 standard_attributes = [
@@ -55,7 +63,9 @@ standard_attributes = [
 row_limit = 20
 
 # strings to use throughout the entire code (important for coherence in response-key names)
+original_instance = "original_instance"
 attr_name = "attribute"
+attr_name_abr = "attr_name"
 type = "type"
 values = "values"
 categorical = "categorical"
@@ -83,6 +93,11 @@ href = "href"
 lime_result = "lime_result"
 display_name = "display_name"
 sort_ascending = "sort_ascending"
+counterfactuals = "counterfactuals"
+type = "type"
+values = "values"
+db_path = "database.db"
+csv_path = "results.csv"
 
 attribute_constraints = [
     {
@@ -104,7 +119,7 @@ attribute_constraints = [
         attr_name : AttributeNames.history,
         type : categorical,
         category : financial_cat,
-        values : ['delay payment of previous loans', 'paid back all previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
+        values : ['delay payment of previous loans', 'paid back previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
         attr_description : "How reliably the applicant handled previous or current loans"
     },
     {
@@ -120,7 +135,7 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 250,
         upper_bound : 11792.5,
-        attr_description : "How much money the applicant wants to lend (in euros)"
+        attr_description : "How much money the applicant wants to borrow (in Euro)"
     },
     {
         attr_name : AttributeNames.savings,
@@ -147,7 +162,7 @@ attribute_constraints = [
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
-        values : ['less than 1 year', 'between 1 and 4 years', ' between 4 and 7 years', 'more than 7 years'],
+        values : ['less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
         attr_description : "How long the applicant has lived in current housing"
     },
     {
@@ -213,7 +228,7 @@ attribute_constraints = [
         category : "other",
         lower_bound : 0,
         upper_bound : 1,
-        attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
+        attr_description : "Indicates how confident the AI is in it's decision."
     },
     {
         attr_name : AttributeNames.NN_recommendation,
@@ -221,6 +236,78 @@ attribute_constraints = [
         category : "other",
         values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
+    },
+    {
+        attr_name : AttributeNames.telephone,
+        type : categorical,
+        category : personal_cat,
+        values : ['none', 'yes'],
+        attr_description : "Whether telephone information is provided"
     }
-
 ]
+
+rename_dict = {
+    'balance_' : AttributeNames.balance.value,
+    'duration_' : AttributeNames.duration.value,
+    'history_' : AttributeNames.history.value,
+    'purpose_' : AttributeNames.purpose.value,
+    'amount_' : AttributeNames.amount.value,
+    'savings_' : AttributeNames.savings.value,
+    'employment_' : AttributeNames.employment.value,
+    'available_income_' : AttributeNames.available_income.value,
+    'other_debtors_' : AttributeNames.other_debtors.value,
+    'residence_' : AttributeNames.residence.value,
+    'assets_' : AttributeNames.assets.value,
+    'age_' : AttributeNames.age.value,
+    'other_loans_' : AttributeNames.other_loans.value,
+    'housing_' : AttributeNames.housing.value,
+    'previous_loans_' : AttributeNames.previous_loans.value,
+    'job_' : AttributeNames.job.value,
+    'people_liable_' : AttributeNames.people_liable.value,
+    'telephone_' : AttributeNames.telephone.value
+}
+
+inv_rename = {v : k for k, v in rename_dict.items()}
+
+# MUST STAY IN THIS ORDER!
+feature_names_model_ordered = [
+    'balance_',
+    'duration_',
+    'history_',
+    'purpose_',
+    'amount_',
+    'savings_',
+    'employment_',
+    'available_income_',
+    'other_debtors_',
+    'residence_',
+    'assets_',
+    'age_',
+    'other_loans_',
+    'housing_',
+    'previous_loans_',
+    'job_',
+    'people_liable_',
+    'telephone_'
+]
+
+lime_exp_mapping = {
+    0 : AttributeNames.balance.value,
+    1 : AttributeNames.duration.value,
+    2 : AttributeNames.history.value,
+    3 : AttributeNames.purpose.value,
+    4 : AttributeNames.amount.value,
+    5 : AttributeNames.savings.value,
+    6 : AttributeNames.employment.value,
+    7 : AttributeNames.available_income.value,
+    8 : AttributeNames.other_debtors.value,
+    9 : AttributeNames.residence.value,
+    10 : AttributeNames.assets.value,
+    11 : AttributeNames.age.value,
+    12 : AttributeNames.other_loans.value,
+    13 : AttributeNames.housing.value,
+    14 : AttributeNames.previous_loans.value,
+    15 : AttributeNames.job.value,
+    16 : AttributeNames.people_liable.value,
+    17 : AttributeNames.telephone.value
+}
