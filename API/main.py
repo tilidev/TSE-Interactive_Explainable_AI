@@ -11,7 +11,7 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.params import Body
 from task_gen import explanation_worker
 from task_gen import Job
@@ -129,7 +129,7 @@ async def schedule_explanation_generation(
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
 ):
     '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
-    returns the information that the task has been started and returns a reference as well as a process id to check for & return the actual
+    returns the information that the task has been started and returns a reference (uuid) to check for & return the actual
     explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
     Only attributes specific to the explanation method (`exp_method`) will be considered.
     ___
@@ -207,7 +207,7 @@ async def shap_explanation(uid: UUID):
         return ShapResponse(status=ResponseStatus.in_prog)
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
-async def dice_explanation(uid: UUID):
+async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
     pass
 

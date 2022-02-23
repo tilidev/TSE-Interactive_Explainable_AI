@@ -63,6 +63,7 @@ standard_attributes = [
 row_limit = 20
 
 # strings to use throughout the entire code (important for coherence in response-key names)
+original_instance = "original_instance"
 attr_name = "attribute"
 attr_name_abr = "attr_name"
 type = "type"

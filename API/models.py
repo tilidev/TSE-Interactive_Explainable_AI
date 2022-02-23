@@ -128,11 +128,9 @@ class ShapResponse(BaseModel):
 
 class DiceCounterfactualResponse(BaseModel):
     '''JSON format for `DICE` model response.
-    The actual results are only returned if the process is terminated.
-    Will only set the modified attributes in the counterfactuals (`List[InstanceInfo]`)
-    The `couterfactuals` are to be expected when the `status` is "terminated"'''
-    status: ResponseStatus = Field(alias=status)
-    counterfactuals: Optional[List[InstanceInfo]] = Field(None, alias=counterfactuals, description="The <b>DICE</b> results. \n`None`, when process has not terminated.")
+    The counterfactuals only contain changed attributes.'''
+    original_Instance: InstanceInfo = Field(alias=original_instance)
+    counterfactuals: List[ModelInstanceInfo] = Field(alias=counterfactuals, description="The <b>DICE</b> counterfactuals.")
 
 class ExperimentInformation(BaseModel):
     '''JSON format for experiment creation.'''
