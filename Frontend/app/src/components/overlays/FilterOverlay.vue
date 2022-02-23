@@ -57,6 +57,9 @@
               </div>
             </div>
           </div>
+          <div class="flex flex-row-reverse">
+            <outline-button>Reset all</outline-button>
+          </div>
         </div>
       </div>
       <filter-menu
@@ -82,10 +85,11 @@
 </template>
 
 <script>
+import OutlineButton from "../buttons/OutlineButton.vue";
 import GrayButton from "../buttons/GrayButton.vue";
 import FilterMenu from "../ui/FilterMenu.vue";
 export default {
-  components: { GrayButton, FilterMenu },
+  components: { GrayButton, FilterMenu, OutlineButton },
   props: {
     currentFilters: Array,
   },
@@ -135,14 +139,6 @@ export default {
         }
       }
       return null;
-    },
-    addAttribute(attr) {
-      if (this.selectedAttributes.length < 5) {
-        this.selectedAttributes.push(attr);
-      }
-    },
-    applyChanges() {
-      this.$emit("apply", this.selectedAttributes);
     },
   },
 };
