@@ -103,10 +103,15 @@ export default {
         this.removeFilter(filter.attribute);
       }
       if (
-        filter.values ||
-        filter.lower_bound !=
-          this.attributeData.lowerBounds[filter.attribute] ||
-        filter.upper_bound != this.attributeData.upperBounds[filter.attribute]
+        (filter.values &&
+          filter.values.length &&
+          filter.values.length <
+            this.attributeData.values[filter.attribute].length) ||
+        (filter.lower_bound != null &&
+          (filter.lower_bound !=
+            this.attributeData.lowerBounds[filter.attribute] ||
+            filter.upper_bound !=
+              this.attributeData.upperBounds[filter.attribute]))
       ) {
         this.newFilters.push(filter);
       }
