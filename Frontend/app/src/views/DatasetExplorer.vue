@@ -22,7 +22,7 @@
       />
     </div>
     <div>
-      <div class="flex flex-row-reverse pr-20 gap-x-4 pb-4">
+      <div class="flex flex-row-reverse pr-20 -mr-0.5 gap-x-4 pb-4">
         <outline-button @click="toggleCustomize = !toggleCustomize"
           ><fa-icon icon="table" class="mr-2" />Customize</outline-button
         >
@@ -83,6 +83,7 @@ export default {
   methods: {
     updateFilter(newFilter) {
       this.requestBody.filter = newFilter;
+      this.requestBody.offset = 0;
       this.scrollUp();
       this.sendTableRequest();
     },
