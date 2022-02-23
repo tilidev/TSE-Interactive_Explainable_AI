@@ -58,7 +58,7 @@
             </div>
           </div>
           <div class="flex flex-row-reverse">
-            <outline-button>Reset all</outline-button>
+            <outline-button @click="removeAllFilters">Reset all</outline-button>
           </div>
         </div>
       </div>
@@ -102,6 +102,10 @@ export default {
   inject: ["attributeData", "attributeCategories"],
 
   methods: {
+    removeAllFilters() {
+      this.newFilters = [];
+      this.$emit("update-filter", this.newFilters);
+    },
     addFilter(filter) {
       if (this.findFilter(filter.attribute)) {
         this.removeFilter(filter.attribute);
