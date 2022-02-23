@@ -11,7 +11,7 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.params import Body
 from task_gen import explanation_worker
 from task_gen import Job
@@ -78,12 +78,12 @@ app.add_middleware(
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True, tags=["Dataset"]) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
-    con = create_connection("database.db")
+    con = create_connection(db_path)
     attributes = [str]
     for i in request.attributes:
         attributes.append(i.value)
-    attributes.append("NN_recommendation")
-    attributes.append("NN_confidence")
+    attributes.append(AttributeNames.NN_recommendation.value)
+    attributes.append(AttributeNames.NN_confidence.value)
     attributes = attributes[1:] # TODO Keep this in mind
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     return table_Response
@@ -129,7 +129,7 @@ async def schedule_explanation_generation(
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
 ):
     '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
-    returns the information that the task has been started and returns a reference as well as a process id to check for & return the actual
+    returns the information that the task has been started and returns a reference (uuid) to check for & return the actual
     explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
     Only attributes specific to the explanation method (`exp_method`) will be considered.
     ___
@@ -165,6 +165,7 @@ async def schedule_explanation_generation(
 
     #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
     #TODO: Check that instance id is provided and legal for dice requests
+    #TODO remove dice request
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
     task_queue.put(job)
@@ -207,9 +208,12 @@ async def shap_explanation(uid: UUID):
         return ShapResponse(status=ResponseStatus.in_prog)
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
-async def dice_explanation(uid: UUID):
+async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
-    pass
+    with open("Data/cfs_response_format.json", "r") as f:
+        return json.load(f)[str(instance_id)]
+        #TODO THIS IS MAXIMALLY INEFFICIENT AND BAD PRACTICE, CHANGE
+        # TODO save this data to the database!! then get it --> write db request and add table for it
 
 @app.get("/processes", tags=["Debugging"])
 async def process_information():
@@ -243,45 +247,45 @@ async def create_experiment(exp_info : ExperimentInformation):
             #TODO should some error be thrown?
             return
     exp = exp_info.json()
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     exp_creation(con, exp_info.experiment_name, exp)
 
 @app.get("/experiment/all", response_model=List[str], tags=["Experimentation"])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return get_all_exp(con) 
 
 @app.get("/experiment", response_model=ExperimentInformation, tags=["Experimentation"])
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return get_exp_info(con, name)
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return create_id(con, gen.experiment_name)
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results(format: ExportFormat):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     return export_results_to(con, format.value)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
-    con = create_connection('database.db')
+    con = create_connection(db_path)
     delete_exp(con, experiment_name)
     # TODO what would be the best response model
 

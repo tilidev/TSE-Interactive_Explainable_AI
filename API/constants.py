@@ -63,7 +63,9 @@ standard_attributes = [
 row_limit = 20
 
 # strings to use throughout the entire code (important for coherence in response-key names)
+original_instance = "original_instance"
 attr_name = "attribute"
+attr_name_abr = "attr_name"
 type = "type"
 values = "values"
 categorical = "categorical"
@@ -91,6 +93,11 @@ href = "href"
 lime_result = "lime_result"
 display_name = "display_name"
 sort_ascending = "sort_ascending"
+counterfactuals = "counterfactuals"
+type = "type"
+values = "values"
+db_path = "database.db"
+csv_path = "results.csv"
 
 attribute_constraints = [
     {
@@ -112,7 +119,7 @@ attribute_constraints = [
         attr_name : AttributeNames.history,
         type : categorical,
         category : financial_cat,
-        values : ['delay payment of previous loans', 'paid back all previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
+        values : ['delay payment of previous loans', 'paid back previous loans at this bank', 'paid back all previous loans', 'no problem with current loans'],
         attr_description : "How reliably the applicant handled previous or current loans"
     },
     {
@@ -128,7 +135,7 @@ attribute_constraints = [
         category : loan_cat,
         lower_bound : 250,
         upper_bound : 11792.5,
-        attr_description : "How much money the applicant wants to lend (in euros)"
+        attr_description : "How much money the applicant wants to borrow (in Euro)"
     },
     {
         attr_name : AttributeNames.savings,
@@ -155,7 +162,7 @@ attribute_constraints = [
         attr_name : AttributeNames.residence,
         type : categorical,
         category : personal_cat,
-        values : ['less than 1 year', 'between 1 and 4 years', ' between 4 and 7 years', 'more than 7 years'],
+        values : ['less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
         attr_description : "How long the applicant has lived in current housing"
     },
     {
@@ -221,7 +228,7 @@ attribute_constraints = [
         category : "other",
         lower_bound : 0,
         upper_bound : 1,
-        attr_description : "Indicates how confident the AI is in it's decision. Range is [0, 1]"
+        attr_description : "Indicates how confident the AI is in it's decision."
     },
     {
         attr_name : AttributeNames.NN_recommendation,
