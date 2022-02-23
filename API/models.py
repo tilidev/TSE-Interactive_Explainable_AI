@@ -150,7 +150,6 @@ class ShapResponse(BaseModel):
 class DiceCounterfactualResponse(BaseModel):
     '''JSON format for `DICE` model response.
     The counterfactuals only contain changed attributes.'''
-    original_Instance: InstanceInfo = Field(alias=original_instance)
     counterfactuals: List[CounterFactual] = Field(alias=counterfactuals, description="The <b>DICE</b> counterfactuals.")
 
 class ExperimentInformation(BaseModel):
