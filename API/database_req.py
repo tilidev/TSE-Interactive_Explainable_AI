@@ -119,7 +119,7 @@ def create_order_query(sort:str):
         if i[attr_name] == sort:
             attr_dict = i
             break
-    if (attr_dict[type] == categorical):
+    if (attr_dict[const_type] == categorical):
         query += 'CASE'
         count = 1
         for i in attr_dict[values]:

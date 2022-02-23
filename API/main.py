@@ -188,10 +188,12 @@ async def lime_explanation(uid: UUID):
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
     if uid in results.keys():
         res = results[uid]
+        if type(res) != LimeResponse:
+            return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
         #TODO make call to check all dict entries
-        return LimeResponse(status=ResponseStatus.terminated, values=res)
-    else:
+        return res
+    else: # In this case, there is no dict entry with this uuid
         return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
@@ -201,6 +203,9 @@ async def shap_explanation(uid: UUID):
 
     if uid in results.keys():
         res = results[uid]
+        if type(res) != ShapResponse:
+            return ShapResponse(status=ResponseStatus.wrong_method)
+
         #TODO delete entry in dictionary
         #TODO make call to check all dict entries
         return res

@@ -1,10 +1,8 @@
-import multiprocessing as mp
 from queue import Queue
 from pydantic import BaseModel, Field
-from models import ShapResponse
+from models import ShapResponse, LimeResponse
 from shap_utils import compute_response_shap
-from constants import ResponseStatus
-from constants import ExplanationType
+from constants import ResponseStatus, ExplanationType, all_features
 from typing import Optional
 from uuid import UUID, uuid4
 import time
@@ -41,7 +39,7 @@ def explanation_worker(in_queue : Queue, res_out : dict):
     from shap_utils import ShapHelperV2
     sh = ShapHelperV2()
     sh.prepare_shap()
-    pred_fn = sh.predict_shap #TODO rename :)
+    pred_fn = sh.predict_shap
 
 
     shap_explainer = shap.KernelExplainer(pred_fn, sh.X_train)
@@ -51,9 +49,10 @@ def explanation_worker(in_queue : Queue, res_out : dict):
     from lime_utils import LimeHelper
     lh = LimeHelper()
 
-    print(f"\n\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m started succesfully. Explainers loaded and ready.\n")
+    print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m started succesfully. Explainers loaded and ready.")
     
     while True: # repeat the process
+        print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m is waiting for the next task.")
         job : Job = in_queue.get(block=True) # explicitely wait until a job is available
         start_time = time.time()
         print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m starting exlanation computation. \
@@ -71,10 +70,12 @@ def explanation_worker(in_queue : Queue, res_out : dict):
         elif job.exp_type == ExplanationType.lime:
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
+            else:
+                num_features = all_features
 
             lh_res = lh.get_lime_values(job.task["instance"].__dict__, num_features) #pass the instance in the required format
             out = lh_res
-            res_out[job.uid] = lh_res
+            res_out[job.uid] = LimeResponse(status=ResponseStatus.terminated, values=lh_res)
         
         end_time = time.time()
 
