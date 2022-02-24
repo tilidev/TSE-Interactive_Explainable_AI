@@ -276,9 +276,10 @@ def cf_to_db(con, path:str):
 def cf_response_format_db(con, path:str):
     c = con.cursor()
     with open(path,'r') as file:
-        cf = json.load(file)
-    for key in cf.keys():
-        instance = cf[key]
+        cfs = json.load(file)
+    for key in cfs.keys():
+        print(key)
+        instance = cfs[key]
         cf = instance[counterfactuals]
         cf_dict = {}
         cf_dict[counterfactuals] = cf
