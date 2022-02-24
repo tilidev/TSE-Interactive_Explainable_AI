@@ -255,16 +255,16 @@ def cf_to_db(con, path:str):
     with open(path,'r') as file:
         cf = json.load(file)
     for key in cf.keys():
-        instance = cf[key]
-        list_of_cf = instance[0]
+        list_of_cf = cf[key]
         list_to_return = []
         d = {}
         for single_cf in list_of_cf:
+            print(single_cf)
             instance_dict = {}
             #TODO lime-exp-mapping iwi umbennen damit sinnvoll
             for index in lime_exp_mapping.keys():
                 instance_dict[lime_exp_mapping[index]] = single_cf[index]
-            instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
+            #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
             list_to_return.append(instance_dict)
         d[counterfactuals] = list_to_return
         query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
