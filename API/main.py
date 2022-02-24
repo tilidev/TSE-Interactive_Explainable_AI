@@ -238,7 +238,6 @@ async def create_experiment(exp_info : ExperimentInformation):
     #check legal boolean combination
     if exp_info.iswhatif:
         if exp_info.ismodify == False:
-            #TODO should some error be thrown?
             return
     exp = exp_info.json()
     con = create_connection(db_path)
@@ -258,32 +257,38 @@ async def experiment_by_name(name: str):
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
+    """Returns the next available client id and adds that client to the results list."""
     con = create_connection(db_path)
     return create_id(con, gen.experiment_name)
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
+    """Adds the results to the results table."""
     con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results(format: ExportFormat):
+    """Returns a list with all experiment results as json and creates a csv file results.csv if csv return format is chosen"""
     con = create_connection(db_path)
     return export_results_to(con, format.value)
 
 @app.get("/single/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def single_export_results(format: ExportFormat, experiment_name: str):
+    """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
     con = create_connection(db_path)
     return export_results_to(con, format.value, experiment_name)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
+    """Deletes all results from the given experiment from the results table if that experiment exists."""
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
+    """Deletes an experiment from the experiments table if it exists there"""
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
     # TODO what would be the best response model
