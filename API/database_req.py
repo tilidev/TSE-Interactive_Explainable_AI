@@ -295,8 +295,7 @@ def get_cf(con, instance_id: int):
     result = results[0]
     res_str = result[0]
     res_json = json.loads(res_str)
-    cf_list = res_json[counterfactuals]
-    return cf_list
+    return res_json
 
 
 
