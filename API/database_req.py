@@ -197,19 +197,10 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
     con.commit()
 
 #export results
-def export_results_to(con, format):
-    query = 'SELECT * FROM results'
-    '''
-    if format == ExportFormat.comma_separated.value:
-        #vorschlag von stackoverflow
-        #TODO threading?
-        con = sql.connect('database.db', isolation_level=None,
-                       detect_types=sql.PARSE_COLNAMES)
-        db_df = pd.read_sql_query(query, con)
-        db_df.to_csv('database.csv', index=False)
-        file = open('database.csv')
-        return file
-    '''
+def export_results_to(con, format, exp_name = None):
+    query = "SELECT * FROM results"
+    if exp_name:
+        query += " WHERE experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -218,7 +209,6 @@ def export_results_to(con, format):
     for res in result_json:
         results_list = []
         results = json.loads(res['results'])
-        print(results)
         for key in results.keys():
             results_list.append(json.loads(results[key]))
             res['results'] = results_list
@@ -260,9 +250,8 @@ def cf_to_db(con, path:str):
         list_to_return = []
         d = {}
         for single_cf in list_of_cf:
-            print(single_cf)
             instance_dict = {}
-            #TODO lime-exp-mapping should be renamed
+            #TODO lime-exp-mapping should be renamed if used here
             for index in lime_exp_mapping.keys():
                 instance_dict[lime_exp_mapping[index]] = single_cf[index]
             #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]

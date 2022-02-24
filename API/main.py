@@ -274,7 +274,7 @@ async def export_results(format: ExportFormat):
 @app.get("/single/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def single_export_results(format: ExportFormat, experiment_name: str):
     con = create_connection(db_path)
-    pass
+    return export_results_to(con, format.value, experiment_name)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
