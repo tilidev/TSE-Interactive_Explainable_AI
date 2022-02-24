@@ -1,4 +1,5 @@
 import os
+from venv import create
 from importlib_metadata import NullFinder
 import uvicorn
 import multiprocessing as mp
@@ -204,10 +205,12 @@ async def shap_explanation(uid: UUID):
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
-    with open("Data/cfs_response_format.json", "r") as f:
-        return {counterfactuals : json.load(f)[str(instance_id)][counterfactuals]}
+    #with open("Data/cfs_response_format.json", "r") as f:
+    #    return {counterfactuals : json.load(f)[str(instance_id)][counterfactuals]}
         #TODO THIS IS MAXIMALLY INEFFICIENT AND BAD PRACTICE, CHANGE
         # TODO save this data to the database!! then get it --> write db request and add table for it
+    con = create_connection(db_path)
+    get_cf(con, instance_id)
 
 @app.get("/processes", tags=["Debugging"])
 async def process_information():
