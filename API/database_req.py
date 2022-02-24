@@ -251,6 +251,7 @@ def delete_exp(con, exp_name: str):
 
 
 def cf_to_db(con, path:str):
+    """Initial method for adding counterfactuals to database. Is not used anymore as cfs_response_format is added."""
     c = con.cursor()
     with open(path,'r') as file:
         cf = json.load(file)
@@ -261,7 +262,7 @@ def cf_to_db(con, path:str):
         for single_cf in list_of_cf:
             print(single_cf)
             instance_dict = {}
-            #TODO lime-exp-mapping iwi umbennen damit sinnvoll
+            #TODO lime-exp-mapping should be renamed
             for index in lime_exp_mapping.keys():
                 instance_dict[lime_exp_mapping[index]] = single_cf[index]
             #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
@@ -271,6 +272,20 @@ def cf_to_db(con, path:str):
         c.execute(query)
     con.commit()
     con.close()
+
+def cf_response_format_db(con, path:str):
+    c = con.cursor()
+    with open(path,'r') as file:
+        cf = json.load(file)
+    for key in cf.keys():
+        instance = cf[key]
+        cf = instance[counterfactuals]
+        cf_dict = {}
+        cf_dict[counterfactuals] = cf
+        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES(" + str(key) + ", '" + json.dumps(cf_dict) + "');"
+        c.execute(query)
+    con.commit()
+
 
 def get_cf(con, instance_id: int):
     query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
