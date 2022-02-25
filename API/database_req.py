@@ -215,6 +215,7 @@ def export_results_to(con, format, exp_name = None):
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
         df.to_csv(csv_path, index=False)
+        return csv_path
     return result_json
 
     

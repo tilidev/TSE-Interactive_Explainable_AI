@@ -14,6 +14,7 @@ import json
 from typing import Any, Optional, List, Union
 from fastapi import BackgroundTasks, FastAPI, Query
 from fastapi.params import Body
+from fastapi.responses import FileResponse
 from task_gen import explanation_worker, timeout_explanation
 from task_gen import Job
 from typing import Dict
@@ -268,16 +269,22 @@ async def results_to_database(results: ExperimentResults):
     add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
-async def export_results(format: ExportFormat):
-    """Returns a list with all experiment results as json and creates a csv file results.csv if csv return format is chosen"""
+async def export_results():
+    """Returns the results for the chosen experiment in json format"""
     con = create_connection(db_path)
-    return export_results_to(con, format.value)
+    return export_results_to(con, ExportFormat.js_object_notation.value)
 
 @app.get("/single/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
-async def single_export_results(format: ExportFormat, experiment_name: str):
+async def single_export_results(experiment_name: str):
+    """Returns the results for the chosen experiment in json format"""
+    con = create_connection(db_path)
+    return export_results_to(con, ExportFormat.js_object_notation.value, experiment_name)
+
+@app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
+async def single_export_results_csv(experiment_name: str):
     """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
     con = create_connection(db_path)
-    return export_results_to(con, format.value, experiment_name)
+    return export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
