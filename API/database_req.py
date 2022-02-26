@@ -214,6 +214,11 @@ def export_results_to(con, format, exp_name = None):
             res['results'] = results_list
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
+        results = df['results']
+        for res in results:
+            for decision in res:
+                df[decision['loan_id']] = decision['choice']
+        df = df.drop(columns='results')
         df.to_csv(csv_path, index=False)
         return csv_path
     return result_json
