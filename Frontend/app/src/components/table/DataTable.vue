@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center">
-    <div class="overflow-auto shadow-md">
+    <div v-if="tableRows[0]" class="overflow-auto shadow-md">
       <table class="table-auto text-primary shadow-lg text-left">
         <thead class="bg-primary text-white">
           <table-header
@@ -10,7 +10,7 @@
             :sort_by="optionsData.sort_by"
             :desc="optionsData.desc"
             :attributes="
-              tableRows[0] ? Object.keys(tableRows[0]) : []
+              Object.keys(tableRows[0])
             "
           />
         </thead>
@@ -19,6 +19,7 @@
         </tbody>
       </table>
     </div>
+    <div v-else><div class="text-3xl font-bold py-2">Nothing to show</div><div class="text-lg">Try removing filters to see more results</div></div>
   </div>
 </template>
 
