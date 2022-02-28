@@ -27,7 +27,7 @@ export default {
         default:
           paddingClass = "px-6 py-3"
       }
-      return paddingClass + " btn rounded-md bg-white font-bold hover:bg-gray-light" + " text-" + this.color
+      return paddingClass + " btn rounded-md bg-white font-bold hover:bg-gray-light border border-transparent" + " text-" + this.color
           + " text-" + this.size;
     }
   },
