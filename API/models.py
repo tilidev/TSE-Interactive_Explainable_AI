@@ -106,7 +106,7 @@ class CategoricalInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     display_name: Optional[str] = Field(None, alias=display_name)
-    type: str = Field(categorical, const=True, alias=type)
+    type: str = Field(categorical, const=True, alias=const_type)
     category: str = Field(alias=category)
     values: List[str]
     description: str = Field(alias=attr_description)
@@ -115,7 +115,7 @@ class ContinuousInformation(BaseModel):
     '''Defines the JSON format for the constraints of a categorical attribute'''
     attr_name: AttributeNames = Field(alias=attr_name)
     display_name: Optional[str] = Field(None, alias=display_name)
-    type: str = Field(continuous, const=True, alias=type)
+    type: str = Field(continuous, const=True, alias=const_type)
     category: str = Field(alias=category)
     lower_bound: float = Field(alias=lower_bound)
     upper_bound: float = Field(alias=upper_bound)
@@ -150,7 +150,6 @@ class ShapResponse(BaseModel):
 class DiceCounterfactualResponse(BaseModel):
     '''JSON format for `DICE` model response.
     The counterfactuals only contain changed attributes.'''
-    original_Instance: InstanceInfo = Field(alias=original_instance)
     counterfactuals: List[CounterFactual] = Field(alias=counterfactuals, description="The <b>DICE</b> counterfactuals.")
 
 class ExperimentInformation(BaseModel):

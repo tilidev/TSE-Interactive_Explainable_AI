@@ -1,4 +1,5 @@
 import os
+from venv import create
 from importlib_metadata import NullFinder
 import uvicorn
 import multiprocessing as mp
@@ -11,9 +12,10 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import FastAPI, Query
+from fastapi import BackgroundTasks, FastAPI, Query
 from fastapi.params import Body
-from task_gen import explanation_worker
+from fastapi.responses import FileResponse
+from task_gen import explanation_worker, timeout_explanation
 from task_gen import Job
 from typing import Dict
 from uuid import UUID
@@ -124,6 +126,7 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
+    background_tasks: BackgroundTasks,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
@@ -149,18 +152,6 @@ async def schedule_explanation_generation(
     contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
     Note that this method can thus be used for existing as well as modified instances.
     ___
-    <h1>DICE</h1>
-
-    Only the modified attributes are set in the response items of the `counterfactuals` list.
-    Will look up the precomputed counterfactual explanation if `is_modified` is `False` and the instance `id` is passed.
-    If one of the two conditions is not met (e.g. for modified instances), the counterfactual explanation will automatically be computed.
-    As this computation process may take a lot of time, the process will be handled in a seperate background process.
-    The Front-End should implement some kind of information for the user, that a long computation should be expected. The number of counterfactuals
-    is limited to 15
-    ___
-    <b>Notice</b> that `id` is a required field for the InstanceInfo model. `id` should be the value `-1` if the instance has been modified.
-    In that case, the server can handle the explanation generation using the values of the sent attributes.
-    If the `id` is known, the back-end can look up the instance in the database and output pre-saved explanations (e.g. <b>DICE</b>)
     '''
 
     #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
@@ -178,6 +169,7 @@ async def schedule_explanation_generation(
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
 
+    background_tasks.add_task(timeout_explanation, job.uid, results) # Will remove the object in the results dictionary after a certain time has expired
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 # TODO add check for XAI-method differentiation when getting the results
@@ -188,11 +180,12 @@ async def lime_explanation(uid: UUID):
     Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
     if uid in results.keys():
         res = results[uid]
+        if type(res) != LimeResponse:
+            return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
-        #TODO make call to check all dict entries
-        return LimeResponse(status=ResponseStatus.terminated, values=res)
-    else:
-        return LimeResponse(status=ResponseStatus.in_prog)
+        return res
+    else: # In this case, there is no dict entry with this uuid
+        return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
@@ -201,19 +194,21 @@ async def shap_explanation(uid: UUID):
 
     if uid in results.keys():
         res = results[uid]
+        if type(res) != ShapResponse:
+            return ShapResponse(status=ResponseStatus.wrong_method)
+
         #TODO delete entry in dictionary
         #TODO make call to check all dict entries
         return res
     else:
-        return ShapResponse(status=ResponseStatus.in_prog)
+        return ShapResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
     '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
-    with open("Data/cfs_response_format.json", "r") as f:
-        return json.load(f)[str(instance_id)]
-        #TODO THIS IS MAXIMALLY INEFFICIENT AND BAD PRACTICE, CHANGE
-        # TODO save this data to the database!! then get it --> write db request and add table for it
+    con = create_connection(db_path)
+    print(get_cf(con, instance_id))
+    return get_cf(con, instance_id)
 
 @app.get("/processes", tags=["Debugging"])
 async def process_information():
@@ -244,7 +239,6 @@ async def create_experiment(exp_info : ExperimentInformation):
     #check legal boolean combination
     if exp_info.iswhatif:
         if exp_info.ismodify == False:
-            #TODO should some error be thrown?
             return
     exp = exp_info.json()
     con = create_connection(db_path)
@@ -264,27 +258,44 @@ async def experiment_by_name(name: str):
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
+    """Returns the next available client id and adds that client to the results list."""
     con = create_connection(db_path)
     return create_id(con, gen.experiment_name)
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
+    """Adds the results to the results table."""
     con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
-async def export_results(format: ExportFormat):
+async def export_results():
+    """Returns the results for the chosen experiment in json format"""
     con = create_connection(db_path)
-    return export_results_to(con, format.value)
+    return export_results_to(con, ExportFormat.js_object_notation.value)
+
+@app.get("/single/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
+async def single_export_results(experiment_name: str):
+    """Returns the results for the chosen experiment in json format"""
+    con = create_connection(db_path)
+    return export_results_to(con, ExportFormat.js_object_notation.value, experiment_name)
+
+@app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
+async def single_export_results_csv(experiment_name: str):
+    """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
+    con = create_connection(db_path)
+    return export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
+    """Deletes all results from the given experiment from the results table if that experiment exists."""
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
+    """Deletes an experiment from the experiments table if it exists there"""
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
     # TODO what would be the best response model

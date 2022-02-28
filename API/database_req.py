@@ -1,4 +1,3 @@
-from genericpath import exists
 import sqlite3 as sql
 import json
 from typing import List
@@ -119,7 +118,7 @@ def create_order_query(sort:str):
         if i[attr_name] == sort:
             attr_dict = i
             break
-    if (attr_dict[type] == categorical):
+    if (attr_dict[const_type] == categorical):
         query += 'CASE'
         count = 1
         for i in attr_dict[values]:
@@ -198,19 +197,10 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
     con.commit()
 
 #export results
-def export_results_to(con, format):
-    query = 'SELECT * FROM results'
-    '''
-    if format == ExportFormat.comma_separated.value:
-        #vorschlag von stackoverflow
-        #TODO threading?
-        con = sql.connect('database.db', isolation_level=None,
-                       detect_types=sql.PARSE_COLNAMES)
-        db_df = pd.read_sql_query(query, con)
-        db_df.to_csv('database.csv', index=False)
-        file = open('database.csv')
-        return file
-    '''
+def export_results_to(con, format, exp_name = None):
+    query = "SELECT * FROM results"
+    if exp_name:
+        query += " WHERE experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -219,13 +209,18 @@ def export_results_to(con, format):
     for res in result_json:
         results_list = []
         results = json.loads(res['results'])
-        print(results)
         for key in results.keys():
             results_list.append(json.loads(results[key]))
             res['results'] = results_list
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
+        results = df['results']
+        for res in results:
+            for decision in res:
+                df[decision['loan_id']] = decision['choice']
+        df = df.drop(columns='results')
         df.to_csv(csv_path, index=False)
+        return csv_path
     return result_json
 
     
@@ -252,26 +247,41 @@ def delete_exp(con, exp_name: str):
 
 
 def cf_to_db(con, path:str):
+    """Initial method for adding counterfactuals to database. Is not used anymore as cfs_response_format is added."""
     c = con.cursor()
     with open(path,'r') as file:
         cf = json.load(file)
     for key in cf.keys():
-        instance = cf[key]
-        list_of_cf = instance[0]
+        list_of_cf = cf[key]
         list_to_return = []
         d = {}
         for single_cf in list_of_cf:
             instance_dict = {}
-            #TODO lime-exp-mapping iwi umbennen damit sinnvoll
+            #TODO lime-exp-mapping should be renamed if used here
             for index in lime_exp_mapping.keys():
                 instance_dict[lime_exp_mapping[index]] = single_cf[index]
-            instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
+            #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
             list_to_return.append(instance_dict)
         d[counterfactuals] = list_to_return
         query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
         c.execute(query)
     con.commit()
     con.close()
+
+def cf_response_format_db(con, path:str):
+    c = con.cursor()
+    with open(path,'r') as file:
+        cfs = json.load(file)
+    for key in cfs.keys():
+        print(key)
+        instance = cfs[key]
+        cf = instance[counterfactuals]
+        cf_dict = {}
+        cf_dict[counterfactuals] = cf
+        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES(" + str(key) + ", '" + json.dumps(cf_dict) + "');"
+        c.execute(query)
+    con.commit()
+
 
 def get_cf(con, instance_id: int):
     query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
@@ -280,8 +290,7 @@ def get_cf(con, instance_id: int):
     result = results[0]
     res_str = result[0]
     res_json = json.loads(res_str)
-    cf_list = res_json[counterfactuals]
-    return cf_list
+    return res_json
 
 
 
