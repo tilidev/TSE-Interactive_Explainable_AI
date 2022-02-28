@@ -25,7 +25,7 @@ const routes = [
     component: InstancePage,
   },
   {
-    path:"/experiments/:experimentId",
+    path:"/experiments/:name",
     name:"Experiment Page",
     component: ExperimentPage
   },

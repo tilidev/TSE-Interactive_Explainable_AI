@@ -4,11 +4,15 @@
       :instanceInfo="instanceInfo"
       :modifiedInstance="modifiedInstance"
       :attributeData="attributeData"
-      :modifiable="true"
+      :modifiable="allowMod"
+      :allowWhatIf="allowWhatIf"
       @apply-modification="applyModification"
       @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
-    <dice-explanation v-if="instanceInfo.id != null" :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
+    <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
+    <div v-else-if="expType === 'lime'">Placeholder for Lime</div>
+    <div v-else-if="expType === 'shap'">Placeholder for SHAP</div>
+    
   </div>
 </template>
 
@@ -39,6 +43,9 @@ export default {
       type: Object,
       required: true,
     },
+    allowMod : Boolean,
+    allowWhatIf : Boolean,
+    expType: String,
   }
 };
 </script>

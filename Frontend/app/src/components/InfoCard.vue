@@ -87,16 +87,22 @@
         >Modify</default-button
       >
       <default-button
-        class="col-start-1 mt-4"
+        class="col-start-1 mt-4  mr-4"
         @click="console.log('Generate Explanation')"
-        v-if="modificationEnabled"
+        v-if="modificationEnabled && allowWhatIf"
         >Generate Explanation</default-button
       >
       <clear-button
-        class="col-start-2 mt-4 ml-4"
+        class="col-start-2 mt-4"
         @click="resetInstance()"
-        v-if="modificationEnabled"
+        v-if="modificationEnabled && allowWhatIf"
         >Reset</clear-button
+      >
+      <outline-button
+        class="col-start-2 mt-4"
+        @click="resetInstance()"
+        v-if="modificationEnabled && !allowWhatIf"
+        >Reset</outline-button
       >
     </div>
   </div>
@@ -108,6 +114,7 @@ import ConfidenceVis from "./ui/ConfidenceVis.vue";
 import DropdownMenu from "./ui/DropdownMenu.vue";
 import RecommendationVis from "./ui/RecommendationVis.vue";
 import ClearButton from "./buttons/ClearButton.vue";
+import OutlineButton from "./buttons/OutlineButton.vue"
 
 export default {
   data() {
@@ -121,6 +128,7 @@ export default {
     RecommendationVis,
     ConfidenceVis,
     DefaultButton,
+    OutlineButton,
     DropdownMenu,
     ClearButton,
   },
@@ -129,6 +137,7 @@ export default {
     attributeData: Object,
     modifiable: Boolean,
     modifiedInstance: Object,
+    allowWhatIf: Boolean,
   },
   methods: {
     sendPredictionRequest() {

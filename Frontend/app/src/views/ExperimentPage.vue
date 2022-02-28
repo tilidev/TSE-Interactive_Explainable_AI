@@ -4,7 +4,7 @@
       <default-button class="mt-8" @click="started = true">Start Experiment</default-button>
     </div>
     <div v-if="!done">
-      <instance-view :instanceInfo="instanceInfo"></instance-view>
+      <instance-view :instanceInfo="instanceInfo" :expType="expType" :allowMod="allowMod" :allowWhatIf="allowWhatIf"></instance-view>
       <div class="text-right space-x-4 justify-end flex">
         <default-button
           :color="'positive'"
@@ -29,27 +29,54 @@ import DefaultButton from "../components/buttons/DefaultButton.vue";
 import InstanceView from "./InstanceView.vue";
 export default {
   mounted() {
-    this.sendInstanceRequest();
+    this.sendExperimentRequest();
   },
   data() {
     return {
       started: false,
+      expType: String,
+      allowMod: false,
+      allowWhatIf: false,
       done: false,
       currentIndex: 0,
-      instanceIds: [1, 2, 3, 10],
-      results: {},
+      instanceIds: [],
+      results: [],
       instanceInfo: {},
+      clientId: Number,
     };
   },
   components: { InstanceView, DefaultButton },
   methods: {
+    postResults() {
+      console.log(this.results);
+      const axios = require("axios");
+      let reqBody = {
+        "experiment_name": this.$route.params.name,
+        "client_id" : this.clientId,
+        "results" : this.results,
+      };
+      axios.post(this.apiUrl + "experiment/results", reqBody).then(() => this.done = true);
+    },
+    sendExperimentRequest() {
+      const axios = require("axios");
+      axios.post(this.apiUrl + "experiment/generate_id", {"experiment_name": this.$route.params.name}).then((response) => {
+        this.clientId = response.data.client_id;
+        console.log(this.clientId);
+      })
+      axios.get(this.apiUrl + "experiment?name=" + this.$route.params.name).then((response) => {
+        this.instanceIds = response.data.loan_ids;
+        this.expType = response.data.exp_type;
+        this.allowMod = response.data.ismodify;
+        this.allowWhatIf = response.data.isWhatIf;
+      }).then(this.sendInstanceRequest);
+    },
     submitDecision(decision) {
-      this.results[this.instanceIds[this.currentIndex]] = decision;
+      this.results.push({"loan_id": this.instanceIds[this.currentIndex], "choice" : decision ? "approve" : "reject"});
       this.currentIndex++;
       if (this.currentIndex < this.instanceIds.length) {
         this.sendInstanceRequest();
       } else {
-        this.done = true;
+        this.postResults();
       }
     },
     sendInstanceRequest() {
