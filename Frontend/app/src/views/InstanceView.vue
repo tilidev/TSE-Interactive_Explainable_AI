@@ -8,7 +8,7 @@
       @apply-modification="applyModification"
       @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
     ></info-card>
-    <dice-explanation :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
+    <dice-explanation v-if="instanceInfo.id != null" :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
   </div>
 </template>
 
