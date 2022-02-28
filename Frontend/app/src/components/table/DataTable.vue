@@ -9,6 +9,7 @@
             :descriptions="attributeData.descriptions"
             :sort_by="optionsData.sort_by"
             :desc="optionsData.desc"
+
             :attributes="
               Object.keys(tableRows[0])
             "
@@ -19,7 +20,7 @@
         </tbody>
       </table>
     </div>
-    <div v-else><div class="text-3xl font-bold py-2">Nothing to show</div><div class="text-lg">Try removing filters to see more results</div></div>
+    <div v-else-if="!tableRows[0] && optionsData.filter.length"><div class="text-3xl font-bold py-2">Nothing to show</div><div class="text-lg">Try removing filters to see more results</div></div>
   </div>
 </template>
 
@@ -32,6 +33,7 @@ export default {
     tableRows: Array,
     attributeData: Object,
     optionsData: Object,
+    isFilterApplied: Boolean,
   },
   components: { TableRow, TableHeader },
   methods: {
