@@ -198,9 +198,9 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 
 #export results
 def export_results_to(con, format, exp_name = None):
-    query = "SELECT * FROM results"
+    query = "SELECT * FROM results WHERE results != 'NULL'"
     if exp_name:
-        query += " WHERE experiment_name =  '" + exp_name + "'"
+        query += " AND experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
