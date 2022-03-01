@@ -3,11 +3,11 @@
     <h2 class="font-bold text-lg pb-4">Current Loan Application</h2>
     <div class="flex text-sm justify-between">
       <div
-        class="grid grid-cols-auto grid-flow-col gap-x-6"
+        class="grid grid-cols-auto grid-flow-col gap-x-6 grid-rows-8"
         v-for="category in Object.keys(attributeCategories)"
         :key="category"
       >
-        <div class="col-span-2 col-start-1 text-lg capitalize">
+        <div class="col-span-2 col-start-1 text-lg capitalize -mt-2 mb-1">
           {{ category }}
         </div>
         <div
@@ -87,7 +87,7 @@
         >Modify</default-button
       >
       <default-button
-        class="col-start-1 mt-4  mr-4"
+        class="col-start-1 mt-4 mr-4"
         @click="console.log('Generate Explanation')"
         v-if="modificationEnabled && allowWhatIf"
         >Generate Explanation</default-button
@@ -114,7 +114,7 @@ import ConfidenceVis from "./ui/ConfidenceVis.vue";
 import DropdownMenu from "./ui/DropdownMenu.vue";
 import RecommendationVis from "./ui/RecommendationVis.vue";
 import ClearButton from "./buttons/ClearButton.vue";
-import OutlineButton from "./buttons/OutlineButton.vue"
+import OutlineButton from "./buttons/OutlineButton.vue";
 
 export default {
   data() {
@@ -173,5 +173,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.grid-rows-8 {
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+}
 </style>
