@@ -100,6 +100,10 @@ const_type = "type"
 values = "values"
 db_path = "database.db"
 csv_path = "results.csv"
+results_key = "results"
+loan_id = "loan_id"
+client_id = "client_id"
+choice = "choice"
 all_features = 18
 
 attribute_constraints = [

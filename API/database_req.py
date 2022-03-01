@@ -132,6 +132,7 @@ def create_order_query(sort:str):
 
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
+    """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
     exists_query = "SELECT name FROM experiments WHERE name = '" + exp_name + "'"
     insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
     c = con.cursor()
@@ -143,6 +144,7 @@ def exp_creation(con, exp_name:str, exp_info:str):
 
 #for experiment_list
 def get_all_exp(con):
+    """Returns a list of all experiments"""
     query = 'SELECT name FROM experiments'
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -153,6 +155,8 @@ def get_all_exp(con):
 
 #for experiment_by_name 
 def get_exp_info(con, name:str):
+    """If the given experiment is in the database the corresponding experiment information is returned in 
+    json format."""
     query = "SELECT information FROM experiments WHERE name = '"+ name + "'"
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -165,11 +169,15 @@ def get_exp_info(con, name:str):
 
 #for generate_clientID
 def create_id(con, exp_name:str):
+    """Queries the database for already existing ids for that experiment and chooses the lowest available id.
+    For this id and the experiment name an entry in the results table is created, where later the results can be added.
+    :returns: json with key client_id and the newly generated id"""
+    #TODO check if experiment exists
     query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
     ids = c.execute(query_existing_id).fetchall()
     return_id = 0
-    #TODO reicht es auch auf letztes tupel zuzugreifen?
+    #TODO simplify
     if len(ids) > 0:
         for id in ids:
             if id[0] >= return_id: #index 0 because tuple is accessed
@@ -179,18 +187,20 @@ def create_id(con, exp_name:str):
     c.execute(query_insert)
     con.commit()
     return_dict = {
-        "client_id": return_id
+        client_id: return_id
     }
     res = json.loads(json.dumps(return_dict))
     return res
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
+    """Adds the given results to the experiment name and client id in the results table."""
     dict = {}
     for res in results:
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
+    #TODO check if experiment exists
     query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
     c = con.cursor()
     c.execute(query)
@@ -198,7 +208,10 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 
 #export results
 def export_results_to(con, format, exp_name = None):
+    """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
+    and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
     query = "SELECT * FROM results WHERE results != 'NULL'"
+    #TODO check if experiment exists 
     if exp_name:
         query += " AND experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
@@ -208,17 +221,17 @@ def export_results_to(con, format, exp_name = None):
     result_json = json.loads(result)
     for res in result_json:
         results_list = []
-        results = json.loads(res['results'])
+        results = json.loads(res[results_key])
         for key in results.keys():
             results_list.append(json.loads(results[key]))
-            res['results'] = results_list
+            res[results_key] = results_list
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
-        results = df['results']
+        results = df[results_key]
         for res in results:
             for decision in res:
-                df[decision['loan_id']] = decision['choice']
-        df = df.drop(columns='results')
+                df[decision[loan_id]] = decision[choice]
+        df = df.drop(columns=results_key)
         df.to_csv(csv_path, index=False)
         return csv_path
     return result_json
@@ -227,6 +240,8 @@ def export_results_to(con, format, exp_name = None):
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
+    """Checks if an experiment with the given name exists and deletes all results for that experiment
+    from the results table if yes."""
     exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
     reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
     c = con.cursor()
@@ -237,6 +252,7 @@ def reset_exp_res(con, exp_name:str):
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
+    """Checks if the experiment exists and deletes it from the experiments table if yes."""
     exists_query = 'SELECT name FROM experiments WHERE name = "' + exp_name + '"'
     delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
     c = con.cursor()
@@ -269,11 +285,11 @@ def cf_to_db(con, path:str):
     con.close()
 
 def cf_response_format_db(con, path:str):
+    """Reading counterfactuals stored in a json from the given path, formatting them and adding them to the database."""
     c = con.cursor()
     with open(path,'r') as file:
         cfs = json.load(file)
     for key in cfs.keys():
-        print(key)
         instance = cfs[key]
         cf = instance[counterfactuals]
         cf_dict = {}
@@ -284,6 +300,9 @@ def cf_response_format_db(con, path:str):
 
 
 def get_cf(con, instance_id: int):
+    """For that instance id the pregenerated counterfactuals are returned from the dice table if the id is
+    between 0 and 999."""
+    #TODO check id 
     query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
     c = con.cursor()
     results = c.execute(query).fetchall()
