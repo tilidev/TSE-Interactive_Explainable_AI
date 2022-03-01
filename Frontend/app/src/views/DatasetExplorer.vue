@@ -22,7 +22,25 @@
       />
     </div>
     <div>
-      <div class="flex flex-row-reverse pr-20 -mr-0.5 gap-x-4 pb-4">
+      <customize-overlay
+        v-if="this.toggleCustomize"
+        :currentAttributes="requestBody.attributes"
+        @close="toggleCustomize = false"
+        @apply="this.applyCustomization"
+      />
+      <filter-overlay
+        v-if="this.toggleFilter"
+        @update-filter="updateFilter"
+        @close="toggleFilter = false"
+        :currentFilters="requestBody.filter"
+      />
+      <div
+        v-if="toggleCustomize || toggleFilter"
+        class="absolute inset-0 z-40 opacity-25 bg-black"
+      ></div>
+    </div>
+    <div class="flex flex-col items-stretch mx-8">
+      <div class="flex flex-row-reverse gap-x-4 pb-4 justify-start">
         <outline-button @click="toggleCustomize = !toggleCustomize"
           ><fa-icon icon="table" class="mr-2" />Customize</outline-button
         >
@@ -30,25 +48,13 @@
           ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
         >
       </div>
-      <customize-overlay
-        v-if="this.toggleCustomize"
-        :currentAttributes="requestBody.attributes"
-        @close="toggleCustomize = false"
-        @apply="this.applyCustomization"
+      <data-table
+        @apply-sorting="applySorting"
+        :tableRows="tableRows"
+        :attributeData="attributeData"
+        :optionsData="requestBody"
       />
-      <filter-overlay v-if="this.toggleFilter" @update-filter="updateFilter" @close="toggleFilter = false" :currentFilters="requestBody.filter"
-       />
-      <div
-        v-if="toggleCustomize || toggleFilter"
-        class="absolute inset-0 z-40 opacity-25 bg-black"
-      ></div>
     </div>
-    <data-table
-      @apply-sorting="applySorting"
-      :tableRows="tableRows"
-      :attributeData="attributeData"
-      :optionsData="requestBody"
-    />
   </div>
 </template>
 

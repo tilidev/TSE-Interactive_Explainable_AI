@@ -1,6 +1,5 @@
 <template>
-  <div class="flex justify-center">
-    <div v-if="tableRows[0]" class="overflow-auto shadow-md">
+    <div v-if="tableRows[0]" class="shadow-md inline-block">
       <table class="table-auto text-primary shadow-lg text-left">
         <thead class="bg-primary text-white">
           <table-header
@@ -21,7 +20,6 @@
       </table>
     </div>
     <div v-else-if="!tableRows[0] && optionsData.filter.length"><div class="text-3xl font-bold py-2">Nothing to show</div><div class="text-lg">Try removing filters to see more results</div></div>
-  </div>
 </template>
 
 <script>
