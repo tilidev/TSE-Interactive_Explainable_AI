@@ -55,6 +55,11 @@ export default {
       required: true,
     },
   },
+  watch: {
+    instanceInfo() {
+      this.index = 0;
+    }
+  },
   methods: {
     handleClick(direction) {
       if (
