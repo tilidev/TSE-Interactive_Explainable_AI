@@ -1,32 +1,41 @@
 <template>
   <div class="text-left px-8 py-4 shadow-md bg-white">
-    <h2 class="font-bold text-lg mb-4">Counterfactual Explanations</h2>
-    <table
-      v-if="counterfactuals.length"
-      class="table-auto text-primary shadow-lg text-left"
-    >
-      <thead class="bg-primary text-white">
-        <table-header
-          :labels="attributeData.labels"
-          :descriptions="attributeData.descriptions"
-          :attributes="['id',
-            ...Object.keys(counterfactuals[index]),
-            'NN_recommendation',
-          ]"
-        />
-      </thead>
-      <tbody class="divide-gray divide-y">
-        <table-row
-          :rowData="
-            getBaseRow(counterfactuals[index])
-          "
-        ></table-row>
-        <table-row
-          :rowData="{'id': 'Counterfactual Explanation', ...counterfactuals[index]}"
-          :highlight="getHighlightSet(counterfactuals[index])"
-        />
-      </tbody>
-    </table>
+    <div class="flex justify-between">
+      <h2 class="font-bold text-lg mb-4">Counterfactual Explanations</h2>
+      <div class="text-lg">
+        {{ index + 1 + " of " + counterfactuals.length }}
+      </div>
+    </div>
+    <div class="flex space-x-8 justify-between items-center">
+      <div :class="getArrowStyling('left')" @click="handleClick('left')">
+        <fa-icon icon="arrow-left" size="2x" />
+      </div>
+      <table
+        v-if="counterfactuals.length"
+        class="table-auto text-primary shadow-lg text-left"
+      >
+        <thead class="bg-primary text-white">
+          <table-header
+            :labels="attributeData.labels"
+            :descriptions="attributeData.descriptions"
+            :attributes="[
+              ...Object.keys(counterfactuals[index]),
+              'NN_recommendation',
+            ]"
+          />
+        </thead>
+        <tbody class="divide-gray divide-y">
+          <table-row :rowData="getBaseRow(counterfactuals[index])"></table-row>
+          <table-row
+            :rowData="counterfactuals[index]"
+            :highlight="getHighlightSet(counterfactuals[index])"
+          />
+        </tbody>
+      </table>
+      <div :class="getArrowStyling('right')" @click="handleClick('right')">
+        <fa-icon icon="arrow-right" size="2x" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,6 +56,24 @@ export default {
     },
   },
   methods: {
+    handleClick(direction) {
+      if (
+        (this.index === 0 && direction === "left") ||
+        (this.index === this.counterfactuals.length - 1 && direction == "right")
+      ) {
+        return;
+      }
+      this.index += direction === "left" ? -1 : 1;
+    },
+    getArrowStyling(direction) {
+      if (
+        (this.index === 0 && direction === "left") ||
+        (this.index === this.counterfactuals.length - 1 && direction == "right")
+      ) {
+        return "p-4 flex justify-center items-center rounded-full text-gray";
+      }
+      return "p-4 flex justify-center items-center rounded-full hover:bg-gray-light cursor-pointer";
+    },
     sendDiceRequest() {
       const axios = require("axios");
       axios
@@ -59,7 +86,11 @@ export default {
         });
     },
     getBaseRow(cfRow) {
-      return {"id":"Original Application", ...Object.fromEntries(Object.entries(this.instanceInfo).filter(([key, value]) => cfRow[key] && value))};
+      return Object.fromEntries(
+        Object.entries(this.instanceInfo).filter(
+          ([key, value]) => cfRow[key] && value
+        )
+      );
     },
     getHighlightSet(row) {
       const attributeArray = Object.keys(row);
