@@ -107,6 +107,7 @@ client_id = "client_id"
 choice = "choice"
 all_features = 18
 
+# attribute constraints must exactly conform to the possible values accepted by the model!
 attribute_constraints = [
     {
         attr_name : AttributeNames.balance,
