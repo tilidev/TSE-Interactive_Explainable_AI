@@ -5,6 +5,7 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice = "dice"
     none = "none"
+    # Do not add further types! This could lead to unexpected behavior for some requests.
 
 class ExportFormat(str, Enum):
     comma_separated = "csv"
@@ -100,6 +101,10 @@ const_type = "type"
 values = "values"
 db_path = "database.db"
 csv_path = "results.csv"
+results_key = "results"
+loan_id = "loan_id"
+client_id = "client_id"
+choice = "choice"
 all_features = 18
 
 attribute_constraints = [

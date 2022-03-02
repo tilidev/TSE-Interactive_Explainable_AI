@@ -1,6 +1,4 @@
 import os
-from venv import create
-from importlib_metadata import NullFinder
 import uvicorn
 import multiprocessing as mp
 from tensorflow.keras.models import load_model
@@ -12,7 +10,7 @@ from starlette.status import HTTP_202_ACCEPTED
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import BackgroundTasks, FastAPI, Query
+from fastapi import BackgroundTasks, FastAPI, Query, HTTPException
 from fastapi.params import Body
 from fastapi.responses import FileResponse
 from task_gen import explanation_worker, timeout_explanation
@@ -155,8 +153,11 @@ async def schedule_explanation_generation(
     '''
 
     #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
-    #TODO: Check that instance id is provided and legal for dice requests
-    #TODO remove dice request
+    #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
+    if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
+        raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
+    #TODO adapt documentation to removed dice
+
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
     task_queue.put(job)
