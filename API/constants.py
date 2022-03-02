@@ -5,6 +5,7 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice = "dice"
     none = "none"
+    # Do not add further types! This could lead to unexpected behavior for some requests.
 
 class ExportFormat(str, Enum):
     comma_separated = "csv"
