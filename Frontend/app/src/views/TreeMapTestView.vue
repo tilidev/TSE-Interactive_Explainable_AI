@@ -10,7 +10,7 @@ export default {
   name: "App",
   data() {
     return {
-      gdp: [
+       gdp: [
         {country: "USA", value: 20.5 },
         {country: "China", value: 13.4 },
         {country: "Germany", value: 4.0 },
@@ -19,7 +19,7 @@ export default {
         {country: "India", value: 3.0}
       ]
     };
-  },
+    },
 
   mounted() {
     this.generateArc();
