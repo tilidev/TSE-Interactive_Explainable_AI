@@ -165,16 +165,12 @@ export default {
 
           root = treemap(hierarchy);
 
-    const categories = this.videoGames.children.map(d=>d.name),      
+   
 
-          colors = ['#1C1832', '#9E999D', '#F2259C', '#347EB4', 
-                      '#08ACB6', '#91BB91', '#BCD32F', '#75EDB8',
-                      "#89EE4B", '#AD4FE8', '#D5AB61', '#BC3B3A',
-                      '#F6A1F9', '#87ABBB', '#412433', '#56B870', 
-                      '#FDAB41', '#64624F'],
+          var colors = ['#008000', '#B22222'],
 
           colorScale = d3.scaleOrdinal() // the scale function
-                        .domain(categories) // the data
+                        .domain(['positiv', 'negativ']) // the data
                         .range(colors);    // the way the data should be shown             
 
           
@@ -192,7 +188,7 @@ export default {
                  .attr("y", d=>d.y0)
                  .attr("width",  d=>d.x1 - d.x0)
                  .attr("height", d=>d.y1 - d.y0)
-                 .attr("fill",d=>colorScale(d.data.category) );
+                 .attr("fill",d=>colorScale(d.parent.parent.data.name) );
 
               svg
                  .selectAll("text")
