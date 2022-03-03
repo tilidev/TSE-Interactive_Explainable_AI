@@ -210,8 +210,10 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 def export_results_to(con, format, exp_name = None):
     """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
     and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
+    #TODO check that format is only csv when exp name is given
     query = "SELECT * FROM results WHERE results != 'NULL'"
-    #TODO check if experiment exists 
+    #TODO check if experiment exists
+    #TODO check if results exist 
     if exp_name:
         query += " AND experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
@@ -228,9 +230,17 @@ def export_results_to(con, format, exp_name = None):
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
         results = df[results_key]
+        #TODO df should never be empty
+        first_results = df.loc[0,results_key]
+        list_dict = {}
+        for decision in first_results:
+            print(decision)
+            list_dict[decision[loan_id]] = []
         for res in results:
             for decision in res:
-                df[decision[loan_id]] = decision[choice]
+                list_dict[decision[loan_id]].append(decision[choice])
+        for key in list_dict.keys():
+            df[str(key)]=list_dict[key]
         df = df.drop(columns=results_key)
         df.to_csv(csv_path, index=False)
         return csv_path
