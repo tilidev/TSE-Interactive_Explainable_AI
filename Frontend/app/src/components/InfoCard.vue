@@ -153,6 +153,7 @@ export default {
     },
     resetInstance() {
       this.modificationEnabled = false;
+      this.dropdownAttribute = "";
       this.newPrediction = null;
       this.$emit("reset-instance");
     },
