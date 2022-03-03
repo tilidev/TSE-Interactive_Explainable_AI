@@ -211,16 +211,22 @@ def export_results_to(con, format, exp_name = None):
     """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
     and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
     #TODO check that format is only csv when exp name is given
-    query = "SELECT * FROM results WHERE results != 'NULL'"
-    #TODO check if experiment exists
-    #TODO check if results exist 
+    query = "SELECT * FROM results WHERE results != 'NULL'" 
     if exp_name:
         query += " AND experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
+    if results == []:
+        if format == ExportFormat.comma_separated.value:
+            df = pd.DataFrame()
+            df.to_csv(csv_path)
+            return csv_path
+        else:
+            return []
     result = json.dumps([dict(res) for res in results])
     result_json = json.loads(result)
+    print(result_json)
     for res in result_json:
         results_list = []
         results = json.loads(res[results_key])
@@ -230,7 +236,6 @@ def export_results_to(con, format, exp_name = None):
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
         results = df[results_key]
-        #TODO df should never be empty
         first_results = df.loc[0,results_key]
         list_dict = {}
         for decision in first_results:
