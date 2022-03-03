@@ -1,7 +1,7 @@
 <template>
     <div v-if="tableRows[0]" class="shadow-md inline-block">
       <table class="table-auto text-primary shadow-lg text-left">
-        <thead class="bg-primary text-white">
+        <thead class="bg-primary text-white sticky top-0">
           <table-header
             @apply-sorting="applySorting"
             :labels="attributeData.labels"
@@ -14,7 +14,7 @@
             "
           />
         </thead>
-        <tbody class="divide-gray divide-y">
+        <tbody class="divide-gray divide-y top-8">
           <table-row v-for="row in tableRows" :key="row.id" :rowData="row" />
         </tbody>
       </table>
