@@ -152,11 +152,11 @@ async def schedule_explanation_generation(
     ___
     '''
 
-    #TODO: assume that each attribute is in the instance_info, but only if shap and lime!!!
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
     #TODO adapt documentation to removed dice
+    #TODO: assume that each attribute is in the instance_info
 
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
@@ -164,8 +164,7 @@ async def schedule_explanation_generation(
 
     response_mapping = {
         ExplanationType.lime : LimeResponse,
-        ExplanationType.shap : ShapResponse,
-        ExplanationType.dice : DiceCounterfactualResponse
+        ExplanationType.shap : ShapResponse
     }
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
