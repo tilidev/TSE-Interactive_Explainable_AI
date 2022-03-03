@@ -192,7 +192,7 @@ export default {
                  .attr("y", d=>d.y0)
                  .attr("width",  d=>d.x1 - d.x0)
                  .attr("height", d=>d.y1 - d.y0)
-                 .attr("fill", d=>colorScale(d.data.category));
+                 .attr("fill",d=>colorScale(d.data.category) );
 
               svg
                  .selectAll("text")
@@ -201,8 +201,19 @@ export default {
                  .append("text")
                  .attr("x", d=>d.x0+5)    
                  .attr("y", d=>d.y0+20)   
-                 .text(function(d){ return d.data.name})
-                 .attr("font-size", "19px")
+                 .text(function(d){ if (d.data.value >= 0.02){return d.data.name}})
+                 .attr("font-size", "15px")
+                 .attr("fill", "white")
+              
+              svg
+                 .selectAll("vals")
+                 .data(root.leaves())
+                 .enter()
+                 .append("text")
+                 .attr("x", d=>d.x0+5)    
+                 .attr("y", d=>d.y0+35)    
+                 .text(function(d){ if (d.data.value >= 0.02){return d.data.value}})
+                 .attr("font-size", "9px")
                  .attr("fill", "white")
 }                    
     }
