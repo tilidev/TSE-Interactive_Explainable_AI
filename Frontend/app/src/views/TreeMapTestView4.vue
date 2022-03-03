@@ -193,6 +193,17 @@ export default {
                  .attr("width",  d=>d.x1 - d.x0)
                  .attr("height", d=>d.y1 - d.y0)
                  .attr("fill", d=>colorScale(d.data.category));
+
+              svg
+                 .selectAll("text")
+                 .data(root.leaves())
+                 .enter()
+                 .append("text")
+                 .attr("x", d=>d.x0+5)    
+                 .attr("y", d=>d.y0+20)   
+                 .text(function(d){ return d.data.name})
+                 .attr("font-size", "19px")
+                 .attr("fill", "white")
 }                    
     }
   }
