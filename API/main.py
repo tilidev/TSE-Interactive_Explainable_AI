@@ -86,6 +86,7 @@ async def table_view(request: TableRequest):
     attributes.append(AttributeNames.NN_confidence.value)
     attributes = attributes[1:] # TODO Keep this in mind
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
+    con.close()
     return table_Response
 
 @app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
@@ -93,6 +94,7 @@ async def entire_instance_by_id(id: int):
     '''Returns an entire instance information for the lvl2 view'''
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
+    con.close()
     return output 
 
 @app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"]) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
@@ -208,7 +210,6 @@ async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
     '''Returns the counterfactuals for the given instance. Appends the ai recommendation'''
     con = create_connection(db_path)
     cfs = get_cf(con, instance_id)
-    con = create_connection(db_path)
     tmp_prediction_cf = get_application(con, instance_id, True)
     
     for cf in cfs[counterfactuals]:
@@ -235,6 +236,7 @@ async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
         cf[AttributeNames.NN_recommendation.value] = recommendation
 
     print(cfs)
+    con.close()
     return cfs
 
 @app.get("/processes", tags=["Debugging"])
@@ -270,54 +272,69 @@ async def create_experiment(exp_info : ExperimentInformation):
     exp = exp_info.json()
     con = create_connection(db_path)
     exp_creation(con, exp_info.experiment_name, exp)
+    con.close()
 
 @app.get("/experiment/all", response_model=List[str], tags=["Experimentation"])
 async def experiment_list():
     """Returns a list of all experiment names, which can be used to access specific experiments."""
     con = create_connection(db_path)
-    return get_all_exp(con) 
+    exp_list = get_all_exp(con)
+    con.close()
+    return exp_list
 
 @app.get("/experiment", response_model=ExperimentInformation, tags=["Experimentation"])
 async def experiment_by_name(name: str):
     """Returns the experiment setup associated to the experiment name."""
     con = create_connection(db_path)
-    return get_exp_info(con, name)
+    exp_info = get_exp_info(con, name)
+    con.close()
+    return exp_info
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
     """Returns the next available client id and adds that client to the results list."""
     con = create_connection(db_path)
-    return create_id(con, gen.experiment_name)
+    return_id = create_id(con, gen.experiment_name)
+    con.close()
+    return return_id
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
     """Adds the results to the results table."""
     con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
+    con.close()
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results():
     """Returns the results for the chosen experiment in json format"""
     con = create_connection(db_path)
-    return export_results_to(con, ExportFormat.js_object_notation.value)
+    result_json = export_results_to(con, ExportFormat.js_object_notation.value)
+    con.close()
+    return result_json
 
 @app.get("/single/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def single_export_results(experiment_name: str):
     """Returns the results for the chosen experiment in json format"""
     con = create_connection(db_path)
-    return export_results_to(con, ExportFormat.js_object_notation.value, experiment_name)
+    result_json = export_results_to(con, ExportFormat.js_object_notation.value, experiment_name)
+    con.close()
+    return result_json
 
 @app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
 async def single_export_results_csv(experiment_name: str):
     """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
     con = create_connection(db_path)
-    return export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
+    result_csv_path = export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
+    con.close()
+    return result_csv_path
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
     """Deletes all results from the given experiment from the results table if that experiment exists."""
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
+    con.close()
     # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
@@ -325,6 +342,7 @@ async def delete_experiment(experiment_name: str):
     """Deletes an experiment from the experiments table if it exists there"""
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
+    con.close()
     # TODO what would be the best response model
 
 

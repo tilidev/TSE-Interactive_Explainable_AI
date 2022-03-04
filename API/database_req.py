@@ -337,8 +337,6 @@ def check_exp_exists(con, exp_name:str):
         return False
     
 
-# @Isabelle, wird hier bewusst nicht die db con geclosed?
-
 
 
 
