@@ -24,7 +24,6 @@ def get_applications(con, start:int, num = 20):
     query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
     c.execute(query)
     result = c.fetchall()
-    con.close()
     return result
 
 def get_application(con, ident:int, json_str = False):
@@ -40,7 +39,6 @@ def get_application(con, ident:int, json_str = False):
         for ix in rows:
             json_dump = json.dumps(dict(ix))
     result = json.loads(json_dump)
-    con.close()
     return result
 
 
@@ -79,7 +77,6 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
         rows = json.loads(rows)
-    con.close()
     return rows
 
 
@@ -290,7 +287,6 @@ def cf_to_db(con, path:str):
         query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
         c.execute(query)
     con.commit()
-    con.close()
 
 def cf_response_format_db(con, path:str):
     """Reading counterfactuals stored in a json from the given path, formatting them and adding them to the database."""
