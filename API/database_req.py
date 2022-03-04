@@ -133,11 +133,9 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
-    exists_query = "SELECT name FROM experiments WHERE name = '" + exp_name + "'"
-    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) == 0:
+    if check_exp_exists(con, exp_name):
+        c = con.cursor()
+        insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
         c.execute(insert_query)
         con.commit()
     
@@ -172,25 +170,28 @@ def create_id(con, exp_name:str):
     """Queries the database for already existing ids for that experiment and chooses the lowest available id.
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
     :returns: json with key client_id and the newly generated id"""
-    #TODO check if experiment exists
-    query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
-    c = con.cursor()
-    ids = c.execute(query_existing_id).fetchall()
-    return_id = 0
-    #TODO simplify
-    if len(ids) > 0:
-        for id in ids:
-            if id[0] >= return_id: #index 0 because tuple is accessed
-                return_id = id[0] + 1
-    #create entry with that id 
-    query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
-    c.execute(query_insert)
-    con.commit()
-    return_dict = {
-        client_id: return_id
-    }
-    res = json.loads(json.dumps(return_dict))
-    return res
+    if check_exp_exists(con, exp_name):
+        query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
+        c = con.cursor()
+        ids = c.execute(query_existing_id).fetchall()
+        return_id = 0
+        #TODO simplify
+        if len(ids) > 0:
+            for id in ids:
+                if id[0] >= return_id: #index 0 because tuple is accessed
+                    return_id = id[0] + 1
+        query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
+        c.execute(query_insert)
+        con.commit()
+        return_dict = {
+            client_id: return_id
+        }
+        res = json.loads(json.dumps(return_dict))
+        return res
+    else:
+        #TODO what should be the return if no id could be created?
+        return {}
+    
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
@@ -200,11 +201,13 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
-    #TODO check if experiment exists
-    query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
-    c = con.cursor()
-    c.execute(query)
-    con.commit()
+    #TODO check if client id exists
+    if check_exp_exists(con, exp_name):
+        query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
+        c = con.cursor()
+        c.execute(query)
+        con.commit()
+    
 
 #export results
 def export_results_to(con, format, exp_name = None):
@@ -256,23 +259,19 @@ def export_results_to(con, format, exp_name = None):
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
     """Checks if an experiment with the given name exists and deletes all results for that experiment
-    from the results table if yes."""
-    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
-    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) > 0:
+    from the results table if yes."""    
+    if check_exp_exists(con, exp_name):
+        reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+        c = con.cursor()
         c.execute(reset_query)
         con.commit()
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
-    exists_query = 'SELECT name FROM experiments WHERE name = "' + exp_name + '"'
-    delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) > 0:
+    if check_exp_exists(con, exp_name):
+        c = con.cursor()
+        delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
         c.execute(delete_query)
         con.commit()
 
@@ -325,6 +324,18 @@ def get_cf(con, instance_id: int):
     res_str = result[0]
     res_json = json.loads(res_str)
     return res_json
+
+
+def check_exp_exists(con, exp_name:str):
+    """Helper method that is used to check if for the given experiment name an actual experiment exists in the database. """
+    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
+    c = con.cursor()
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        return True
+    else:
+        return False
+    
 
 # @Isabelle, wird hier bewusst nicht die db con geclosed?
 
