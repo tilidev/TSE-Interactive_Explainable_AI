@@ -77,6 +77,8 @@ class CounterFactual(BaseModel):
     other_debtors : Optional[str] = Field(None, alias=AttributeNames.other_debtors.value)
     people_liable : Optional[str] = Field(None, alias=AttributeNames.people_liable.value)
     telephone : Optional[str] = Field(None, alias=AttributeNames.telephone.value)
+    NN_recommendation : str = Field(alias=AttributeNames.NN_recommendation.value)
+    NN_confidence : float = Field(alias=AttributeNames.NN_confidence.value)
 
 class PredictionResponse(BaseModel):
     '''Defines the response format for a prediction call.'''

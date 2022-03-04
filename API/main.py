@@ -205,10 +205,37 @@ async def shap_explanation(uid: UUID):
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
-    '''Returns the counterfactuals for the request or the status of the processing of the original request (`schedule_explanation_generation`).'''
+    '''Returns the counterfactuals for the given instance. Appends the ai recommendation'''
     con = create_connection(db_path)
-    print(get_cf(con, instance_id))
-    return get_cf(con, instance_id)
+    cfs = get_cf(con, instance_id)
+    con = create_connection(db_path)
+    tmp_prediction_cf = get_application(con, instance_id, True)
+    
+    for cf in cfs[counterfactuals]:
+        tmp = tmp_prediction_cf.copy() # must be the same as in databse
+        for key in cf.keys():
+            tmp[key] = cf[key]
+        
+        tmp_pred = {}
+        for key in feature_names_model_ordered:
+            tmp_pred[key] = tmp[rename_dict[key]]
+        print(tmp_pred)
+        df = pd.DataFrame(tmp_pred, index=[0])
+
+        data_to_predict = preprocessor.transform(df)
+        prediction = tf_model.predict(data_to_predict)[0][0] # list in list
+        if prediction < 0.5:
+            confidence = 1 - prediction
+            recommendation = "Approve"
+        else:
+            confidence = prediction
+            recommendation = "Reject"
+        
+        cf[AttributeNames.NN_confidence.value] = confidence
+        cf[AttributeNames.NN_recommendation.value] = recommendation
+
+    print(cfs)
+    return cfs
 
 @app.get("/processes", tags=["Debugging"])
 async def process_information():

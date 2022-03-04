@@ -326,7 +326,7 @@ def get_cf(con, instance_id: int):
     res_json = json.loads(res_str)
     return res_json
 
-
+# @Isabelle, wird hier bewusst nicht die db con geclosed?
 
 
 
