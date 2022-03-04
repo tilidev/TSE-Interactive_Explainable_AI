@@ -161,6 +161,10 @@ def get_exp_info(con, name:str):
     result_tuple = results[0]
     result_str = result_tuple[0]
     result_json = json.loads(result_str)
+    participants_query = "SELECT * FROM results WHERE experiment_name = '" + name +"' AND results != 'NULL'"
+    participants = c.execute(participants_query).fetchall()
+    number_participants = len(participants)
+    result_json["num_participants"] = number_participants
     return result_json
 
 #for generate_clientID
@@ -219,7 +223,6 @@ def export_results_to(con, format, exp_name = None):
             return []
     result = json.dumps([dict(res) for res in results])
     result_json = json.loads(result)
-    print(result_json)
     for res in result_json:
         results_list = []
         results = json.loads(res[results_key])
@@ -232,7 +235,6 @@ def export_results_to(con, format, exp_name = None):
         first_results = df.loc[0,results_key]
         list_dict = {}
         for decision in first_results:
-            print(decision)
             list_dict[decision[loan_id]] = []
         for res in results:
             for decision in res:

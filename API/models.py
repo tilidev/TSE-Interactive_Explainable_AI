@@ -161,6 +161,7 @@ class ExperimentInformation(BaseModel):
     iswhatif : bool # Should only be True if ismodify is also true
     exp_type : ExplanationType
     experiment_name : str
+    num_participants : Optional[int]
     survey_link : Optional[str] = Field(None, description="URL to a survey")
     description : Optional[str] = Field(None, description="description for the experiment")
 
