@@ -174,12 +174,9 @@ def create_id(con, exp_name:str):
         query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
-        return_id = 0
-        #TODO simplify
-        if len(ids) > 0:
-            for id in ids:
-                if id[0] >= return_id: #index 0 because tuple is accessed
-                    return_id = id[0] + 1
+        last_id_element = ids.pop()
+        #index 0 is needed because of the tuple format
+        return_id = last_id_element[0] + 1
         query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
         c.execute(query_insert)
         con.commit()
@@ -188,9 +185,6 @@ def create_id(con, exp_name:str):
         }
         res = json.loads(json.dumps(return_dict))
         return res
-    else:
-        #TODO what should be the return if no id could be created?
-        return {}
     
 
 #for results to database
