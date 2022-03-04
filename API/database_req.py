@@ -1,6 +1,7 @@
 import sqlite3 as sql
 import json
 from typing import List
+from numpy import number
 import pandas as pd
 from models import ExperimentResults
 
@@ -192,12 +193,10 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
-    #TODO check if client id exists
-    if check_exp_exists(con, exp_name):
-        query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
-        c = con.cursor()
-        c.execute(query)
-        con.commit()
+    query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
+    c = con.cursor()
+    c.execute(query)
+    con.commit()
     
 
 #export results
@@ -267,26 +266,6 @@ def delete_exp(con, exp_name: str):
         con.commit()
 
 
-def cf_to_db(con, path:str):
-    """Initial method for adding counterfactuals to database. Is not used anymore as cfs_response_format is added."""
-    c = con.cursor()
-    with open(path,'r') as file:
-        cf = json.load(file)
-    for key in cf.keys():
-        list_of_cf = cf[key]
-        list_to_return = []
-        d = {}
-        for single_cf in list_of_cf:
-            instance_dict = {}
-            #TODO lime-exp-mapping should be renamed if used here
-            for index in lime_exp_mapping.keys():
-                instance_dict[lime_exp_mapping[index]] = single_cf[index]
-            #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
-            list_to_return.append(instance_dict)
-        d[counterfactuals] = list_to_return
-        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
-        c.execute(query)
-    con.commit()
 
 def cf_response_format_db(con, path:str):
     """Reading counterfactuals stored in a json from the given path, formatting them and adding them to the database."""
@@ -306,14 +285,14 @@ def cf_response_format_db(con, path:str):
 def get_cf(con, instance_id: int):
     """For that instance id the pregenerated counterfactuals are returned from the dice table if the id is
     between 0 and 999."""
-    #TODO check id 
-    query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
-    c = con.cursor()
-    results = c.execute(query).fetchall()
-    result = results[0]
-    res_str = result[0]
-    res_json = json.loads(res_str)
-    return res_json
+    if instance_id in range(number_of_applications):
+        query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
+        c = con.cursor()
+        results = c.execute(query).fetchall()
+        result = results[0]
+        res_str = result[0]
+        res_json = json.loads(res_str)
+        return res_json
 
 
 def check_exp_exists(con, exp_name:str):

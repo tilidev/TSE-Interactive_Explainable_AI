@@ -106,6 +106,7 @@ loan_id = "loan_id"
 client_id = "client_id"
 choice = "choice"
 all_features = 18
+number_of_applications = 1000
 
 # attribute constraints must exactly conform to the possible values accepted by the model!
 attribute_constraints = [
