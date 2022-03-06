@@ -2,10 +2,6 @@ module.exports = {
   purge: ['./public/**/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    fontFamily: {
-        sans: ['Avenir', 'sans-serif'],
-        serif: ['Merriweather', 'serif'],
-      },
     extend: {
       boxShadow: {
         'blurred': '0 2px 10px 3px rgb(0 0 0 / 0.1)',
