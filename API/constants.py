@@ -256,6 +256,9 @@ attribute_constraints = [
     }
 ]
 
+# Dictionary generated from attribute constraints to check values passed to API
+cat_attr_check = {constr[attr_name].value : constr[values] for constr in attribute_constraints if "NN" not in constr[attr_name] and constr[const_type] is categorical}
+
 rename_dict = {
     'balance_' : AttributeNames.balance.value,
     'duration_' : AttributeNames.duration.value,
