@@ -1,6 +1,7 @@
 import sqlite3 as sql
 import json
 from typing import List
+from numpy import number
 import pandas as pd
 from models import ExperimentResults
 
@@ -24,7 +25,6 @@ def get_applications(con, start:int, num = 20):
     query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
     c.execute(query)
     result = c.fetchall()
-    con.close()
     return result
 
 def get_application(con, ident:int, json_str = False):
@@ -40,7 +40,6 @@ def get_application(con, ident:int, json_str = False):
         for ix in rows:
             json_dump = json.dumps(dict(ix))
     result = json.loads(json_dump)
-    con.close()
     return result
 
 
@@ -79,7 +78,6 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     if json_str:
         rows = json.dumps([dict(ix) for ix in rows])
         rows = json.loads(rows)
-    con.close()
     return rows
 
 
@@ -133,11 +131,9 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
-    exists_query = "SELECT name FROM experiments WHERE name = '" + exp_name + "'"
-    insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) == 0:
+    if check_exp_exists(con, exp_name):
+        c = con.cursor()
+        insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
         c.execute(insert_query)
         con.commit()
     
@@ -165,6 +161,10 @@ def get_exp_info(con, name:str):
     result_tuple = results[0]
     result_str = result_tuple[0]
     result_json = json.loads(result_str)
+    participants_query = "SELECT * FROM results WHERE experiment_name = '" + name +"' AND results != 'NULL'"
+    participants = c.execute(participants_query).fetchall()
+    number_participants = len(participants)
+    result_json["num_participants"] = number_participants
     return result_json
 
 #for generate_clientID
@@ -172,25 +172,22 @@ def create_id(con, exp_name:str):
     """Queries the database for already existing ids for that experiment and chooses the lowest available id.
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
     :returns: json with key client_id and the newly generated id"""
-    #TODO check if experiment exists
-    query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
-    c = con.cursor()
-    ids = c.execute(query_existing_id).fetchall()
-    return_id = 0
-    #TODO simplify
-    if len(ids) > 0:
-        for id in ids:
-            if id[0] >= return_id: #index 0 because tuple is accessed
-                return_id = id[0] + 1
-    #create entry with that id 
-    query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
-    c.execute(query_insert)
-    con.commit()
-    return_dict = {
-        client_id: return_id
-    }
-    res = json.loads(json.dumps(return_dict))
-    return res
+    if check_exp_exists(con, exp_name):
+        query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
+        c = con.cursor()
+        ids = c.execute(query_existing_id).fetchall()
+        last_id_element = ids.pop()
+        #index 0 is needed because of the tuple format
+        return_id = last_id_element[0] + 1
+        query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
+        c.execute(query_insert)
+        con.commit()
+        return_dict = {
+            client_id: return_id
+        }
+        res = json.loads(json.dumps(return_dict))
+        return res
+    
 
 #for results to database
 def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.SingleResult]):
@@ -200,23 +197,30 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
-    #TODO check if experiment exists
     query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
     c = con.cursor()
     c.execute(query)
     con.commit()
+    
 
 #export results
 def export_results_to(con, format, exp_name = None):
     """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
     and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
-    query = "SELECT * FROM results WHERE results != 'NULL'"
-    #TODO check if experiment exists 
+    #TODO check that format is only csv when exp name is given
+    query = "SELECT * FROM results WHERE results != 'NULL'" 
     if exp_name:
         query += " AND experiment_name =  '" + exp_name + "'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
+    if results == []:
+        if format == ExportFormat.comma_separated.value:
+            df = pd.DataFrame()
+            df.to_csv(csv_path)
+            return csv_path
+        else:
+            return []
     result = json.dumps([dict(res) for res in results])
     result_json = json.loads(result)
     for res in result_json:
@@ -228,9 +232,15 @@ def export_results_to(con, format, exp_name = None):
     if format == ExportFormat.comma_separated.value:
         df = pd.DataFrame(result_json)
         results = df[results_key]
+        first_results = df.loc[0,results_key]
+        list_dict = {}
+        for decision in first_results:
+            list_dict[decision[loan_id]] = []
         for res in results:
             for decision in res:
-                df[decision[loan_id]] = decision[choice]
+                list_dict[decision[loan_id]].append(decision[choice])
+        for key in list_dict.keys():
+            df[str(key)]=list_dict[key]
         df = df.drop(columns=results_key)
         df.to_csv(csv_path, index=False)
         return csv_path
@@ -241,48 +251,23 @@ def export_results_to(con, format, exp_name = None):
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
     """Checks if an experiment with the given name exists and deletes all results for that experiment
-    from the results table if yes."""
-    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
-    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) > 0:
+    from the results table if yes."""    
+    if check_exp_exists(con, exp_name):
+        reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+        c = con.cursor()
         c.execute(reset_query)
         con.commit()
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
-    exists_query = 'SELECT name FROM experiments WHERE name = "' + exp_name + '"'
-    delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) > 0:
+    if check_exp_exists(con, exp_name):
+        c = con.cursor()
+        delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
         c.execute(delete_query)
         con.commit()
 
 
-def cf_to_db(con, path:str):
-    """Initial method for adding counterfactuals to database. Is not used anymore as cfs_response_format is added."""
-    c = con.cursor()
-    with open(path,'r') as file:
-        cf = json.load(file)
-    for key in cf.keys():
-        list_of_cf = cf[key]
-        list_to_return = []
-        d = {}
-        for single_cf in list_of_cf:
-            instance_dict = {}
-            #TODO lime-exp-mapping should be renamed if used here
-            for index in lime_exp_mapping.keys():
-                instance_dict[lime_exp_mapping[index]] = single_cf[index]
-            #instance_dict[AttributeNames.NN_recommendation.value] = single_cf[18]
-            list_to_return.append(instance_dict)
-        d[counterfactuals] = list_to_return
-        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES( " + str(key) + ", '" + json.dumps(d) + "');"
-        c.execute(query)
-    con.commit()
-    con.close()
 
 def cf_response_format_db(con, path:str):
     """Reading counterfactuals stored in a json from the given path, formatting them and adding them to the database."""
@@ -302,16 +287,26 @@ def cf_response_format_db(con, path:str):
 def get_cf(con, instance_id: int):
     """For that instance id the pregenerated counterfactuals are returned from the dice table if the id is
     between 0 and 999."""
-    #TODO check id 
-    query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
+    if instance_id in range(number_of_applications):
+        query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
+        c = con.cursor()
+        results = c.execute(query).fetchall()
+        result = results[0]
+        res_str = result[0]
+        res_json = json.loads(res_str)
+        return res_json
+
+
+def check_exp_exists(con, exp_name:str):
+    """Helper method that is used to check if for the given experiment name an actual experiment exists in the database. """
+    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
     c = con.cursor()
-    results = c.execute(query).fetchall()
-    result = results[0]
-    res_str = result[0]
-    res_json = json.loads(res_str)
-    return res_json
-
-
+    c.execute(exists_query)
+    if len(c.fetchall()) > 0:
+        return True
+    else:
+        return False
+    
 
 
 

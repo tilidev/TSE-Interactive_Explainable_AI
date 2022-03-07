@@ -1,20 +1,17 @@
 import pandas as pd
-import pickle
-from pandas.core.frame import DataFrame
-import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
+from constants import *
 
 
 def data_loader(path='Data/german.csv', raw=False, remove_outliers=True):
     """
-    Loads the german credit data
+    Method from the xai reference project, that loads the german credit data
     :param raw: If true, reads the raw dataframe, else it removes columns unused for training
     :param path: Path to file
     :return: dataframe
     """
     df = pd.read_csv(path, index_col=0)
-
     if raw:
         return df
     else:
@@ -34,8 +31,9 @@ def data_loader(path='Data/german.csv', raw=False, remove_outliers=True):
 
         return df
 
-#preprocessing steps from German_Credit_NN_final_ey
+
 def preprocessX(df):
+    """This method contains the preprocessing steps from the xai reference project."""
     X = df.drop(columns='label')
 
     from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
@@ -56,6 +54,7 @@ def preprocessX(df):
     return X
 
 def createDataframeForDB(deleteLabel=True):
+    """This method prepares the data to be added to the database. It determines the model prediction and confidence and adds it to the dataframe."""
     df = data_loader()
     data = preprocessX(df)
     model = load_model('smote_ey.tf')
@@ -69,8 +68,8 @@ def createDataframeForDB(deleteLabel=True):
             results[i] = 1 - results[i]
             recommendation.append('Approve')
             
-    df['NN_confidence'] = results
-    df['NN_recommendation']= np.array(recommendation)
+    df[AttributeNames.NN_confidence.value] = results
+    df[AttributeNames.NN_recommendation.value]= np.array(recommendation)
     if (deleteLabel):
         df.drop(columns='label', inplace=True)
 

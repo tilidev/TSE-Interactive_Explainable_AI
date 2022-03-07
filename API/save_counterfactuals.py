@@ -5,7 +5,6 @@ from tensorflow.python.keras.saving.save import load_model
 from DataLoader_ey import data_loader
 import tensorflow as tf
 import json
-from multiprocessing import Process, Queue
 
 def process_instance(query_instance, exp):
     dice_exp = exp.generate_counterfactuals(query_instance, total_CFs=5, desired_class="opposite", posthoc_sparsity_algorithm="binary")
