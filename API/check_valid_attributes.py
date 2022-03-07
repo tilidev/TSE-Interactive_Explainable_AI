@@ -40,21 +40,23 @@ assert r.json()["NN_recommendation"] == "Reject" and r.json()["NN_confidence"] =
 
 faulty_values = {}
 
+# Check values for each categorical constraint
 for constraint in attribute_constraints:
     if constraint["type"] == "continuous" or "NN" in constraint["attribute"].value:
-        continue
+        continue # skip anything that isn't continuous or does not have anything to do with 
     attr_name = constraint["attribute"].value
     attr_values = constraint["values"]
     faulty_list = []
     print(f"\033[92mINFO:\033[0m checking {attr_name} for model misbehaving.")
-    for val in attr_values:
+    for val in attr_values: # check every specified value
         print(f"    checking {val}")
         tmp = baseline_req_api.copy()
-        tmp[attr_name] = val
+        tmp[attr_name] = val # only change one value, to see if the prediction changes. If it does, then the value is correctly specified
         tmp_r = requests.post("http://localhost:8000/instance/predict", json=tmp)
         try:
             assert not (tmp_r.json()["NN_recommendation"] == "Reject" and tmp_r.json()["NN_confidence"] == baseline_value)
-        except AssertionError:
+        except AssertionError: 
+            # gets executed when the value didn't change the prediction, which means that the model does not know the value and has no encoding for it
             print(f"    \033[91mWARNING\033[0m: {val} is wrongly specified for attribute {attr_name}")
             faulty_list.append(val)
     if len(faulty_list) > 0:
