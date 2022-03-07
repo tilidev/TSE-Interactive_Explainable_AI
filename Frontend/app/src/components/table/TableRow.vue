@@ -1,6 +1,6 @@
 <template>
   <tr
-    class="bg-white hover:bg-gray cursor-pointer"
+    class="bg-white hover:bg-gray cursor-pointer text-sm"
     @click="
       this.router.push({
         name: 'Application View',

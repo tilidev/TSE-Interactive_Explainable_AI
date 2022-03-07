@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr class="text-sm">
     <th
       class="py-5 px-8 font-bold"
       v-for="attribute in attributes"
