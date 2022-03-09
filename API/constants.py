@@ -236,7 +236,7 @@ attribute_constraints = [
         attr_name : AttributeNames.NN_confidence,
         const_type : continuous,
         category : "other",
-        lower_bound : 0,
+        lower_bound : 0.5,
         upper_bound : 1,
         attr_description : "Indicates how confident the AI is in it's decision."
     },
