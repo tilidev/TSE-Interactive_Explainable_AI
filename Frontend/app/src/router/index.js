@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
 import DatasetExplorer from "../views/DatasetExplorer.vue";
 import InstancePage from "../views/InstancePage.vue";
 import ExperimentPage from "../views/ExperimentPage.vue"
