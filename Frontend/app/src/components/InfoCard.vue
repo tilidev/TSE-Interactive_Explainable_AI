@@ -63,7 +63,7 @@
             />
           </div>
         </div>
-        <div class="flex flex-col space-y-4" v-if="newPrediction != null">
+        <div class="flex flex-col space-y-4" v-if="newPrediction != null && JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance)">
           <div class="text-lg">New Recommendation</div>
           <div class="flex space-x-4">
             <recommendation-vis
