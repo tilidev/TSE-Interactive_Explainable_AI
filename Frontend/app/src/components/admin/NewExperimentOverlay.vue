@@ -266,6 +266,10 @@ export default {
         this.errorMessages.modwhatif =
           "Error, What-if analysis is not possible with this explanation type";
       }
+      const urlPattern = /\b(https?:\/\/\S*\b)/g;
+      if (!urlPattern.test(this.surveyLink) && this.surveyLink) {
+        "Error, invalid url format";
+      }
       if (Object.keys(this.errorMessages).length === 0) {
         this.createExperiment();
       }
