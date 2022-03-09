@@ -1,7 +1,7 @@
 <template>
-  <div class="shadow-md bg-white px-4 py-2">
-    <div class="m-2">Original value:</div>
-    <div class="m-2 cursor-pointer">{{ originalValue }}</div>
+  <div class="shadow-blurred bg-white px-4 py-2">
+    <div class="m-2 font-bold">Original value:</div>
+    <div class="m-2 cursor-pointer"  @click="applyValue(originalValue)">{{ originalValue }}</div>
     <hr />
     <div v-if="attributeData.types[attribute] == 'categorical'">
       <div
