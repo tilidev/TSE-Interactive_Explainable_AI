@@ -39,21 +39,23 @@
         class="absolute inset-0 z-40 opacity-25 bg-black"
       ></div>
     </div>
-    <div class="flex flex-col items-stretch mx-8">
-      <div class="flex flex-row-reverse gap-x-4 pb-4 justify-start">
-        <outline-button @click="toggleCustomize = !toggleCustomize"
-          ><fa-icon icon="table" class="mr-2" />Customize</outline-button
-        >
-        <outline-button @click="toggleFilter = !toggleFilter"
-          ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
-        >
+    <div class="flex flex-col items-center mx-8">
+      <div class="flex flex-col items-end">
+        <div class="flex flex-row-reverse gap-x-4 pb-4 justify-start">
+          <outline-button @click="toggleCustomize = !toggleCustomize"
+            ><fa-icon icon="table" class="mr-2" />Customize</outline-button
+          >
+          <outline-button @click="toggleFilter = !toggleFilter"
+            ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
+          >
+        </div>
+        <data-table
+          @apply-sorting="applySorting"
+          :tableRows="tableRows"
+          :attributeData="attributeData"
+          :optionsData="requestBody"
+        />
       </div>
-      <data-table
-        @apply-sorting="applySorting"
-        :tableRows="tableRows"
-        :attributeData="attributeData"
-        :optionsData="requestBody"
-      />
     </div>
   </div>
 </template>

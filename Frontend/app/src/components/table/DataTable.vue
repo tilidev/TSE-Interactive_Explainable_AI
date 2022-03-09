@@ -1,6 +1,6 @@
 <template>
     <div v-if="tableRows[0]" class="shadow-md inline-block">
-      <table class="table-auto text-primary shadow-lg text-left">
+      <table class="table-auto text-primary shadow-lg text-left block">
         <thead class="bg-primary text-white sticky top-0">
           <table-header
             @apply-sorting="applySorting"
