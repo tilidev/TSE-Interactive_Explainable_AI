@@ -25,7 +25,7 @@
                 space-x-16
                 items-center
               "
-              v-for="category in Object.keys(getReducedCategories())"
+              v-for="category in Object.keys(reducedCategories)"
               :key="category"
             >
               <div>
@@ -33,7 +33,7 @@
               </div>
               <div class="flex space-x-4">
                 <div
-                  v-for="attribute of attributeCategories[category]"
+                  v-for="attribute of reducedCategories[category]"
                   :key="attribute"
                 >
                   <gray-button
@@ -83,14 +83,9 @@ export default {
       selectedAttributes: [...this.currentAttributes],
     };
   },
-  inject: ["attributeData", "attributeCategories"],
+  inject: ["attributeData", "reducedCategories"],
 
   methods: {
-    getReducedCategories() {
-      // eslint-disable-next-line no-unused-vars
-      const { other, ...rest } = this.attributeCategories;
-      return rest;
-    },
     addAttribute(attr) {
       if (this.selectedAttributes.length < 5) {
         this.selectedAttributes.push(attr);

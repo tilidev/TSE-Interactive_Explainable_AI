@@ -4,7 +4,7 @@
     <div class="flex text-sm justify-between">
       <div
         class="grid grid-cols-auto grid-flow-col gap-x-6 grid-rows-8"
-        v-for="category in Object.keys(attributeCategories)"
+        v-for="category in Object.keys(reducedCategories)"
         :key="category"
       >
         <div class="col-span-2 col-start-1 text-lg capitalize -mt-2 mb-1">
@@ -12,14 +12,14 @@
         </div>
         <div
           class="col-start-1 text-primary-light font-bold"
-          v-for="attribute in attributeCategories[category]"
+          v-for="attribute in reducedCategories[category]"
           :key="attribute"
         >
           {{ attributeData.labels[attribute] }}:
         </div>
         <div
           class="col-start-2 capitalize"
-          v-for="attribute in attributeCategories[category]"
+          v-for="attribute in reducedCategories[category]"
           :key="attribute"
         >
           <span :class="getValueStyling(attribute)">
@@ -170,7 +170,7 @@ export default {
       this.sendPredictionRequest();
     },
   },
-  inject: ["attributeCategories", "apiUrl"],
+  inject: ["reducedCategories", "apiUrl"],
 };
 </script>
 

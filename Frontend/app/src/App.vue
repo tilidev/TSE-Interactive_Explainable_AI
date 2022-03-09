@@ -39,6 +39,11 @@ export default {
         loan: [],
         other: [],
       },
+      reducedCategories: {
+        financial: [],
+        personal: [],
+        loan: [],
+      },
       attributeData: {
         descriptions: {},
         labels: {
@@ -96,6 +101,11 @@ export default {
               attr
             );
           }
+            if (this.reducedCategories[this.attributeData.categories[attr]]) {
+            this.reducedCategories[this.attributeData.categories[attr]].push(
+              attr
+            );
+          }
         }
       });
     },
@@ -105,6 +115,7 @@ export default {
       attributeData: this.attributeData,
       attributeCategories: this.attributeCategories,
       apiUrl: this.apiUrl,
+      reducedCategories: this.reducedCategories,
     };
   },
 };
