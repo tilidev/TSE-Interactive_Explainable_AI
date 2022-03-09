@@ -64,17 +64,22 @@
               class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentData.survey_link"
               v-if="experimentData.survey_link"
-            ></a>
+              >{{ experimentData.survey_link }}</a
+            >
             <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
             <a
               class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentLink"
               >{{ experimentLink }}</a
             >
-            <default-button @click="downloadFile(true)" class="col-start-1 col-span-2"
+            <default-button
+              @click="downloadFile(true)"
+              class="col-start-1 col-span-2"
               >Download results (CSV)</default-button
             >
-            <default-button @click="downloadFile(false)" class="col-start-3 col-span-1"
+            <default-button
+              @click="downloadFile(false)"
+              class="col-start-3 col-span-1"
               >Download results (JSON)</default-button
             >
             <default-button
@@ -123,9 +128,19 @@ export default {
     downloadFile(csv) {
       const axios = require("axios");
 
-      axios.get(this.apiUrl + "single/experiment/results/export/" + (csv ? "csv" : "") + "?experiment_name=" + this.experimentName, { responseType: "blob" })
+      axios
+        .get(
+          this.apiUrl +
+            "single/experiment/results/export/" +
+            (csv ? "csv" : "") +
+            "?experiment_name=" +
+            this.experimentName,
+          { responseType: "blob" }
+        )
         .then((response) => {
-          const blob = new Blob([response.data], { type: csv ? "text/csv" : "application/json" });
+          const blob = new Blob([response.data], {
+            type: csv ? "text/csv" : "application/json",
+          });
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
           link.download = this.experimentName + "_results";
