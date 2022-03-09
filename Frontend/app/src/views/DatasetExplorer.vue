@@ -40,7 +40,7 @@
       ></div>
     </div>
     <div class="flex flex-col items-center mx-8">
-      <div class="flex flex-col items-end">
+      <div class="flex flex-col" :class="getItemsClass()">
         <div class="flex flex-row-reverse gap-x-4 pb-4 justify-start">
           <outline-button @click="toggleCustomize = !toggleCustomize"
             ><fa-icon icon="table" class="mr-2" />Customize</outline-button
@@ -89,6 +89,12 @@ export default {
     this.loadMoreRows();
   },
   methods: {
+    getItemsClass() {
+      if (this.tableRows.length) {
+        return "items-end";
+      }
+      return "items-center";
+    },
     updateFilter(newFilter) {
       this.requestBody.filter = newFilter;
       this.requestBody.offset = 0;
