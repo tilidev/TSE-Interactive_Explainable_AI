@@ -171,22 +171,24 @@ def get_exp_info(con, name:str):
 def create_id(con, exp_name:str):
     """Queries the database for already existing ids for that experiment and chooses the lowest available id.
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
-    :returns: json with key client_id and the newly generated id"""
-    if check_exp_doesnt_exist(con, exp_name):
+    :returns: json with key client_id and the newly generated id or None if the experiment does not exist"""
+    if check_exp_exists(con, exp_name):
         query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
-        last_id_element = ids.pop()
+        if len(ids) > 0:
+            last_id_element = max(ids)[0] # makes sure there is no id with higher value, max also works with single valued tuples
+        else:
+            last_id_element = 0
         #index 0 is needed because of the tuple format
-        return_id = last_id_element[0] + 1
+        return_id = last_id_element + 1
         query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
         c.execute(query_insert)
         con.commit()
         return_dict = {
             client_id: return_id
         }
-        res = json.loads(json.dumps(return_dict))
-        return res
+        return return_dict
     
 
 #for results to database
@@ -246,7 +248,6 @@ def export_results_to(con, format, exp_name = None):
         return csv_path
     return result_json
 
-    
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
@@ -306,9 +307,11 @@ def check_exp_doesnt_exist(con, exp_name:str):
         return False
     else:
         return True
-    
 
-
-
-
-
+def check_exp_exists(con, exp_name: str):
+    """Checks whether or not an experiment with the given name exists in the table `experiments`. Returns true if it exists."""
+    exists_query = f'SELECT name FROM experiments WHERE name = "{exp_name}"'
+    query_res = con.execute(exists_query).fetchall()
+    if len(query_res) > 0:
+        return True
+    return False
