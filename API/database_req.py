@@ -21,7 +21,7 @@ def get_applications(con, start:int, num = 20):
     Needs a connection con to the database.db (use create_connection) and a start value as int """    
     c = con.cursor()
     end = int(start) + int(num)
-    query = 'SELECT * FROM applicants WHERE ident >= ' + str(start) + ' AND ident < ' + str(end)  
+    query = f'SELECT * FROM applicants WHERE ident >= {start} AND ident < {end}' 
     c.execute(query)
     result = c.fetchall()
     return result
@@ -33,7 +33,7 @@ def get_application(con, ident:int, json_str = False):
     if json_str:
         con.row_factory = sql.Row
     c = con.cursor()
-    query = 'SELECT * FROM applicants WHERE id = ' + str(ident)
+    query = f'SELECT * FROM applicants WHERE id = {ident}'
     rows = c.execute(query).fetchall()
     if json_str:
         for ix in rows:
@@ -63,14 +63,14 @@ def get_applications_custom(con, start:int, attributes: List[str],  num = 20, js
     view_query += create_order_query(sort)
     if sort_asc == False:
         view_query += ' DESC'
-    view_query += ') RowNum,' + chosen + ' FROM applicants'  
+    view_query += f') RowNum,{chosen} FROM applicants'  
     #add filters to query
     if filters:
         view_query += create_filter_query(filters)
     c.execute(view_query)
     con.commit()
     end = start + num
-    query = 'SELECT ' + chosen + ' FROM custom WHERE RowNum > ' + str(start) + ' AND RowNum <= ' + str(end)
+    query = f'SELECT {chosen} FROM custom WHERE RowNum > {start} AND RowNum <= {end}'
     rows = c.execute(query).fetchall()
     c.execute("DROP VIEW custom")
     con.commit()
@@ -92,13 +92,13 @@ def create_filter_query(filters):
                 selected = filter_dict[values]
                 filter_str += "("
                 for j in range(0,len(selected)):
-                    filter_str += attribute + " = " + "'"+ selected[j] + "'"
+                    filter_str += f"{attribute} = '{selected[j]}'"
                     if j < len(selected) - 1:
                         filter_str += " OR "
                 filter_str += ")"
             else:
                 #numerical
-                filter_str += "(" + attribute + " >= " + str(filter_dict[lower_bound]) + " AND " + attribute + " <= " + str(filter_dict[upper_bound]) + ")"
+                filter_str += f"({attribute} >= {filter_dict[lower_bound]} AND {attribute} <= {filter_dict[upper_bound]})"
             if i < len(filters) - 1:
                 filter_str += " AND "
     return filter_str
@@ -111,15 +111,15 @@ def create_order_query(sort:str):
     if (sort == AttributeNames.ident.value):
         query += sort 
         return query
-    for i in attribute_constraints:
-        if i[attr_name] == sort:
-            attr_dict = i
+    for constraint in attribute_constraints:
+        if constraint[attr_name] == sort:
+            attr_dict = constraint
             break
     if (attr_dict[const_type] == categorical):
         query += 'CASE'
         count = 1
-        for i in attr_dict[values]:
-            query += " WHEN "+ sort + " = '" + i + "' THEN " + str(count)
+        for entry in attr_dict[values]:
+            query += f" WHEN {sort} = '{entry}' THEN {count}"
             count += 1
         query += ' END'
     else:
@@ -132,7 +132,7 @@ def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
     if not check_exp_exists(con, exp_name):
         c = con.cursor()
-        insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
+        insert_query = f"INSERT INTO experiments (name, information) VALUES ('{exp_name}','{exp_info}')"
         c.execute(insert_query)
         con.commit()
     
@@ -152,7 +152,7 @@ def get_all_exp(con):
 def get_exp_info(con, name:str):
     """If the given experiment is in the database the corresponding experiment information is returned in 
     json format."""
-    query = "SELECT information FROM experiments WHERE name = '"+ name + "'"
+    query = f"SELECT information FROM experiments WHERE name = '{name}'"
     c = con.cursor()
     results = c.execute(query).fetchall()
     if len(results) == 0:
@@ -160,7 +160,7 @@ def get_exp_info(con, name:str):
     result_tuple = results[0]
     result_str = result_tuple[0]
     result_json = json.loads(result_str)
-    participants_query = "SELECT * FROM results WHERE experiment_name = '" + name +"' AND results != 'NULL'"
+    participants_query = f"SELECT * FROM results WHERE experiment_name = '{name}' AND results != 'NULL'"
     participants = c.execute(participants_query).fetchall()
     number_participants = len(participants)
     result_json["num_participants"] = number_participants
@@ -172,16 +172,16 @@ def create_id(con, exp_name:str):
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
     :returns: json with key client_id and the newly generated id or None if the experiment does not exist"""
     if check_exp_exists(con, exp_name):
-        query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
+        query_existing_id = f'SELECT client_id FROM results WHERE experiment_name = "{exp_name}"'
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
         if len(ids) > 0:
-            last_id_element = max(ids)[0] # makes sure there is no id with higher value, max also works with single valued tuples
+            max_id_element = max(ids)[0] # makes sure there is no id with higher value, max also works with single valued tuples
         else:
-            last_id_element = 0
+            max_id_element = 0
         #index 0 is needed because of the tuple format
-        return_id = last_id_element + 1
-        query_insert = 'INSERT INTO results (experiment_name, client_id, results) VALUES("' + exp_name + '",' + str(return_id) + ', NULL)'
+        return_id = max_id_element + 1
+        query_insert = f'INSERT INTO results (experiment_name, client_id, results) VALUES("{exp_name}",{return_id}, NULL)'
         c.execute(query_insert)
         con.commit()
         return_dict = {
@@ -198,7 +198,7 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
-    query = "UPDATE results SET results = '" + json_str + "' WHERE experiment_name = '" + exp_name + "' AND client_id = " + str(client_id)
+    query = f"UPDATE results SET results = '{json_str}' WHERE experiment_name = '{exp_name}' AND client_id = {client_id}"
     c = con.cursor()
     c.execute(query)
     con.commit()
@@ -211,7 +211,7 @@ def export_results_to(con, format, exp_name = None):
     #TODO check that format is only csv when exp name is given
     query = "SELECT * FROM results WHERE results != 'NULL'" 
     if exp_name:
-        query += " AND experiment_name =  '" + exp_name + "'"
+        query += f" AND experiment_name =  '{exp_name}'"
     con.row_factory = sql.Row
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -251,7 +251,7 @@ def export_results_to(con, format, exp_name = None):
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
     """Deletes all results for an experiment with the given name from the results table."""    
-    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+    reset_query = f'DELETE FROM results WHERE experiment_name = "{exp_name}"'
     c = con.cursor()
     c.execute(reset_query)
     con.commit()
@@ -261,7 +261,7 @@ def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
     if check_exp_exists(con, exp_name):
         c = con.cursor()
-        delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
+        delete_query = f'DELETE FROM experiments WHERE name = "{exp_name}"'
         c.execute(delete_query)
         con.commit()
 
@@ -277,7 +277,7 @@ def cf_response_format_db(con, path:str):
         cf = instance[counterfactuals]
         cf_dict = {}
         cf_dict[counterfactuals] = cf
-        query = "INSERT INTO dice (instance_id, counterfactuals) VALUES(" + str(key) + ", '" + json.dumps(cf_dict) + "');"
+        query = f"INSERT INTO dice (instance_id, counterfactuals) VALUES({key}, '{json.dumps(cf_dict)}');"
         c.execute(query)
     con.commit()
 
@@ -286,7 +286,7 @@ def get_cf(con, instance_id: int):
     """For that instance id the pregenerated counterfactuals are returned from the dice table if the id is
     between 0 and 999."""
     if instance_id in range(number_of_applications):
-        query = 'SELECT counterfactuals FROM dice WHERE instance_id = ' + str(instance_id)
+        query = f'SELECT counterfactuals FROM dice WHERE instance_id = {instance_id}'
         c = con.cursor()
         results = c.execute(query).fetchall()
         result = results[0]
