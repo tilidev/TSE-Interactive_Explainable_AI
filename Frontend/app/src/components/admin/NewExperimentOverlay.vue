@@ -253,7 +253,7 @@ export default {
           "Error, description can't be longer than 500 characters";
       }
 
-      this.applications.replace(" ", "");
+      this.applications = this.applications.replace(/\s/g, '');
       const applicationsPattern = RegExp("^[0-9]{1,3}(,[0-9]{1,3})*$");
       if (!applicationsPattern.test(this.applications) && this.applications) {
         this.errorMessages.applications =
