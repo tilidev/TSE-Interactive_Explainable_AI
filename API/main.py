@@ -5,8 +5,9 @@ from tensorflow.keras.models import load_model
 import pandas as pd
 import pickle
 import psutil
+import hashlib
 
-from starlette.status import HTTP_202_ACCEPTED
+from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED
 import json
 
 from typing import Any, Optional, List, Union
@@ -59,6 +60,9 @@ process_ids = []
 task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
+
+# hash for admin password
+admin_pwd_hash = '5adfb2c0eca0935eede2af480a5d60b7481ee308ef8c0a14b4e0d367067d8842'
 
 # This preprocessor was pickled in python 3.8.12.
 # It follows the steps from data_loader_ey, except that the preprocessor is returned
@@ -351,6 +355,14 @@ async def delete_experiment(experiment_name: str):
     delete_exp(con, experiment_name)
     con.close()
     # TODO what would be the best response model
+
+@app.post("/authenticate", tags=["Security"])
+async def authenticate_admin(pwd: str):
+    """Is used by the frontend for simple blocking of experiment requests."""
+    m = hashlib.sha256()
+    m.update(pwd.encode("UTF-8"))
+    if m.hexdigest() != admin_pwd_hash:
+        raise HTTPException(HTTP_401_UNAUTHORIZED)
 
 
 # Helper methods
