@@ -1,4 +1,5 @@
 <template>
+  <div id="tooltip" class="tooltip"></div>
   <div id="treemap"/>
 </template>
 
@@ -171,12 +172,16 @@ export default {
                         .domain(['positiv', 'negativ']) // the data
                         .range(colors);    // the way the data should be shown             
 
-          
+    const tooltip = d3.select("#tooltip");
 
     const svg = d3.select("#treemap") //make sure there's a svg element in your html file
                   .append("svg")
                   .attr("width", w)
                   .attr("height", h);
+
+
+              
+
 
               svg.selectAll("rect")
                  .data(root.leaves())
@@ -186,7 +191,35 @@ export default {
                  .attr("y", d=>d.y0)
                  .attr("width",  d=>d.x1 - d.x0)
                  .attr("height", d=>d.y1 - d.y0)
-                 .attr("fill",d=>colorScale(d.parent.parent.data.name));
+                 .attr("fill", function(d){return colorScale(d.parent.parent.data.name)})
+                 .attr("fill-opacity", 1.0)
+                 .on("mouseenter", function(event, d) {
+                    tooltip
+                      .append("div")
+                      .text(d.data.category)
+                      .attr("class", "tt-category");
+
+                    tooltip
+                      .append("div")
+                      .text(d.data.name)
+                      .attr("class", "tt-name");
+
+                    tooltip
+                      .append("div")
+                      .text(d.data.value)
+                      .attr("class", "tt-value");
+
+                    tooltip
+                      .style("opacity", 1)
+                      .style("top", (d3.select(this).attr("y")) + "px")
+                      .style("left", (d3.select(this).attr("x")) + "px");
+                 })
+                 .on("mouseout", function() {
+                    tooltip
+                      .style("opacity", 0)
+                      .selectAll("div")
+                      .remove();
+                 });
 
               svg
                  .selectAll("text")
@@ -213,3 +246,17 @@ export default {
     }
   }
 </script>
+
+<style scoped>
+  .tooltip {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.2s ease-in-out;
+	max-width: 400px;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 1px 5px rgba(51,51,51,0.5);
+	padding: 1rem;
+}
+</style>
