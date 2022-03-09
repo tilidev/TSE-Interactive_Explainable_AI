@@ -1,7 +1,6 @@
 import sqlite3 as sql
 import json
 from typing import List
-from numpy import number
 import pandas as pd
 from models import ExperimentResults
 
@@ -131,7 +130,7 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
-    if check_exp_doesnt_exist(con, exp_name):
+    if not check_exp_exists(con, exp_name):
         c = con.cursor()
         insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
         c.execute(insert_query)
@@ -251,18 +250,16 @@ def export_results_to(con, format, exp_name = None):
 
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
-    """Checks if an experiment with the given name exists and deletes all results for that experiment
-    from the results table if yes."""    
-    if check_exp_doesnt_exist(con, exp_name):
-        reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
-        c = con.cursor()
-        c.execute(reset_query)
-        con.commit()
+    """Deletes all results for an experiment with the given name from the results table."""    
+    reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
+    c = con.cursor()
+    c.execute(reset_query)
+    con.commit()
 
 #for delete_experiment
 def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
-    if check_exp_doesnt_exist(con, exp_name):
+    if check_exp_exists(con, exp_name):
         c = con.cursor()
         delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
         c.execute(delete_query)
@@ -297,16 +294,6 @@ def get_cf(con, instance_id: int):
         res_json = json.loads(res_str)
         return res_json
 
-
-def check_exp_doesnt_exist(con, exp_name:str):
-    """Helper method that is used to check if for the given experiment name an actual experiment exists in the database. """
-    exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
-    c = con.cursor()
-    c.execute(exists_query)
-    if len(c.fetchall()) > 0:
-        return False
-    else:
-        return True
 
 def check_exp_exists(con, exp_name: str):
     """Checks whether or not an experiment with the given name exists in the table `experiments`. Returns true if it exists."""
