@@ -6,7 +6,7 @@
         {{ index + 1 + " of " + counterfactuals.length }}
       </div>
     </div>
-    <div class="flex space-x-8 justify-between items-center">
+    <div class="-mx-4 flex space-x-4 justify-between items-center">
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
@@ -18,10 +18,7 @@
           <table-header
             :labels="attributeData.labels"
             :descriptions="attributeData.descriptions"
-            :attributes="[
-              ...Object.keys(counterfactuals[index]),
-              'NN_recommendation',
-            ]"
+            :attributes="Object.keys(counterfactuals[index])"
           />
         </thead>
         <tbody class="divide-gray divide-y">
