@@ -52,7 +52,7 @@ export default {
       expType: String,
       allowMod: false,
       allowWhatIf: false,
-      done: true,
+      done: false,
       currentIndex: 0,
       instanceIds: [],
       results: [],
