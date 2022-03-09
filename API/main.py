@@ -300,6 +300,9 @@ async def generate_client_id(gen: GenerateClientID):
     con = create_connection(db_path)
     return_id = create_id(con, gen.experiment_name)
     con.close()
+    # check for None response! If return_id dict is None, the experiment does no exist
+    if return_id is None:
+        raise HTTPException(400, f"Experiment with name {gen.experiment_name} does not exist")
     return return_id
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
