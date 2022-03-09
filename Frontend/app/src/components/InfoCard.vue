@@ -48,8 +48,8 @@
           ></dropdown-menu>
         </div>
       </div>
-      <div class="flex flex-col justify-between">
-        <div class="flex flex-col space-y-4">
+      <div class="flex flex-col justify-start space-y-12">
+        <div class="flex flex-col space-y-4 -mt-2">
           <div class="text-lg">AI Recommendation</div>
           <div class="flex space-x-4">
             <recommendation-vis
