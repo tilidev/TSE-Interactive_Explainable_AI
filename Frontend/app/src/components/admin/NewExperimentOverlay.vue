@@ -268,7 +268,7 @@ export default {
       }
       const urlPattern = /\b(https?:\/\/\S*\b)/g;
       if (!urlPattern.test(this.surveyLink) && this.surveyLink) {
-        "Error, invalid url format";
+        this.errorMessages.surveyLink = "Error, invalid url format";
       }
       if (Object.keys(this.errorMessages).length === 0) {
         this.createExperiment();
