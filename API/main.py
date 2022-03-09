@@ -101,6 +101,8 @@ async def entire_instance_by_id(id: int):
 async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
     
+    check_cat_values(instance)
+
     data_dict = {col : [instance.__dict__[rename_dict[col]]] for col in feature_names_model_ordered}
     df = pd.DataFrame(data_dict) # Only works when all attributes are provided correctly
     data_to_predict = preprocessor.transform(df)
@@ -153,6 +155,8 @@ async def schedule_explanation_generation(
     Note that this method can thus be used for existing as well as modified instances.
     ___
     '''
+
+    check_cat_values(instance)
 
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
@@ -346,6 +350,14 @@ async def delete_experiment(experiment_name: str):
     # TODO what would be the best response model
 
 
+# Helper methods
+
+
+def check_cat_values(instance):
+    # check if the categorical values are correctly specified in the request
+    for key in cat_attr_check.keys():
+        if instance.__dict__[key] not in cat_attr_check[key]:
+            raise HTTPException(400, f"Please use a correct value for attribute '{key}'")
 
 if __name__ == "__main__":
     # This is needed for multiprocessing to run correctly on windows

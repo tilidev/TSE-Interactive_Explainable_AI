@@ -131,7 +131,7 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
-    if check_exp_exists(con, exp_name):
+    if check_exp_doesnt_exist(con, exp_name):
         c = con.cursor()
         insert_query = "INSERT INTO experiments (name, information) VALUES ('" + exp_name +"','" + exp_info + "')"
         c.execute(insert_query)
@@ -172,7 +172,7 @@ def create_id(con, exp_name:str):
     """Queries the database for already existing ids for that experiment and chooses the lowest available id.
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
     :returns: json with key client_id and the newly generated id"""
-    if check_exp_exists(con, exp_name):
+    if check_exp_doesnt_exist(con, exp_name):
         query_existing_id = 'SELECT client_id FROM results WHERE experiment_name = "'+ exp_name + '"'
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
@@ -252,7 +252,7 @@ def export_results_to(con, format, exp_name = None):
 def reset_exp_res(con, exp_name:str):
     """Checks if an experiment with the given name exists and deletes all results for that experiment
     from the results table if yes."""    
-    if check_exp_exists(con, exp_name):
+    if check_exp_doesnt_exist(con, exp_name):
         reset_query = 'DELETE FROM results WHERE experiment_name = "'+ exp_name + '"'
         c = con.cursor()
         c.execute(reset_query)
@@ -261,7 +261,7 @@ def reset_exp_res(con, exp_name:str):
 #for delete_experiment
 def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
-    if check_exp_exists(con, exp_name):
+    if check_exp_doesnt_exist(con, exp_name):
         c = con.cursor()
         delete_query = 'DELETE FROM experiments WHERE name = "' + exp_name + '"'
         c.execute(delete_query)
@@ -297,15 +297,15 @@ def get_cf(con, instance_id: int):
         return res_json
 
 
-def check_exp_exists(con, exp_name:str):
+def check_exp_doesnt_exist(con, exp_name:str):
     """Helper method that is used to check if for the given experiment name an actual experiment exists in the database. """
     exists_query = 'SELECT experiment_name FROM results WHERE experiment_name = "' + exp_name + '"'
     c = con.cursor()
     c.execute(exists_query)
     if len(c.fetchall()) > 0:
-        return True
-    else:
         return False
+    else:
+        return True
     
 
 
