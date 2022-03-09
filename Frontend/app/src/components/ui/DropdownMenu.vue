@@ -16,7 +16,7 @@
         :key="value"
       >
         <fa-icon
-          class="text-modified -ml-6 absolute"
+          class="text-modified -ml-6 mt-0.5 absolute"
           icon="check"
           v-if="selectedValue == value"
         /><span :class="getValueStyling(value)">{{ value }}</span>
