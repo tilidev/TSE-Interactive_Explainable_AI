@@ -14,7 +14,7 @@
       rounded-md
     "
   >
-  <h4 class="mb-4 font-bold">{{ attributeData.labels[attribute] }}</h4>
+    <h4 class="mb-4 font-bold">{{ attributeData.labels[attribute] }}</h4>
     <div class="" v-if="attributeData.types[attribute] == 'categorical'">
       <div
         class=""
@@ -30,7 +30,21 @@
         <label class="capitalize ml-2" :for="value">{{ value }}</label>
       </div>
     </div>
-    <div v-if="attributeData.types[attribute] == 'continuous'">
+    <div v-if="attribute == 'NN_confidence'">
+      <slider
+        class="mx-2 mt-16 mb-4"
+        :step="-1"
+        :format="
+          function (value) {
+            return Math.round(value * 100) + '%';
+          }
+        "
+        :min="attributeData.lowerBounds[attribute]"
+        :max="attributeData.upperBounds[attribute]"
+        v-model="allowedRange"
+      ></slider>
+    </div>
+    <div v-else-if="attributeData.types[attribute] == 'continuous'">
       <slider
         class="mx-2 mt-16 mb-4"
         :min="attributeData.lowerBounds[attribute]"

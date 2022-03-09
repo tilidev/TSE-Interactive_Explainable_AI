@@ -25,7 +25,7 @@
                 space-x-16
                 items-center
               "
-              v-for="category in Object.keys(attributeCategories)"
+              v-for="category in Object.keys(getReducedCategories())"
               :key="category"
             >
               <div>
@@ -36,12 +36,22 @@
                   v-for="attribute of attributeCategories[category]"
                   :key="attribute"
                 >
-                  <gray-button @click="selectedAttributes = selectedAttributes.filter(e => e !== attribute)" :selected="true" v-if="selectedAttributes.includes(attribute)">{{
-                    attributeData.labels[attribute]
-                  }}</gray-button>
-                  <gray-button @click="addAttribute(attribute)" :selected="false" v-else>{{
-                    attributeData.labels[attribute]
-                  }}</gray-button>
+                  <gray-button
+                    @click="
+                      selectedAttributes = selectedAttributes.filter(
+                        (e) => e !== attribute
+                      )
+                    "
+                    :selected="true"
+                    v-if="selectedAttributes.includes(attribute)"
+                    >{{ attributeData.labels[attribute] }}</gray-button
+                  >
+                  <gray-button
+                    @click="addAttribute(attribute)"
+                    :selected="false"
+                    v-else
+                    >{{ attributeData.labels[attribute] }}</gray-button
+                  >
                 </div>
               </div>
             </div>
@@ -76,14 +86,19 @@ export default {
   inject: ["attributeData", "attributeCategories"],
 
   methods: {
+    getReducedCategories() {
+      // eslint-disable-next-line no-unused-vars
+      const { other, ...rest } = this.attributeCategories;
+      return rest;
+    },
     addAttribute(attr) {
       if (this.selectedAttributes.length < 5) {
-        this.selectedAttributes.push(attr)
+        this.selectedAttributes.push(attr);
       }
     },
-      applyChanges() {
-        this.$emit("apply", this.selectedAttributes);
-      }
+    applyChanges() {
+      this.$emit("apply", this.selectedAttributes);
+    },
   },
 };
 </script>
