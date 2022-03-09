@@ -1,5 +1,6 @@
 <template>
   <div
+    v-click-outside="cancel"
     class="
       absolute
       mt-4
@@ -30,7 +31,7 @@
         <label class="capitalize ml-2" :for="value">{{ value }}</label>
       </div>
     </div>
-    <div v-if="attribute == 'NN_confidence'">
+    <div v-else-if="attribute == 'NN_confidence'">
       <slider
         class="mx-2 mt-16 mb-4"
         :step="-1"
@@ -54,7 +55,7 @@
     </div>
     <div class="flex space-x-4 mt-4 justify-between">
       <default-button @click="applyChanges">Apply</default-button>
-      <clear-button @click="this.$emit('cancel')">Cancel</clear-button>
+      <clear-button @click="cancel">Cancel</clear-button>
     </div>
   </div>
 </template>
@@ -63,8 +64,12 @@
 import DefaultButton from "@/components/buttons/DefaultButton";
 import ClearButton from "@/components/buttons/ClearButton";
 import Slider from "@vueform/slider";
+import vClickOutside from "click-outside-vue3";
 
 export default {
+  directives: {
+    clickOutside: vClickOutside.directive,
+  },
   mounted() {
     this.selectedValues = this.currentFilter.values ?? [];
     this.allowedRange = this.currentFilter.lower_bound
@@ -81,6 +86,9 @@ export default {
     };
   },
   methods: {
+    cancel() {
+      this.$emit("cancel");
+    },
     applyChanges() {
       if (this.attributeData.types[this.attribute] == "categorical") {
         this.$emit("apply", {
