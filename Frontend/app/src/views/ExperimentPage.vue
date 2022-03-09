@@ -1,10 +1,17 @@
 <template>
   <div>
     <div class="absolute inset-0 bg-background" v-if="!started">
-      <default-button class="mt-8" @click="started = true">Start Experiment</default-button>
+      <default-button class="mt-8" @click="started = true"
+        >Start Experiment</default-button
+      >
     </div>
     <div v-if="!done">
-      <instance-view :instanceInfo="instanceInfo" :expType="expType" :allowMod="allowMod" :allowWhatIf="allowWhatIf"></instance-view>
+      <instance-view
+        :instanceInfo="instanceInfo"
+        :expType="expType"
+        :allowMod="allowMod"
+        :allowWhatIf="allowWhatIf"
+      ></instance-view>
       <div class="text-right space-x-4 justify-end flex">
         <default-button
           :color="'positive'"
@@ -20,7 +27,15 @@
         >
       </div>
     </div>
-    <div v-if="done">You're done</div>
+    <div v-if="done">
+      <div class="text-3xl font-bold py-2">You're done!</div>
+      <div v-if="!surveyLink" class="text-lg">
+        Thank you for participating in our experiment
+      </div>
+      <a v-else :href="surveyLink" class="text-primary-light underline text-lg"
+        >Please click here to continue to the survey</a
+      >
+    </div>
   </div>
 </template>
 
@@ -37,11 +52,12 @@ export default {
       expType: String,
       allowMod: false,
       allowWhatIf: false,
-      done: false,
+      done: true,
       currentIndex: 0,
       instanceIds: [],
       results: [],
       instanceInfo: {},
+      surveyLink: null,
       clientId: Number,
     };
   },
@@ -51,27 +67,40 @@ export default {
       console.log(this.results);
       const axios = require("axios");
       let reqBody = {
-        "experiment_name": this.$route.params.name,
-        "client_id" : this.clientId,
-        "results" : this.results,
+        experiment_name: this.$route.params.name,
+        client_id: this.clientId,
+        results: this.results,
       };
-      axios.post(this.apiUrl + "experiment/results", reqBody).then(() => this.done = true);
+      axios
+        .post(this.apiUrl + "experiment/results", reqBody)
+        .then(() => (this.done = true));
     },
     sendExperimentRequest() {
       const axios = require("axios");
-      axios.post(this.apiUrl + "experiment/generate_id", {"experiment_name": this.$route.params.name}).then((response) => {
-        this.clientId = response.data.client_id;
-        console.log(this.clientId);
-      })
-      axios.get(this.apiUrl + "experiment?name=" + this.$route.params.name).then((response) => {
-        this.instanceIds = response.data.loan_ids;
-        this.expType = response.data.exp_type;
-        this.allowMod = response.data.ismodify;
-        this.allowWhatIf = response.data.isWhatIf;
-      }).then(this.sendInstanceRequest);
+      axios
+        .post(this.apiUrl + "experiment/generate_id", {
+          experiment_name: this.$route.params.name,
+        })
+        .then((response) => {
+          this.clientId = response.data.client_id;
+          console.log(this.clientId);
+        });
+      axios
+        .get(this.apiUrl + "experiment?name=" + this.$route.params.name)
+        .then((response) => {
+          this.instanceIds = response.data.loan_ids;
+          this.expType = response.data.exp_type;
+          this.allowMod = response.data.ismodify;
+          this.allowWhatIf = response.data.isWhatIf;
+          this.surveyLink = response.data.survey_link;
+        })
+        .then(this.sendInstanceRequest);
     },
     submitDecision(decision) {
-      this.results.push({"loan_id": this.instanceIds[this.currentIndex], "choice" : decision ? "approve" : "reject"});
+      this.results.push({
+        loan_id: this.instanceIds[this.currentIndex],
+        choice: decision ? "approve" : "reject",
+      });
       this.currentIndex++;
       if (this.currentIndex < this.instanceIds.length) {
         this.sendInstanceRequest();
