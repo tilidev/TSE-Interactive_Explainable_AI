@@ -8,8 +8,7 @@ import AdminPage from "../views/AdminPage.vue"
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    redirect: { name: "Dataset Explorer" }
   },
   {
     path: "/dataset",
@@ -25,13 +24,13 @@ const routes = [
     component: InstancePage,
   },
   {
-    path:"/experiments/:name",
-    name:"Experiment Page",
+    path: "/experiments/:name",
+    name: "Experiment Page",
     component: ExperimentPage
   },
   {
-    path:"/admin",
-    name:"Admin Page",
+    path: "/admin",
+    name: "Admin Page",
     component: AdminPage
   }
 ];
