@@ -356,7 +356,7 @@ async def delete_experiment(experiment_name: str):
     con.close()
     # TODO what would be the best response model
 
-@app.post("/authenticate", tags=["Security"])
+@app.get("/authenticate", tags=["Security"])
 async def authenticate_admin(pwd: str):
     """Is used by the frontend for simple blocking of experiment requests."""
     m = hashlib.sha256()
