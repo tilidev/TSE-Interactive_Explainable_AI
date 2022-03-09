@@ -1,7 +1,12 @@
 <template>
-  <div class="shadow-blurred bg-white px-4 py-2">
+  <div
+    v-click-outside="cancel"
+    class="shadow-blurred bg-white px-4 py-2"
+  >
     <div class="m-2 font-bold">Original value:</div>
-    <div class="m-2 cursor-pointer"  @click="applyValue(originalValue)">{{ originalValue }}</div>
+    <div class="m-2 cursor-pointer" @click="applyValue(originalValue)">
+      {{ originalValue }}
+    </div>
     <hr />
     <div v-if="attributeData.types[attribute] == 'categorical'">
       <div
@@ -41,10 +46,14 @@
 
 <script>
 import Slider from "@vueform/slider";
+import vClickOutside from "click-outside-vue3";
 import DefaultButton from "@/components/buttons/DefaultButton";
 import ClearButton from "../buttons/ClearButton.vue";
 
 export default {
+  directives: {
+    clickOutside: vClickOutside.directive,
+  },
   data() {
     return {
       sliderValue: this.selectedValue,
@@ -58,6 +67,9 @@ export default {
   props: { originalValue: String, selectedValue: String, attribute: String },
   inject: ["attributeData"],
   methods: {
+    cancel() {
+      this.$emit("apply-value", this.originalValue);
+    },
     getValueStyling(attribute) {
       if (attribute == this.selectedValue) {
         return "text-modified";
@@ -73,5 +85,5 @@ export default {
 
 <style
 src="@vueform/slider/themes/default.css">
-@import '../../../node_modules/@vueform/slider/themes/tailwind.scss'
+@import "../../../node_modules/@vueform/slider/themes/tailwind.scss";
 </style>
