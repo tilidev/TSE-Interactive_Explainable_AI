@@ -12,7 +12,7 @@ import AdminView from './AdminView.vue'
 export default {
     data() {
         return {
-            authenticated: true,
+            authenticated: false,
         }
     },
     components: {
