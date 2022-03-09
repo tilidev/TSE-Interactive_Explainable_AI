@@ -172,7 +172,9 @@ export default {
                         .domain(['positiv', 'negativ']) // the data
                         .range(colors);    // the way the data should be shown             
 
-    const tooltip = d3.select("#tooltip");
+    const tooltip = d3.select("#tooltip")
+                     .style("font-size", '16px');
+                     
 
     const svg = d3.select("#treemap") //make sure there's a svg element in your html file
                   .append("svg")
@@ -258,5 +260,10 @@ export default {
 	background: #fff;
 	box-shadow: 0 1px 5px rgba(51,51,51,0.5);
 	padding: 1rem;
+}
+  .tt-name {
+	font-size: 1.4rem;
+	font-weight: 1200;
+
 }
 </style>
