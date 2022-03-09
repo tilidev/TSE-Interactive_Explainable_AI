@@ -5,7 +5,8 @@
 <style lang="scss">
 @import url('https://cdn.jsdelivr.net/npm/plusplusjakartasans@latest/plusjakartasans.css');
 #app {
-  font-family: 'Plus Jakarta Sans', Helvetica, Arial sans-serif;
+  font-family: Helvetica, Arial sans-serif;
+  word-spacing: 0.08rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
