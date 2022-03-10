@@ -5,17 +5,25 @@
 **Authors**: Felix Hasse, Nicolas Kiefer, Isabelle Konrad, Tilio Schulze
 **Version**: 1.0
 
+[[_TOC_]]
+
 ## First Steps
 
-- `#F00`
+### Environment and dependencies
+
+### Run application
 
 Terminal 1:
-> `cd API/` \
-> `python main.py`
+```shell
+cd API/
+python main.py
+```
 
 Terminal 2:
-> `cd Frontend/app/` \
-> `npm run serve`
+```shell
+cd Frontend/app/
+npm run serve
+```
 
 ## Project structure
 
