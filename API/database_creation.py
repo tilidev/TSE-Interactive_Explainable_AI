@@ -24,9 +24,9 @@ for key in rename_dict.keys():
 create_query_exp = 'CREATE TABLE IF NOT EXISTS experiments (name TEXT PRIMARY KEY, information TEXT);'
 c.execute(create_query_exp)
 con.commit()
-create_query_res = 'CREATE TABLE IF NOT EXISTS results (experiment_name TEXT, client_id INT, results JSON, PRIMARY KEY (experiment_name, client_id));'
+create_query_res = 'CREATE TABLE IF NOT EXISTS results (experiment_name TEXT REFERENCES experiments (name) ON DELETE CASCADE ON UPDATE CASCADE, client_id INT, results JSON, PRIMARY KEY (experiment_name, client_id));'
 c.execute(create_query_res)
-create_query_cf = 'CREATE TABLE IF NOT EXISTS dice (instance_id INT PRIMARY KEY, counterfactuals JSON);'
+create_query_cf = 'CREATE TABLE IF NOT EXISTS dice (instance_id INT PRIMARY KEY REFERENCES applicants (id) ON DELETE CASCADE ON UPDATE CASCADE , counterfactuals JSON);'
 c.execute(create_query_cf)
 con.commit()
 cf_response_format_db(con, 'Data/cfs_response_format.json')
