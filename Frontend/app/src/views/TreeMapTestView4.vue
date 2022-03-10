@@ -12,7 +12,7 @@ export default {
 
     data() {
     return {
-    videoGames: {
+    explanationData: {
     
   "name" : "Lime Expanation",
   "children" : [{
