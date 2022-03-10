@@ -73,7 +73,6 @@ export default {
   },
   inject: ["attributeData", "apiUrl"],
   mounted() {
-    console.log(this.attributeData);
     this.sendExplanationRequest();
   },
   methods: {
@@ -84,7 +83,6 @@ export default {
         childElement.category = this.attributeData.categories[obj.attribute];
         childElement.value = Math.abs(obj.influence);
         let catObj;
-        console.log(this.detailExpData.children);
         if (obj.influence < 0) {
           for (let category of this.detailExpData.children[0].children) {
             if (
@@ -105,7 +103,6 @@ export default {
         catObj.children.push(childElement);
       }
       for (let direction of [0, 1]) {
-        console.log(this.detailExpData.children[direction].children);
         for (let category of this.detailExpData.children[direction].children) {
           let sum = 0;
           for (let attribute of category.children) {
@@ -117,8 +114,6 @@ export default {
           });
         }
       }
-      console.log(this.simpleExpData);
-      console.log(this.detailExpData);
       this.generateTreeMap();
     },
     getResult(href, result) {
@@ -148,6 +143,7 @@ export default {
         });
     },
     generateTreeMap() {
+      const detailView = this.detailView;
       const w = 600;
       const h = 500;
 
@@ -188,10 +184,13 @@ export default {
         })
         .attr("fill-opacity", 1.0)
         .on("mouseenter", function (event, d) {
-          if (this.detailView) {
+          if (detailView) {
             tooltip
               .append("div")
-              .text(d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1))
+              .text(
+                d.parent.data.name.charAt(0).toUpperCase() +
+                  d.parent.data.name.slice(1)
+              )
               .attr("class", "tt-category");
           }
 
@@ -230,7 +229,6 @@ export default {
         .attr("y", (d) => d.y0 + 20)
         .text(function (d) {
           if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 40) {
-            console.log(this.attributeData);
             return d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1);
           }
         })
