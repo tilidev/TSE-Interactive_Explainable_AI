@@ -257,7 +257,7 @@ export default {
       const applicationsPattern = RegExp("^[0-9]{1,3}(,[0-9]{1,3})*$");
       if (!applicationsPattern.test(this.applications) && this.applications) {
         this.errorMessages.applications =
-          "Error, invalid format or application ids";
+          "Error, invalid format of application ids";
       }
       if (
         this.modwhatif === "both" &&
