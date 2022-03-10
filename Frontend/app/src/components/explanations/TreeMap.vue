@@ -10,11 +10,14 @@ import * as d3 from "d3";
 
 export default {
   components: {},
-
+  props: {
+    expType: String,
+    detailView: Boolean,
+    instance: Object,
+    whatif: Boolean,
+  },
   data() {
     return {
-      expType: "lime",
-      detailView: true,
       simpleExpData: {
         name: "Explanation",
         children: [
@@ -46,33 +49,11 @@ export default {
           },
         ],
       },
-      instance: {
-        id: 0,
-        balance: "no account",
-        duration: 6,
-        history: "paid back previous loans at this bank",
-        purpose: "furniture",
-        amount: 1169,
-        savings: "above 1000 EUR",
-        employment: "more than 7 years",
-        available_income: "less than 20%",
-        residence: "more than 7 years",
-        assets: "real estate",
-        age: 67,
-        other_loans: "no additional loans",
-        housing: "own",
-        previous_loans: "2 or 3",
-        job: "skilled",
-        other_debtors: "none",
-        people_liable: "0 to 2",
-        telephone: "yes",
-        NN_recommendation: "Approve",
-        NN_confidence: 0.9382685422897339,
-      },
     };
   },
   inject: ["attributeData", "apiUrl"],
   mounted() {
+    console.log(this.instance);
     this.sendExplanationRequest();
   },
   methods: {
@@ -144,7 +125,7 @@ export default {
     },
     generateTreeMap() {
       const detailView = this.detailView;
-      const w = 600;
+      const w = this.whatif ? 600 : 1200;
       const h = 500;
       const hierarchy = d3
           .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
@@ -243,7 +224,7 @@ export default {
         .attr("x", (d) => d.x0 + 5)
         .attr("y", (d) => d.y0 + 40)
         .text(function (d) {
-          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 40) {
+          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 50) {
             return Math.round(d.data.value * 10000) / 100 + "%";
           }
         })

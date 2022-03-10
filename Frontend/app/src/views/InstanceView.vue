@@ -14,8 +14,13 @@
       :instanceInfo="instanceInfo"
       class="mb-4 mt-8"
     ></dice-explanation>
-    <tree-map v-else-if="expType === 'lime'">Placeholder for Lime</tree-map>
-    <tree-map v-else-if="expType === 'shap'">Placeholder for SHAP</tree-map>
+    <tree-map
+      v-else-if="Object.keys(instanceInfo).length"
+      :expType="expType"
+      :instance="instanceInfo"
+      :detailView="true"
+      :whatif="false"
+    ></tree-map>
   </div>
 </template>
 
