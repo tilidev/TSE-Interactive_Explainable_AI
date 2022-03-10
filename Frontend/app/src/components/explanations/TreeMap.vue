@@ -146,9 +146,8 @@ export default {
       const detailView = this.detailView;
       const w = 600;
       const h = 500;
-
       const hierarchy = d3
-          .hierarchy(this.detailView ? this.detailExpData : this.simpleExpData)
+          .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
           .sum((d) => d.value) //sums every child values
           .sort((a, b) => b.value - a.value), // and sort them in descending order
         treemap = d3.treemap().size([w, h]).padding(1),
@@ -179,7 +178,7 @@ export default {
         .attr("height", (d) => d.y1 - d.y0)
         .attr("fill", function (d) {
           return colorScale(
-            this.detailView ? d.parent.parent.data.name : d.parent.data.name
+            detailView ? d.parent.parent.data.name : d.parent.data.name
           );
         })
         .attr("fill-opacity", 1.0)
@@ -206,7 +205,7 @@ export default {
             .style(
               "color",
               colorScale(
-                this.detailView ? d.parent.parent.data.name : d.parent.data.name
+                detailView ? d.parent.parent.data.name : d.parent.data.name
               )
             )
             .attr("class", "tt-value");
@@ -228,7 +227,7 @@ export default {
         .attr("x", (d) => d.x0 + 5)
         .attr("y", (d) => d.y0 + 20)
         .text(function (d) {
-          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 40) {
+          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 50) {
             return d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1);
           }
         })
