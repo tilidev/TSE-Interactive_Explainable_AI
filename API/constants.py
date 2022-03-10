@@ -235,7 +235,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_confidence,
         const_type : continuous,
-        category : "other",
+        category : "prediction",
         lower_bound : 0.5,
         upper_bound : 1,
         attr_description : "Indicates how confident the AI is in it's decision."
@@ -243,7 +243,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_recommendation,
         const_type : categorical,
-        category : "other",
+        category : "prediction",
         values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     },
