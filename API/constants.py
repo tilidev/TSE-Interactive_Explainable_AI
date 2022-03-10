@@ -82,6 +82,7 @@ category = "category"
 financial_cat = "financial"
 personal_cat = "personal"
 loan_cat = "loan"
+prediction_cat = "prediction"
 filter = "filter"
 attributes = "attributes"
 sort_by = "sort_by"
@@ -235,7 +236,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_confidence,
         const_type : continuous,
-        category : "prediction",
+        category : prediction_cat,
         lower_bound : 0.5,
         upper_bound : 1,
         attr_description : "Indicates how confident the AI is in it's decision."
@@ -243,7 +244,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_recommendation,
         const_type : categorical,
-        category : "prediction",
+        category : prediction_cat,
         values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     },
