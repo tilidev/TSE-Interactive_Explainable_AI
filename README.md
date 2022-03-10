@@ -10,11 +10,11 @@
 - `#F00`
 
 Terminal 1:
-> `cd API/`
+> `cd API/` \
 > `python main.py`
 
 Terminal 2:
-> `cd Frontend/app/`
+> `cd Frontend/app/` \
 > `npm run serve`
 
 ## Project structure
