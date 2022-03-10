@@ -23,5 +23,9 @@ Terminal 2:
 
 ## Back-End
 
+Explanation Task flow: `rgb(133, 192, 255)`\
+Explanation Result flow: `rgb(217, 155, 255)`
+![Explanations compuation & data flow](/uploads/164a51e39b282a5dcd504bbb3997e6d4/Api_Explainer_Flow.jpg)
+
 ## Front-End
 
