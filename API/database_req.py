@@ -261,8 +261,10 @@ def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
     if check_exp_exists(con, exp_name):
         c = con.cursor()
-        delete_query = f'DELETE FROM experiments WHERE name = "{exp_name}"'
-        c.execute(delete_query)
+        delete_query_exp = f'DELETE FROM experiments WHERE name = "{exp_name}"'
+        c.execute(delete_query_exp)
+        delete_query_res = f'DELETE FROM results WHERE experiment_name ="{exp_name}"'
+        c.execute(delete_query_res)
         con.commit()
 
 
