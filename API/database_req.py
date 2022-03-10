@@ -176,11 +176,9 @@ def create_id(con, exp_name:str):
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
         if len(ids) > 0:
-            max_id_element = max(ids)[0] # makes sure there is no id with higher value, max also works with single valued tuples
+            return_id = max(ids)[0] + 1 # makes sure there is no id with higher value, max also works with single valued tuples
         else:
-            max_id_element = 0
-        #index 0 is needed because of the tuple format
-        return_id = max_id_element + 1
+            return_id = 0
         query_insert = f'INSERT INTO results (experiment_name, client_id, results) VALUES("{exp_name}",{return_id}, NULL)'
         c.execute(query_insert)
         con.commit()
