@@ -8,6 +8,7 @@ import psutil
 import hashlib
 
 from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED
+from starlette.background import BackgroundTask
 import json
 
 from typing import Any, Optional, List, Union
@@ -334,11 +335,13 @@ async def single_export_results(experiment_name: str):
 
 @app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
 async def single_export_results_csv(experiment_name: str):
-    """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
+    """Returns the results for the chosen experiment in csv format"""
+    def cleanup():
+        os.remove(temp_file)
     con = create_connection(db_path)
-    result_csv_path = export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
+    temp_file = export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
     con.close()
-    return result_csv_path
+    return FileResponse(temp_file, background=BackgroundTask(cleanup))
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
