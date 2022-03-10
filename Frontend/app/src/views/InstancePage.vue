@@ -1,6 +1,6 @@
 <template>
 <div>
-  <instance-view :allowMod="true" :allowWhatIf="true" expType="dice" :instanceInfo="instanceInfo"></instance-view>
+  <instance-view :allowMod="true" :allowWhatIf="true" expType="lime" :instanceInfo="instanceInfo"></instance-view>
 </div>
 </template>
 

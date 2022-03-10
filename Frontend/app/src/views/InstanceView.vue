@@ -7,18 +7,22 @@
       :modifiable="allowMod"
       :allowWhatIf="allowWhatIf"
       @apply-modification="applyModification"
-      @reset-instance="modifiedInstance = Object.assign({}, instanceInfo);"
+      @reset-instance="modifiedInstance = Object.assign({}, instanceInfo)"
     ></info-card>
-    <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo" class="mb-4 mt-8"></dice-explanation>
-    <div v-else-if="expType === 'lime'">Placeholder for Lime</div>
-    <div v-else-if="expType === 'shap'">Placeholder for SHAP</div>
-    
+    <dice-explanation
+      v-if="instanceInfo.id != null && expType === 'dice'"
+      :instanceInfo="instanceInfo"
+      class="mb-4 mt-8"
+    ></dice-explanation>
+    <tree-map v-else-if="expType === 'lime'">Placeholder for Lime</tree-map>
+    <tree-map v-else-if="expType === 'shap'">Placeholder for SHAP</tree-map>
   </div>
 </template>
 
 <script>
 import InfoCard from "../components/InfoCard.vue";
-import DiceExplanation from "../components/explanations/DiceExplanation.vue"
+import DiceExplanation from "../components/explanations/DiceExplanation.vue";
+import TreeMap from "../components/explanations/TreeMap.vue";
 
 export default {
   data() {
@@ -26,7 +30,7 @@ export default {
       modifiedInstance: {},
     };
   },
-  components: { InfoCard, DiceExplanation },
+  components: { InfoCard, DiceExplanation, TreeMap },
   methods: {
     applyModification(modification) {
       this.modifiedInstance[modification["attribute"]] = modification["value"];
@@ -34,19 +38,19 @@ export default {
   },
   watch: {
     instanceInfo(newInstance) {
-      this.modifiedInstance = Object.assign({}, newInstance)
-    } 
+      this.modifiedInstance = Object.assign({}, newInstance);
+    },
   },
   inject: ["attributeData"],
   props: {
-    instanceInfo : {
+    instanceInfo: {
       type: Object,
       required: true,
     },
-    allowMod : Boolean,
-    allowWhatIf : Boolean,
+    allowMod: Boolean,
+    allowWhatIf: Boolean,
     expType: String,
-  }
+  },
 };
 </script>
 
