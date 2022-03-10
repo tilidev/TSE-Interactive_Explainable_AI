@@ -19,6 +19,8 @@ Terminal 2:
 
 ## Project structure
 
+![project structure](/uploads/47aa8caab144de1185aaf9e9fa3f06b5/image.png)
+
 ## Back-End
 
 ## Front-End
