@@ -62,7 +62,7 @@ task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
 
-# hash for admin password
+# hash for admin password, not secure, idea is only to 
 admin_pwd_hash = '5adfb2c0eca0935eede2af480a5d60b7481ee308ef8c0a14b4e0d367067d8842'
 
 # This preprocessor was pickled in python 3.8.12.
@@ -179,22 +179,20 @@ async def schedule_explanation_generation(
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
-    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
-    Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
+    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
     if uid in results.keys():
         res = results[uid]
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
-        
+
         return res
     else: # In this case, there is no dict entry with this uuid
         return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
-    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
-    Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
+    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
 
     if uid in results.keys():
         res = results[uid]
@@ -210,7 +208,7 @@ async def shap_explanation(uid: UUID):
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
-    '''Returns the counterfactuals for the given instance. Appends the ai recommendation'''
+    '''Returns the counterfactuals for the given loan application. Appends the AI prediction (`NN_recommendation`, `NN_confidence`)'''
     con = create_connection(db_path)
     cfs = get_cf(con, instance_id)
     tmp_prediction_cf = get_application(con, instance_id, True)
@@ -263,6 +261,7 @@ async def process_status(p_id : int):
 
 @app.get("/result_uids", tags=["Debugging"])
 async def explanation_uids():
+    """Returns the UUIDs for each explanation that is currently saved in the results dictionary."""
     return results.keys()
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
@@ -295,7 +294,8 @@ async def experiment_by_name(name: str):
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
-    """Returns the next available client id and adds that client to the results list."""
+    """Returns the next available client_id and adds that client_id to the results list. The client_id is a database reference to the
+    actual user doing the experiment."""
     con = create_connection(db_path)
     return_id = create_id(con, gen.experiment_name)
     con.close()
@@ -306,14 +306,14 @@ async def generate_client_id(gen: GenerateClientID):
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
-    """Adds the results to the results table."""
+    """Adds the user-generated experiment results mapped to the client_id to the `results` table in the database."""
     con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
     con.close()
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results():
-    """Returns the results for the chosen experiment in json format"""
+    """Returns all results for the chosen experiment in JSON format"""
     con = create_connection(db_path)
     result_json = export_results_to(con, ExportFormat.js_object_notation.value)
     con.close()
@@ -329,7 +329,8 @@ async def single_export_results(experiment_name: str):
 
 @app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
 async def single_export_results_csv(experiment_name: str):
-    """Returns the results for the chosen experiment in csv format"""
+    """Returns the results for the chosen experiment in csv format. The csv file is temporarily saved on the server
+    and deleted after it has been returned."""
     def cleanup():
         os.remove(temp_file)
     con = create_connection(db_path)
@@ -339,7 +340,7 @@ async def single_export_results_csv(experiment_name: str):
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
-    """Deletes all results from the given experiment from the results table if that experiment exists."""
+    """Deletes all results from the given experiment from the `results` table if that experiment exists."""
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     con.close()
@@ -347,7 +348,7 @@ async def reset_experiment_results(experiment_name: str):
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
-    """Deletes an experiment from the experiments table if it exists there"""
+    """Deletes an experiment from the `experiments` table if it exists there."""
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
     con.close()
@@ -355,7 +356,7 @@ async def delete_experiment(experiment_name: str):
 
 @app.get("/authenticate", tags=["Security"])
 async def authenticate_admin(pwd: str):
-    """Is used by the frontend for simple blocking of experiment requests."""
+    """Is used by the frontend for simple blocking of experiment requests. THIS IS NOT A SECURE WAY TO DO SO."""
     m = hashlib.sha256()
     m.update(pwd.encode("UTF-8"))
     if m.hexdigest() != admin_pwd_hash:

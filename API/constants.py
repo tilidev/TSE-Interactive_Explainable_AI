@@ -5,12 +5,10 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice = "dice"
     none = "none"
-    # Do not add further types! This could lead to unexpected behavior for some requests.
 
 class ExportFormat(str, Enum):
     comma_separated = "csv"
     js_object_notation = "json"
-    # Maybe other export formats? XML or something
 
 class RecommendationType(str, Enum):
     approve = "approve"
