@@ -89,4 +89,6 @@ def timeout_explanation(uid: UUID, results_dict: dict):
     time.sleep(timeout_exp)
     timeouted = results_dict.pop(uid)
 
+    # TODO make sure the timer only starts after the explanation has been generated.
+
     print(f"\033[92mINFO:\033[0m Explanation with uuid {uid} has been deleted due to timeout.")   

@@ -82,27 +82,27 @@ app.add_middleware(
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True, tags=["Dataset"]) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
-    '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
+    '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes, aswell as sorting.'''
     con = create_connection(db_path)
     attributes = [str]
     for i in request.attributes:
         attributes.append(i.value)
     attributes.append(AttributeNames.NN_recommendation.value)
     attributes.append(AttributeNames.NN_confidence.value)
-    attributes = attributes[1:] # TODO Keep this in mind
+    attributes = attributes[1:]
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     con.close()
     return table_Response
 
 @app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
 async def entire_instance_by_id(id: int):
-    '''Returns the values for a loan application in the dataset, aswell as the corresponding ai recommendation and confidence.'''
+    '''Returns the values for a loan application in the dataset, aswell as the corresponding AI recommendation and confidence provided by the `smote_ey` tensorflow model.'''
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     con.close()
     return output 
 
-@app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"]) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
+@app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"])
 async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
     
@@ -138,26 +138,18 @@ async def schedule_explanation_generation(
     is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
     num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
 ):
-    '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
+    '''General scheduler for **LIME** or **SHAP** explanations. **DICE** counterfactuals are already generated in the database and cannot be
+    generated using this request.
+    As the computations can take a large amount of time (up to 20 seconds for **SHAP**), the back-end
     returns the information that the task has been started and returns a reference (uuid) to check for & return the actual
     explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
     Only attributes specific to the explanation method (`exp_method`) will be considered.
+    The back-end will use the attributes in the request body to compute an explanation. It is vital that the request
+    contains each instance-attribute's respective value. (`NN_recommendation`, `NN_confidence` and `id` will be ignored if passed in the request)
     ___
-    <h1>LIME</h1>
+    <h2>LIME</h2>
 
-    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
-    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
-    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
-    Note that this method can thus be used for existing as well as modified instances.
     The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
-    It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
-    ___
-    <h1>SHAP</h1>
-
-    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
-    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
-    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
-    Note that this method can thus be used for existing as well as modified instances.
     ___
     '''
 
@@ -194,6 +186,7 @@ async def lime_explanation(uid: UUID):
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
+        
         return res
     else: # In this case, there is no dict entry with this uuid
         return LimeResponse(status=ResponseStatus.not_existing)
@@ -209,6 +202,7 @@ async def shap_explanation(uid: UUID):
             return ShapResponse(status=ResponseStatus.wrong_method)
 
         #TODO delete entry in dictionary
+
         #TODO make call to check all dict entries
         return res
     else:
