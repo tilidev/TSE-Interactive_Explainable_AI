@@ -96,7 +96,7 @@ async def table_view(request: TableRequest):
 
 @app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
 async def entire_instance_by_id(id: int):
-    '''Returns an entire instance information for the lvl2 view'''
+    '''Returns the values for a loan application in the dataset, aswell as the corresponding ai recommendation and confidence.'''
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     con.close()
@@ -106,7 +106,7 @@ async def entire_instance_by_id(id: int):
 async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
     
-    check_cat_values(instance)
+    check_cat_values(instance) # Checks if the provided categorical values are correctly specified, throws HTTP exception if not
 
     data_dict = {col : [instance.__dict__[rename_dict[col]]] for col in feature_names_model_ordered}
     df = pd.DataFrame(data_dict) # Only works when all attributes are provided correctly
@@ -124,7 +124,7 @@ async def predict_instance(instance: ModelInstanceInfo):
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True, tags=["Dataset"])
 async def attribute_informations():
-    '''Returns a JSON with the constraints for each attribute.'''
+    '''Returns a JSON with the constraints, possible values and description for each attribute.'''
     result = json.dumps(attribute_constraints)
     result = json.loads(result)
     return result
@@ -161,13 +161,13 @@ async def schedule_explanation_generation(
     ___
     '''
 
-    check_cat_values(instance)
-
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
     #TODO adapt documentation to removed dice
     #TODO: assume that each attribute is in the instance_info
+
+    check_cat_values(instance)
 
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
     job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
@@ -377,8 +377,10 @@ def check_cat_values(instance):
         if instance.__dict__[key] not in cat_attr_check[key]:
             raise HTTPException(400, f"Please use a correct value for attribute '{key}'")
 
+
+# Run main script
+
 if __name__ == "__main__":
-    # This is needed for multiprocessing to run correctly on windows
 
     num_processes = mp.cpu_count() - 2 # will raise NotImplementedError if count cannot be determined
     manager = mp.Manager()
