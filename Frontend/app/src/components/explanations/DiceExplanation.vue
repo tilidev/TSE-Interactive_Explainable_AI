@@ -10,25 +10,41 @@
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
-      <table
-        v-if="counterfactuals.length"
-        class="table-auto text-primary shadow-lg text-left"
-      >
-        <thead class="bg-primary text-white">
-          <table-header
-            :labels="attributeData.labels"
-            :descriptions="attributeData.descriptions"
-            :attributes="Object.keys(counterfactuals[index])"
-          />
-        </thead>
-        <tbody class="divide-gray divide-y">
-          <table-row :rowData="getBaseRow(counterfactuals[index])"></table-row>
-          <table-row
-            :rowData="counterfactuals[index]"
-            :highlight="getHighlightSet(counterfactuals[index])"
-          />
-        </tbody>
-      </table>
+      <div>
+        <table
+          v-if="counterfactuals.length"
+          class="table-auto text-primary shadow-lg text-left"
+        >
+          <thead class="bg-primary text-white">
+            <table-header
+              :labels="attributeData.labels"
+              :descriptions="attributeData.descriptions"
+              :attributes="Object.keys(counterfactuals[index])"
+            />
+          </thead>
+          <tbody class="divide-gray divide-y">
+            <table-row
+              :rowData="getBaseRow(counterfactuals[index])"
+            ></table-row>
+            <table-row
+              :rowData="counterfactuals[index]"
+              :highlight="getHighlightSet(counterfactuals[index])"
+            />
+          </tbody>
+        </table>
+        <div>
+          <div class="flex mt-8 mb-4">
+            <div class="bg-primary h-6 w-6 mr-4"></div>
+            Original application
+          </div>
+          <div class="flex">
+            <div class="bg-modified h-6 w-6 mr-4"></div>
+            <div class="text-modified font-bold">
+              Counterfactual application
+            </div>
+          </div>
+        </div>
+      </div>
       <div :class="getArrowStyling('right')" @click="handleClick('right')">
         <fa-icon icon="arrow-right" size="2x" />
       </div>
@@ -55,7 +71,7 @@ export default {
   watch: {
     instanceInfo() {
       this.index = 0;
-    }
+    },
   },
   methods: {
     handleClick(direction) {
