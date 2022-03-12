@@ -43,7 +43,7 @@ ___
 ___
 
 **Database Interaction:**
-![Database Interaction](/uploads/99f6e1cf809f3b982885bb8aa803fe5a/image.png)
+![Database Interaction](/uploads/b58c7e493f24e5a1926cde76ecc5e64a/image.png)
 
 Explanation Task flow: `rgb(133, 192, 255)`\
 Explanation Result flow: `rgb(217, 155, 255)`
