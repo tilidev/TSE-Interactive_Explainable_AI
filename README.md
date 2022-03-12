@@ -31,6 +31,57 @@ npm run serve
 
 ## Back-End
 
+### Overview of Files
+
+The Back-end files can be found in the folder "API/". Here is a short summary about what each file or directory does:
+
+`main.py`:
+- starting point for FastAPI process
+- defines the API requests accessible by the front-end
+- contains documentation for interactive FastAPI docs (http://localhost:8000/docs)
+- launches explanation sub-processes defined in `task_gen.py`
+- defines manager process for shared process memory
+
+`models.py`:
+- defines the [pydantic](https://pydantic-docs.helpmanual.io) models for requests, responses and other data schemas
+- using models ensures data validation and basic type conversion
+
+`constants.py`:
+- defines commonly used strings and numbers to reduce magic strings
+- contains the constraints for the dataset attributes
+- defines dictionary mappings for data transformations 
+
+`database_req.py`:
+- interface for database interaction with the API
+- defines functions for database access, seperates database logic and structure from API requests
+
+`task_gen.py`:
+- defines explanation sub-process logic for lime and shap
+- access to shared memory (job queue, explanation results dictionary)
+- defines timeout logic for explanation results
+
+`lime_utils.py`:
+
+
+`shap_utils.py`:
+
+
+`preproc.pickle`:
+
+
+`DataLoader_ey.py`:
+
+
+`database.db`:
+
+
+`smote_ey.tf/`:
+
+
+`Data/`:
+
+
+
 ### SQLite Database
 
 The application uses a SQLite database for saving the cleaned german credit dataset ([GCD](https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29)), the experiments and the corresponding results, aswell as pre-generated `DICE` counterfactuals for each loan application. The python module [SQLite3](https://docs.python.org/3.8/library/sqlite3.html) is used as the database interface for the API.
