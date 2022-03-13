@@ -134,9 +134,7 @@ async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
     background_tasks: BackgroundTasks,
-    num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
-    is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
-    num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
+    num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation")
 ):
     '''General scheduler for **LIME** or **SHAP** explanations. **DICE** counterfactuals are already generated in the database and cannot be
     generated using this request.
@@ -162,7 +160,7 @@ async def schedule_explanation_generation(
     check_cat_values(instance)
 
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
-    job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
+    job.task = {"instance" : instance, "num_features" : num_features}
     task_queue.put(job)
 
     response_mapping = {

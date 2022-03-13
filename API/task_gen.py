@@ -15,8 +15,6 @@ class Job(BaseModel):
     uid : UUID = Field(default_factory=uuid4)
     task : dict = {} # instance attributes with values & arguments necessary for computation
     status : str = Field(ResponseStatus)
-    time_out : Optional[float] = Field(None)
-
 
 def explanation_worker(in_queue : Queue, res_out : dict):
     """Takes one element (a job) out of the input queue (TODO BLOCKING), solves the task
