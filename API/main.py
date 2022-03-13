@@ -135,7 +135,6 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
-    background_tasks: BackgroundTasks,
     num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation")
 ):
     '''General scheduler for **LIME** or **SHAP** explanations. **DICE** counterfactuals are already generated in the database and cannot be
@@ -172,7 +171,6 @@ async def schedule_explanation_generation(
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
 
-    background_tasks.add_task(timeout_explanation, job.uid, results) # Will remove the object in the results dictionary after a certain time has expired
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 # TODO add check for XAI-method differentiation when getting the results

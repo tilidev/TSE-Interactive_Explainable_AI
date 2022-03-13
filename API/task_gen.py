@@ -1,8 +1,9 @@
 from queue import Queue
+import threading
 from pydantic import BaseModel, Field
 from models import ShapResponse, LimeResponse
 from shap_utils import compute_response_shap
-from constants import ResponseStatus, ExplanationType, all_features
+from constants import ResponseStatus, ExplanationType, all_features, timeout_seconds
 from typing import Optional
 from uuid import UUID, uuid4
 import time
@@ -63,8 +64,6 @@ def explanation_worker(in_queue : Queue, res_out : dict):
 
             out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes)
             res_out[job.uid] = out
-
-
         elif job.exp_type == ExplanationType.lime:
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
@@ -74,19 +73,26 @@ def explanation_worker(in_queue : Queue, res_out : dict):
             lh_res = lh.get_lime_values(job.task["instance"].__dict__, num_features) #pass the instance in the required format
             out = lh_res
             res_out[job.uid] = LimeResponse(status=ResponseStatus.terminated, values=lh_res)
-        
+        else:
+            print(f"\033[93mWARNING:\033[0m \033[1m{job.exp_type.value}\033[0m is invalid for explanation with uuid {job.uid}. Fetching new job.")
+            continue
+
         end_time = time.time()
 
         print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m finished \033[1m{job.exp_type.value}\033[0m computation.\n      Time taken: {end_time-start_time} seconds.")
         print(f"      Result saved with uuid {job.uid}.")
 
+        threading.Thread(target=timeout_explanation, args=(job.uid, res_out, timeout_seconds)).start()
+        print(f"      Timeout for explanation {job.uid} has begun. Deletion in {timeout_seconds} seconds.")
 
-def timeout_explanation(uid: UUID, results_dict: dict):
-    '''Will remove the generated explanation a certain amount of time after its generation.'''
-    timeout_exp = 300
-    time.sleep(timeout_exp)
-    timeouted = results_dict.pop(uid)
 
-    # TODO make sure the timer only starts after the explanation has been generated.
+def timeout_explanation(uid: UUID, results_dict: dict, timeout_seconds: int):
+    '''Will remove the generated explanation a certain amount of time after its generation. This method should only be used after the explanation has been generated.'''
+    time.sleep(timeout_seconds)
+    try:
+        results_dict.pop(uid)
+    except KeyError:
+        # Could have been deleted otherwise
+        print(f"\033[92mINFO:\033[0m Explanation with uuid {uid} couldn't be deleted. Key does not exist.")
 
     print(f"\033[92mINFO:\033[0m Explanation with uuid {uid} has been deleted due to timeout.")   
