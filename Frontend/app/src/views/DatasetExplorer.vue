@@ -40,14 +40,20 @@
       ></div>
     </div>
     <div class="flex flex-col items-center mx-8">
-      <div class="flex flex-col" :class="getItemsClass()">
-        <div class="flex flex-row-reverse gap-x-4 pb-4 justify-start">
+      <div class="flex flex-col items-stretch" :class="getItemsClass()">
+        <div class="flex space-x-4 mb-4 -mt-4 self-start">
+          <navigation-button :type="'admin'"></navigation-button>
+        </div>
+        <div class="flex justify-between pb-4 items-center">
+          <div class="text-2xl font-bold">Dataset Explorer</div>
+          <div class="flex flex-row-reverse gap-x-4 justify-start">
           <outline-button @click="toggleCustomize = !toggleCustomize"
             ><fa-icon icon="table" class="mr-2" />Customize</outline-button
           >
           <outline-button @click="toggleFilter = !toggleFilter"
             ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
           >
+          </div>
         </div>
         <data-table
           @apply-sorting="applySorting"
@@ -65,6 +71,7 @@ import DataTable from "../components/table/DataTable.vue";
 import OutlineButton from "../components/buttons/OutlineButton.vue";
 import FilterOverlay from "../components/overlays/FilterOverlay.vue";
 import CustomizeOverlay from "../components/overlays/CustomizeOverlay.vue";
+import NavigationButton from "../components/buttons/NavigationButton.vue";
 
 export default {
   data() {
@@ -142,7 +149,13 @@ export default {
       this.sendTableRequest();
     },
   },
-  components: { DataTable, OutlineButton, CustomizeOverlay, FilterOverlay },
+  components: {
+    DataTable,
+    OutlineButton,
+    CustomizeOverlay,
+    FilterOverlay,
+    NavigationButton,
+  },
   inject: ["apiUrl", "attributeData"],
 };
 </script>
