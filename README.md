@@ -25,7 +25,14 @@ cd Frontend/app/
 npm run serve
 ```
 
+The API interactive docs are accessible with http://localhost:8000/docs.
+The root for all API requests is http://localhost:8000/. \
+The application gui is accessible with http://localhost:8080/.
+The starting page is "/dataset". To access the admin panel, use "/admin".
+
 ## Project structure
+
+The application consists of a desktop front-end gui and a backend api server. The front-end is built with the [VUE](https://vuejs.org)-Javascript framework, the back-end api with the [FastAPI](https://fastapi.tiangolo.com)-python framework.
 
 ![project structure](/uploads/47aa8caab144de1185aaf9e9fa3f06b5/image.png)
 
