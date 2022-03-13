@@ -7,7 +7,7 @@ import pickle
 import psutil
 import hashlib
 
-from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 from starlette.background import BackgroundTask
 import json
 
@@ -97,6 +97,8 @@ async def table_view(request: TableRequest):
 @app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
 async def entire_instance_by_id(id: int):
     '''Returns the values for a loan application in the dataset, aswell as the corresponding AI recommendation and confidence provided by the `smote_ey` tensorflow model.'''
+    if id > number_of_applications - 1 or id < 0:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail={"min" : 0, "max" : number_of_applications - 1})
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     con.close()
