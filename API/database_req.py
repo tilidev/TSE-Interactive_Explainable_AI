@@ -132,6 +132,8 @@ def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
     if not check_exp_exists(con, exp_name):
         c = con.cursor()
+        #single quotes need to be replaced with double single quotes as otherwise sql assumes it indicates the end of a string
+        exp_info = exp_info.replace("'","''")
         insert_query = f"INSERT INTO experiments (name, information) VALUES ('{exp_name}','{exp_info}')"
         c.execute(insert_query)
         con.commit()
