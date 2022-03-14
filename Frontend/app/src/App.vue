@@ -37,7 +37,7 @@ export default {
         financial: [],
         personal: [],
         loan: [],
-        other: [],
+        prediction: [],
       },
       reducedCategories: {
         financial: [],
