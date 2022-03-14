@@ -98,6 +98,9 @@ import TreeMap from "../components/explanations/TreeMap.vue";
 import Toggle from "@vueform/toggle";
 
 export default {
+  mounted() {
+    this.modifiedInstance = Object.assign({}, this.instanceInfo);
+  },
   data() {
     return {
       modifiedInstance: {},

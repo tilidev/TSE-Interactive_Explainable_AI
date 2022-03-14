@@ -5,7 +5,7 @@
         >Start Experiment</default-button
       >
     </div>
-    <div v-if="!done">
+    <div v-if="!done && started">
         <div v-if="currentIndex"
           class="flex space-x-2 mb-4 -mt-4 items-center cursor-pointer py-2"
           @click="goBack()"
@@ -13,7 +13,7 @@
           <fa-icon size="xl" icon="arrow-left"></fa-icon>
           <div>Back to previous loan application</div>
       </div>
-      <instance-view
+      <instance-view v-if="started"
         :instanceInfo="instanceInfo"
         :expType="expType"
         :allowMod="allowMod"
@@ -127,6 +127,7 @@ export default {
         .get(this.apiUrl + "instance/" + this.instanceIds[this.currentIndex])
         .then((response) => {
           this.instanceInfo = response.data;
+          console.log("done")
         });
     },
   },
