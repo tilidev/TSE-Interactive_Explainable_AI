@@ -104,7 +104,7 @@
       >
       <default-button
         class="col-start-1 mt-4 mr-4"
-        @click="console.log('Generate Explanation')"
+        @click="this.$emit('generate-explanation', modifiedInstance)"
         v-if="modificationEnabled && allowWhatIf"
         >Generate New Explanation</default-button
       >

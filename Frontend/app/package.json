@@ -17,6 +17,7 @@
     "@vuedoc/md": "^3.2.0",
     "@vuedoc/parser": "^3.4.0",
     "@vueform/slider": "^2.0.8",
+    "@vueform/toggle": "^2.0.1",
     "autoprefixer": "^9",
     "axios": "^0.24.0",
     "click-outside-vue3": "^4.0.1",

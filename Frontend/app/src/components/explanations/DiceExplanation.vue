@@ -55,14 +55,21 @@
 <script>
 import TableHeader from "../table/TableHeader.vue";
 import TableRow from "../table/TableRow.vue";
+/**
+ * A component for displaying the DiCE explanation.
+ * It shows 5 different tables with the original instance and one counterfactual each time.
+ * The user can navigate through these tables with arrow buttons.
+ */
 export default {
   inject: ["attributeData", "apiUrl"],
   components: { TableHeader, TableRow },
   mounted() {
-    console.log(this.instanceInfo);
     this.sendDiceRequest();
   },
   props: {
+    /**
+     * The instance (loan application) to be used for the explanation.
+     */
     instanceInfo: {
       type: Object,
       required: true,

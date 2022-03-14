@@ -5,11 +5,15 @@
       :modifiedInstance="modifiedInstance"
       :attributeData="attributeData"
       :modifiable="allowMod"
-      :allowWhatIf="allowWhatIf"
+      :allowWhatIf="expType == 'dice' ? false : allowWhatIf"
       @apply-modification="applyModification"
-      @reset-instance="modifiedInstance = Object.assign({}, instanceInfo)"
+      @generate-explanation="generateExplanation"
+      @reset-instance="reset"
     ></info-card>
-    <div class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white" v-if="allowSwitching">
+    <div
+      class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white"
+      v-if="allowSwitching"
+    >
       <div :class="getStyling('lime')" @click="this.$emit('switch', 'lime')">
         LIME
       </div>
@@ -19,21 +23,71 @@
       <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
         DiCE
       </div>
-    <div class="flex flex-row-reverse gap-y-4 pb-4 justify-start">
-      <outline-button @click="detailed = !detailed">Detail</outline-button>
     </div>
     <dice-explanation
       v-if="instanceInfo.id != null && expType === 'dice'"
       :instanceInfo="instanceInfo"
       class="mb-4 mt-8"
     ></dice-explanation>
-    <tree-map
+    <div
+      class="bg-white px-8 py-4 my-8"
       v-else-if="Object.keys(instanceInfo).length"
-      :expType="expType"
-      :instance="instanceInfo"
-      :detailView="detailed"
-      :whatif="false"
-    ></tree-map>
+    >
+      <div class="flex justify-between mb-4">
+        <div class="text-lg font-bold">
+          Factors influencing AI Recommendation
+        </div>
+        <div class="flex justify-end space-x-4">
+          <div>Toggle detail view</div>
+          <Toggle
+            v-model="detailed"
+            :classes="{
+              toggleOn: 'bg-primary border-primary justify-start text-white',
+            }"
+          />
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <div>
+          <div class="text-left mb-2" v-if="whatif">
+            Original Loan Application
+          </div>
+          <tree-map
+            class="-ml-1"
+            :expType="expType"
+            :instance="instanceInfo"
+            :whatif="whatif"
+            :id="'left'"
+            :detailView="detailed"
+          ></tree-map>
+        </div>
+        <div v-if="whatif">
+          <div class="text-right mb-2">Modified Loan Application</div>
+          <tree-map
+            class="-mr-1"
+            :expType="expType"
+            :instance="modifiedInstance"
+            :whatif="whatif"
+            :id="'right'"
+            :detailView="detailed"
+          ></tree-map>
+        </div>
+      </div>
+      <div>
+        <div class="flex mt-8 mb-4">
+          <div class="bg-positive h-6 w-6 mr-4"></div>
+          <div class="text-positive-dark font-bold">
+            Influencing towards approval
+          </div>
+        </div>
+        <div class="flex">
+          <div class="bg-negative h-6 w-6 mr-4"></div>
+          <div class="text-negative-dark font-bold">
+            Influencing towards rejection
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,18 +95,27 @@
 import InfoCard from "../components/InfoCard.vue";
 import DiceExplanation from "../components/explanations/DiceExplanation.vue";
 import TreeMap from "../components/explanations/TreeMap.vue";
-import OutlineButton from "../components/buttons/OutlineButton.vue";
+import Toggle from "@vueform/toggle";
 
 export default {
   data() {
     return {
       modifiedInstance: {},
-      detailed: true,
+      detailed: false,
       modified: false,
+      whatif: false,
     };
   },
-  components: { InfoCard, DiceExplanation, TreeMap, OutlineButton },
+  components: { InfoCard, DiceExplanation, TreeMap, Toggle },
   methods: {
+    reset() {
+      this.modifiedInstance = Object.assign({}, this.instanceInfo);
+      this.whatif = false;
+    },
+    generateExplanation(modifiedInstance) {
+      this.modifiedInstance = Object.assign({}, modifiedInstance);
+      this.whatif = true;
+    },
     getStyling(explanation) {
       console.log(this.expType);
       if (explanation == this.expType) {

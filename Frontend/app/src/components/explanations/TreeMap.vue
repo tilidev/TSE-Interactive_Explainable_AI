@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white px-8 py-4 my-8">
-    <div id="tooltip" class="tooltip"></div>
-    <div id="treemap" />
+  <div>
+    <div :id="'tooltip' + id" class="tooltip"></div>
+    <div :id="id" />
   </div>
 </template>
 
@@ -9,23 +9,28 @@
 import * as d3 from "d3";
 
 export default {
-  components: {},
   props: {
+    id: String,
     expType: String,
-    detailView: Boolean,
     instance: Object,
     whatif: Boolean,
+    detailView: Boolean,
   },
   watch: {
-    detailView(){
-      d3.select("#treemap").html(null);
+    instance() {
+      d3.select("#" + this.id).html(null);
+      this.sendExplanationRequest();
+    },
+    whatif() {
       this.generateTreeMap();
     },
-    expType(){
-      d3.select("#treemap").html(null);
+    detailView() {
+      this.generateTreeMap();
+    },
+    expType() {
+      d3.select("#" + this.id).html(null);
       this.sendExplanationRequest();
-    }
-
+    },
   },
   data() {
     return {
@@ -64,16 +69,47 @@ export default {
   },
   inject: ["attributeData", "apiUrl"],
   mounted() {
-    console.log(this.instance);
     this.sendExplanationRequest();
   },
   methods: {
     saveData(result) {
+      (this.simpleExpData = {
+        name: "Explanation",
+        children: [
+          { name: "positive", children: [] },
+          {
+            name: "negative",
+            children: [],
+          },
+        ],
+      }),
+        (this.detailExpData = {
+          name: "Explanation",
+          children: [
+            {
+              name: "positive",
+              children: [
+                { name: "financial", children: [] },
+                { name: "personal", children: [] },
+                { name: "loan", children: [] },
+              ],
+            },
+            {
+              name: "negative",
+              children: [
+                { name: "financial", children: [] },
+                { name: "personal", children: [] },
+                { name: "loan", children: [] },
+              ],
+            },
+          ],
+        });
       for (let obj of result) {
         let childElement = {};
         childElement.name = this.attributeData.labels[obj.attribute];
         childElement.category = this.attributeData.categories[obj.attribute];
         childElement.value = Math.abs(obj.influence);
+        childElement.attributeValue = this.instance[obj.attribute];
         let catObj;
         if (obj.influence < 0) {
           for (let category of this.detailExpData.children[0].children) {
@@ -135,27 +171,32 @@ export default {
         });
     },
     generateTreeMap() {
-      
+      d3.select("#" + this.id).html(null);
       const detailView = this.detailView;
-      const w = this.whatif ? 600 : 1200;
+      const w = this.whatif ? 640 : 1320;
       const h = 500;
       const hierarchy = d3
           .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
           .sum((d) => d.value) //sums every child values
           .sort((a, b) => b.value - a.value), // and sort them in descending order
-        treemap = d3.treemap().size([w, h]).padding(1),
+        treemap = d3
+          .treemap()
+          .size([w, h])
+          .padding(this.detailView ? 1 : 2),
         root = treemap(hierarchy);
 
-      var colors = ["#008000", "#B22222"],
+      var colors = ["#15803d", "#b91c1c"],
         colorScale = d3
           .scaleOrdinal() // the scale function
           .domain(["positive", "negative"]) // the data
           .range(colors); // the way the data should be shown
 
-      const tooltip = d3.select("#tooltip").style("font-size", "16px");
+      const tooltip = d3
+        .select("#tooltip" + this.id)
+        .style("font-size", "16px");
 
       const svg = d3
-        .select("#treemap") //make sure there's a svg element in your html file
+        .select("#" + this.id) //make sure there's a svg element in your html file
         .append("svg")
         .attr("width", w)
         .attr("height", h);
@@ -183,15 +224,17 @@ export default {
                 d.parent.data.name.charAt(0).toUpperCase() +
                   d.parent.data.name.slice(1)
               )
-              .attr("class", "tt-category");
+              .attr("class", "tt-category pb-1 text-left");
           }
 
           tooltip
             .append("div")
-            .text(d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1))
-            .attr("class", "tt-name")
-            .style("font-weight", "600");
-
+            .text(
+              d.data.name.charAt(0).toUpperCase() +
+                d.data.name.slice(1) +
+                (detailView ? ": " + d.data.attributeValue : "")
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold");
           tooltip
             .append("div")
             .text(Math.round(d.data.value * 10000) / 100 + "%")
@@ -201,7 +244,7 @@ export default {
                 detailView ? d.parent.parent.data.name : d.parent.data.name
               )
             )
-            .attr("class", "tt-value");
+            .attr("class", "tt-value font-bold text-left");
 
           tooltip
             .style("opacity", 1)
@@ -217,10 +260,10 @@ export default {
         .data(root.leaves())
         .enter()
         .append("text")
-        .attr("x", (d) => d.x0 + 5)
-        .attr("y", (d) => d.y0 + 20)
+        .attr("x", (d) => d.x0 + 10)
+        .attr("y", (d) => d.y0 + 25)
         .text(function (d) {
-          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 50) {
+          if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
             return d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1);
           }
         })
@@ -233,10 +276,10 @@ export default {
         .data(root.leaves())
         .enter()
         .append("text")
-        .attr("x", (d) => d.x0 + 5)
-        .attr("y", (d) => d.y0 + 40)
+        .attr("x", (d) => d.x0 + 10)
+        .attr("y", (d) => d.y0 + 45)
         .text(function (d) {
-          if (d.x1 - d.x0 >= 120 && d.y1 - d.y0 >= 50) {
+          if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
             return Math.round(d.data.value * 10000) / 100 + "%";
           }
         })
@@ -265,3 +308,4 @@ export default {
   font-weight: 1200;
 }
 </style>
+<style src="@vueform/toggle/themes/default.css"></style>
