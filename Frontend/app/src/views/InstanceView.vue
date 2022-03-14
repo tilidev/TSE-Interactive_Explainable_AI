@@ -30,7 +30,7 @@
       class="mb-4 mt-8"
     ></dice-explanation>
     <div
-      class="bg-white px-8 py-4 my-8"
+      class="bg-white px-8 py-4 my-8 shadow-md"
       v-else-if="Object.keys(instanceInfo).length"
     >
       <div class="flex justify-between mb-4">
