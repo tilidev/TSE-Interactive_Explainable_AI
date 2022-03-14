@@ -1,8 +1,10 @@
 <template>
   <div>
     <button
+    
         :class="getStyling()"
     >
+    <!-- The button's content -->
       <slot />
     </button>
   </div>
@@ -10,10 +12,16 @@
 
 <script>
 export default {
+  /**
+   * A configurable clear button component
+   */
   methods: {
+     /**
+     * Returns classes for the button's style depending on the props provided
+     * @returns {String} Tailwind classes for button styling
+     */
     getStyling() {
       let paddingClass = "";
-      //TODO: Outsource this to util class to avoid duplicate code
       switch (this.size) {
         case 'sm':
           paddingClass = "px-2 py-1";
@@ -32,13 +40,17 @@ export default {
     }
   },
   props: {
-    // The button's text color, needs to be a color defined by tailwind
+    /**
+     * The button's text color, needs to be a color defined in tailwind.config.cs
+     */
     color: {
       type: String,
       required: false,
       default: "primary"
     },
-    // The button's size, can be sm, base, lg, xl, 2xl, ..., 9xl
+    /**
+    The button's size, can be sm, base, lg, xl, 2xl, ..., 9xl
+    */
     size: {
       type: String,
       required: false,
