@@ -105,19 +105,19 @@
       <default-button
         class="col-start-1 mt-4 mr-4"
         @click="this.$emit('generate-explanation', modifiedInstance)"
-        v-if="modificationEnabled && allowWhatIf"
+        v-if="JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) && allowWhatIf"
         >Generate New Explanation</default-button
       >
       <clear-button
         class="col-start-2 mt-4"
         @click="resetInstance()"
-        v-if="modificationEnabled && allowWhatIf"
+        v-if="JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) && allowWhatIf"
         >Reset</clear-button
       >
       <outline-button
         class="col-start-2 mt-4"
         @click="resetInstance()"
-        v-if="modificationEnabled && !allowWhatIf"
+        v-else-if="modificationEnabled"
         >Reset</outline-button
       >
     </div>
