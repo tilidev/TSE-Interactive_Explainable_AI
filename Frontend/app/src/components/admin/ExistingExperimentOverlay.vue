@@ -72,6 +72,10 @@
               :href="experimentLink"
               >{{ experimentLink }}</a
             >
+            <div class="col-start-1 col-span-2 font-bold">Number of participants</div>
+            <div class="col-start-3 col-span-3">
+              {{ experimentData.num_participants }}
+            </div>
             <default-button
               @click="downloadFile(true)"
               class="col-start-1 col-span-2"
