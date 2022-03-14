@@ -19,6 +19,8 @@
       <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
         DiCE
       </div>
+    <div class="flex flex-row-reverse gap-y-4 pb-4 justify-start">
+      <outline-button @click="detailed = !detailed">Detail</outline-button>
     </div>
     <dice-explanation
       v-if="instanceInfo.id != null && expType === 'dice'"
@@ -26,17 +28,10 @@
       class="mb-4 mt-8"
     ></dice-explanation>
     <tree-map
-      v-else-if="Object.keys(instanceInfo).length && expType == 'lime'"
-      :expType="'lime'"
+      v-else-if="Object.keys(instanceInfo).length"
+      :expType="expType"
       :instance="instanceInfo"
-      :detailView="true"
-      :whatif="false"
-    ></tree-map>
-    <tree-map
-      v-else-if="Object.keys(instanceInfo).length && expType == 'shap'"
-      :expType="'shap'"
-      :instance="instanceInfo"
-      :detailView="true"
+      :detailView="detailed"
       :whatif="false"
     ></tree-map>
   </div>
@@ -46,14 +41,17 @@
 import InfoCard from "../components/InfoCard.vue";
 import DiceExplanation from "../components/explanations/DiceExplanation.vue";
 import TreeMap from "../components/explanations/TreeMap.vue";
+import OutlineButton from "../components/buttons/OutlineButton.vue";
 
 export default {
   data() {
     return {
       modifiedInstance: {},
+      detailed: true,
+      modified: false,
     };
   },
-  components: { InfoCard, DiceExplanation, TreeMap },
+  components: { InfoCard, DiceExplanation, TreeMap, OutlineButton },
   methods: {
     getStyling(explanation) {
       console.log(this.expType);

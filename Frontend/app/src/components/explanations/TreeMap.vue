@@ -16,6 +16,17 @@ export default {
     instance: Object,
     whatif: Boolean,
   },
+  watch: {
+    detailView(){
+      d3.select("#treemap").html(null);
+      this.generateTreeMap();
+    },
+    expType(){
+      d3.select("#treemap").html(null);
+      this.sendExplanationRequest();
+    }
+
+  },
   data() {
     return {
       simpleExpData: {
@@ -124,6 +135,7 @@ export default {
         });
     },
     generateTreeMap() {
+      
       const detailView = this.detailView;
       const w = this.whatif ? 600 : 1200;
       const h = 500;
