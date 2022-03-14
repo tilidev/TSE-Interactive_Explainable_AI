@@ -96,7 +96,6 @@ export default {
         })
         .then((response) => {
           this.clientId = response.data.client_id;
-          console.log(this.clientId);
         });
       axios
         .get(this.apiUrl + "experiment?name=" + this.$route.params.name)
@@ -104,7 +103,7 @@ export default {
           this.instanceIds = response.data.loan_ids;
           this.expType = response.data.exp_type;
           this.allowMod = response.data.ismodify;
-          this.allowWhatIf = response.data.isWhatIf;
+          this.allowWhatIf = response.data.iswhatif;
           this.surveyLink = response.data.survey_link;
         })
         .then(this.sendInstanceRequest);
