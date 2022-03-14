@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-click-outside="cancel"
-    class="shadow-blurred bg-white px-4 py-2"
-  >
+  <div v-click-outside="cancel" class="shadow-blurred bg-white px-4 py-2">
     <div class="m-2 font-bold">Original value:</div>
     <div class="m-2 cursor-pointer" @click="applyValue(originalValue)">
       {{ originalValue }}
@@ -16,7 +13,8 @@
         :key="value"
       >
         <fa-icon
-          class="text-modified -ml-6 mt-0.5 absolute"
+          class="-ml-6 mt-0.5 absolute"
+          :class="getValueStyling(value)"
           icon="check"
           v-if="selectedValue == value"
         /><span :class="getValueStyling(value)">{{ value }}</span>
@@ -71,7 +69,7 @@ export default {
       this.$emit("apply-value", this.originalValue);
     },
     getValueStyling(attribute) {
-      if (attribute == this.selectedValue) {
+      if (attribute == this.selectedValue && attribute != this.originalValue) {
         return "text-modified";
       }
       return "";
