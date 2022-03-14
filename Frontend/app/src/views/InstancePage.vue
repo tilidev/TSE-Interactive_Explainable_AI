@@ -7,7 +7,9 @@
     <instance-view
       :allowMod="true"
       :allowWhatIf="true"
-      expType="dice"
+      :expType="expType"
+      @switch="switchExp"
+      :allowSwitching="true"
       :instanceInfo="instanceInfo"
     ></instance-view>
   </div>
@@ -24,10 +26,14 @@ export default {
     return {
       id: this.$route.params.id,
       instanceInfo: {},
+      expType: "lime",
     };
   },
   components: { InstanceView, NavigationButton },
   methods: {
+    switchExp(expType) {
+      this.expType = expType;
+    },
     backToDataset() {
       this.$router.push("/dataset");
     },
