@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="isLoading" class="mt-4 flex items-center justify-start space-x-2">
+    <div
+      v-if="isLoading"
+      class="mt-4 flex items-center justify-start space-x-2"
+    >
       <svg
         role="status"
         class="mr-2 w-8 h-8 text-gray-light animate-spin"
@@ -242,21 +245,16 @@ export default {
           if (detailView) {
             tooltip
               .append("div")
-              .text(
-                d.parent.data.name.charAt(0).toUpperCase() +
-                  d.parent.data.name.slice(1)
-              )
-              .attr("class", "tt-category pb-1 text-left");
+              .text(d.parent.data.name)
+              .attr("class", "tt-category pb-1 text-left capitalize");
           }
 
           tooltip
             .append("div")
             .text(
-              d.data.name.charAt(0).toUpperCase() +
-                d.data.name.slice(1) +
-                (detailView ? ": " + d.data.attributeValue : "")
+              d.data.name + (detailView ? ": " + d.data.attributeValue : "")
             )
-            .attr("class", "tt-name text-left pb-2 font-bold");
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
           tooltip
             .append("div")
             .text(Math.round(d.data.value * 10000) / 100 + "%")
@@ -308,7 +306,7 @@ export default {
         .attr("font-size", "15px")
         .attr("margin-top", "16px")
         .attr("fill", "white");
-        this.isLoading = false;
+      this.isLoading = false;
     },
   },
 };
