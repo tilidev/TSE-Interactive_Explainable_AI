@@ -6,6 +6,13 @@
       >
     </div>
     <div v-if="!done">
+        <div v-if="currentIndex"
+          class="flex space-x-2 mb-4 -mt-4 items-center cursor-pointer py-2"
+          @click="goBack()"
+        >
+          <fa-icon size="xl" icon="arrow-left"></fa-icon>
+          <div>Back to last loan application</div>
+      </div>
       <instance-view
         :instanceInfo="instanceInfo"
         :expType="expType"
@@ -29,9 +36,7 @@
     </div>
     <div v-if="done">
       <div class="text-3xl font-bold py-2">You completed the experiment</div>
-      <div v-if="!surveyLink" class="text-lg">
-        Thank you for participating!
-      </div>
+      <div v-if="!surveyLink" class="text-lg">Thank you for participating!</div>
       <a v-else :href="surveyLink" class="text-primary-light underline text-lg"
         >Please click here to continue to the survey</a
       >
@@ -63,6 +68,11 @@ export default {
   },
   components: { InstanceView, DefaultButton },
   methods: {
+    goBack() {
+      this.results.pop();
+      this.currentIndex--;
+      this.sendInstanceRequest();
+    },
     postResults() {
       console.log(this.results);
       const axios = require("axios");
