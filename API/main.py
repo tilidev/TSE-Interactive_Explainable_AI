@@ -12,10 +12,10 @@ from starlette.background import BackgroundTask
 import json
 
 from typing import Any, Optional, List, Union
-from fastapi import BackgroundTasks, FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.params import Body
 from fastapi.responses import FileResponse
-from task_gen import explanation_worker, timeout_explanation
+from task_gen import explanation_worker
 from task_gen import Job
 from typing import Dict
 from uuid import UUID
@@ -219,7 +219,6 @@ async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
         tmp_pred = {}
         for key in feature_names_model_ordered:
             tmp_pred[key] = tmp[rename_dict[key]]
-        print(tmp_pred)
         df = pd.DataFrame(tmp_pred, index=[0])
 
         data_to_predict = preprocessor.transform(df)
@@ -342,7 +341,6 @@ async def reset_experiment_results(experiment_name: str):
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     con.close()
-    # TODO what would be the best response model?
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
@@ -350,7 +348,6 @@ async def delete_experiment(experiment_name: str):
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
     con.close()
-    # TODO what would be the best response model
 
 @app.get("/authenticate", tags=["Security"])
 async def authenticate_admin(pwd: str):
