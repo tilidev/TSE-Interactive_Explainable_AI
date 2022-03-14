@@ -5,12 +5,10 @@ class ExplanationType(str, Enum):
     shap = "shap"
     dice = "dice"
     none = "none"
-    # Do not add further types! This could lead to unexpected behavior for some requests.
 
 class ExportFormat(str, Enum):
     comma_separated = "csv"
     js_object_notation = "json"
-    # Maybe other export formats? XML or something
 
 class RecommendationType(str, Enum):
     approve = "approve"
@@ -82,6 +80,7 @@ category = "category"
 financial_cat = "financial"
 personal_cat = "personal"
 loan_cat = "loan"
+prediction_cat = "prediction"
 filter = "filter"
 attributes = "attributes"
 sort_by = "sort_by"
@@ -107,6 +106,7 @@ client_id = "client_id"
 choice = "choice"
 all_features = 18
 number_of_applications = 1000
+timeout_seconds = 180
 
 # attribute constraints must exactly conform to the possible values accepted by the model!
 attribute_constraints = [
@@ -235,7 +235,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_confidence,
         const_type : continuous,
-        category : "other",
+        category : prediction_cat,
         lower_bound : 0.5,
         upper_bound : 1,
         attr_description : "Indicates how confident the AI is in it's decision."
@@ -243,7 +243,7 @@ attribute_constraints = [
     {
         attr_name : AttributeNames.NN_recommendation,
         const_type : categorical,
-        category : "other",
+        category : prediction_cat,
         values : ['Reject','Approve'],
         attr_description : "The AI's recommendation whether the loan application should be approved or rejected"
     },

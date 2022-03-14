@@ -5,8 +5,10 @@ from tensorflow.keras.models import load_model
 import pandas as pd
 import pickle
 import psutil
+import hashlib
 
-from starlette.status import HTTP_202_ACCEPTED
+from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from starlette.background import BackgroundTask
 import json
 
 from typing import Any, Optional, List, Union
@@ -60,6 +62,9 @@ task_queue = None # tasks will be inputted here
 results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
 tf_model = load_model("smote_ey.tf")
 
+# hash for admin password, not secure, idea is only to 
+admin_pwd_hash = '5adfb2c0eca0935eede2af480a5d60b7481ee308ef8c0a14b4e0d367067d8842'
+
 # This preprocessor was pickled in python 3.8.12.
 # It follows the steps from data_loader_ey, except that the preprocessor is returned
 preprocessor = pickle.load(open("preproc.pickle", "rb"))
@@ -77,31 +82,33 @@ app.add_middleware(
 
 @app.post("/table", response_model=List[InstanceInfo], response_model_exclude_none=True, tags=["Dataset"]) # second parameter makes sure that unused stuff won't be included in the response
 async def table_view(request: TableRequest):
-    '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes.'''
+    '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes, aswell as sorting.'''
     con = create_connection(db_path)
     attributes = [str]
     for i in request.attributes:
         attributes.append(i.value)
     attributes.append(AttributeNames.NN_recommendation.value)
     attributes.append(AttributeNames.NN_confidence.value)
-    attributes = attributes[1:] # TODO Keep this in mind
+    attributes = attributes[1:]
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     con.close()
     return table_Response
 
 @app.get("/instance/{id}", response_model=InstanceInfo, tags=["Dataset"])
 async def entire_instance_by_id(id: int):
-    '''Returns an entire instance information for the lvl2 view'''
+    '''Returns the values for a loan application in the dataset, aswell as the corresponding AI recommendation and confidence provided by the `smote_ey` tensorflow model.'''
+    if id > number_of_applications - 1 or id < 0:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail={"min" : 0, "max" : number_of_applications - 1})
     con = create_connection("database.db")
     output = get_application(con, id, json_str=True)
     con.close()
     return output 
 
-@app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"]) # TODO Make Model specific instance infor, with required attributes TODO make specific response model
+@app.post("/instance/predict", response_model=PredictionResponse, tags=["Dataset"])
 async def predict_instance(instance: ModelInstanceInfo):
     """Predict the provided instance using the `smote_ey` tensorflow model. Will return `NN_recommendation` and `NN_confidence`."""
     
-    check_cat_values(instance)
+    check_cat_values(instance) # Checks if the provided categorical values are correctly specified, throws HTTP exception if not
 
     data_dict = {col : [instance.__dict__[rename_dict[col]]] for col in feature_names_model_ordered}
     df = pd.DataFrame(data_dict) # Only works when all attributes are provided correctly
@@ -119,7 +126,7 @@ async def predict_instance(instance: ModelInstanceInfo):
 
 @app.get("/attributes/information", response_model=List[Union[CategoricalInformation, ContinuousInformation]], response_model_exclude_none=True, tags=["Dataset"])
 async def attribute_informations():
-    '''Returns a JSON with the constraints for each attribute.'''
+    '''Returns a JSON with the constraints, possible values and description for each attribute.'''
     result = json.dumps(attribute_constraints)
     result = json.loads(result)
     return result
@@ -128,35 +135,22 @@ async def attribute_informations():
 async def schedule_explanation_generation(
     instance: InstanceInfo,
     exp_method: ExplanationType,
-    background_tasks: BackgroundTasks,
-    num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation"),
-    is_modified: bool = Body(False, description="<b>DICE</b>: if True, the counterfactuals are not pre-generated and the explanation is computed dynamically"),
-    num_cfs: Optional[int] = Body(None, le=15, ge=1, description="<b>DICE</b>: number of counterfactuals")
+    num_features: Optional[int] = Body(None, description="<b>LIME</b>: the number of features for the lime computation")
 ):
-    '''General scheduler for any of the xai explanations. As the computations can take a large amount of time, the back-end
+    '''General scheduler for **LIME** or **SHAP** explanations. **DICE** counterfactuals are already generated in the database and cannot be
+    generated using this request.
+    As the computations can take a large amount of time (up to 20 seconds for **SHAP**), the back-end
     returns the information that the task has been started and returns a reference (uuid) to check for & return the actual
     explantion. Notice that the front-end has to check periodically for the (status of the) result until its computation has finished.
     Only attributes specific to the explanation method (`exp_method`) will be considered.
+    The back-end will use the attributes in the request body to compute an explanation. It is vital that the request
+    contains each instance-attribute's respective value. (`NN_recommendation`, `NN_confidence` and `id` will be ignored if passed in the request)
     ___
-    <h1>LIME</h1>
+    <h2>LIME</h2>
 
-    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
-    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
-    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
-    Note that this method can thus be used for existing as well as modified instances.
     The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
-    It can be used to differentiate between lvl 2 and lvl 3 <b>LIME</b>, if computation time is a concern.
-    ___
-    <h1>SHAP</h1>
-
-    The back-end will take at least an `id` for the instance information, so that it can either look up the instance in the database
-    or use the attributes in the request body to compute an explanation. For the second option to work, it is vital that the request
-    contains each instance-attribute's respective value. (The neural network recommendation and confidence will get ignored if passed in the request)
-    Note that this method can thus be used for existing as well as modified instances.
     ___
     '''
-
-    check_cat_values(instance)
 
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
@@ -164,8 +158,10 @@ async def schedule_explanation_generation(
     #TODO adapt documentation to removed dice
     #TODO: assume that each attribute is in the instance_info
 
+    check_cat_values(instance)
+
     job = Job(exp_type=exp_method, status=ResponseStatus.in_prog)
-    job.task = {"instance" : instance, "num_features" : num_features, "num_cfs" : num_cfs, "is_modified" : is_modified}
+    job.task = {"instance" : instance, "num_features" : num_features}
     task_queue.put(job)
 
     response_mapping = {
@@ -175,28 +171,26 @@ async def schedule_explanation_generation(
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
 
-    background_tasks.add_task(timeout_explanation, job.uid, results) # Will remove the object in the results dictionary after a certain time has expired
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 # TODO add check for XAI-method differentiation when getting the results
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
-    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
-    Can be used for <b>LIME</b> lvl 2 as well as lvl 3'''
+    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
     if uid in results.keys():
         res = results[uid]
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
         #TODO delete entry in dictionary
+
         return res
     else: # In this case, there is no dict entry with this uuid
         return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
-    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).
-    Can be used for <b>SHAP</b> lvl 2 as well as lvl 3'''
+    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
 
     if uid in results.keys():
         res = results[uid]
@@ -204,6 +198,7 @@ async def shap_explanation(uid: UUID):
             return ShapResponse(status=ResponseStatus.wrong_method)
 
         #TODO delete entry in dictionary
+
         #TODO make call to check all dict entries
         return res
     else:
@@ -211,7 +206,7 @@ async def shap_explanation(uid: UUID):
 
 @app.get("/explanations/dice", response_model=DiceCounterfactualResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def dice_explanation(instance_id: int = Query(-1, ge=0, lt=1000)):
-    '''Returns the counterfactuals for the given instance. Appends the ai recommendation'''
+    '''Returns the counterfactuals for the given loan application. Appends the AI prediction (`NN_recommendation`, `NN_confidence`)'''
     con = create_connection(db_path)
     cfs = get_cf(con, instance_id)
     tmp_prediction_cf = get_application(con, instance_id, True)
@@ -264,6 +259,7 @@ async def process_status(p_id : int):
 
 @app.get("/result_uids", tags=["Debugging"])
 async def explanation_uids():
+    """Returns the UUIDs for each explanation that is currently saved in the results dictionary."""
     return results.keys()
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
@@ -296,7 +292,8 @@ async def experiment_by_name(name: str):
 
 @app.post("/experiment/generate_id", response_model=ClientIDResponse, tags=["Experimentation"])
 async def generate_client_id(gen: GenerateClientID):
-    """Returns the next available client id and adds that client to the results list."""
+    """Returns the next available client_id and adds that client_id to the results list. The client_id is a database reference to the
+    actual user doing the experiment."""
     con = create_connection(db_path)
     return_id = create_id(con, gen.experiment_name)
     con.close()
@@ -307,14 +304,14 @@ async def generate_client_id(gen: GenerateClientID):
 
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
-    """Adds the results to the results table."""
+    """Adds the user-generated experiment results mapped to the client_id to the `results` table in the database."""
     con = create_connection(db_path)
     add_res(con, results.experiment_name, results.client_id, results.results)
     con.close()
 
 @app.get("/experiment/results/export", response_model=List[ExperimentResults], tags=["Experimentation"])
 async def export_results():
-    """Returns the results for the chosen experiment in json format"""
+    """Returns all results for the chosen experiment in JSON format"""
     con = create_connection(db_path)
     result_json = export_results_to(con, ExportFormat.js_object_notation.value)
     con.close()
@@ -330,15 +327,18 @@ async def single_export_results(experiment_name: str):
 
 @app.get("/single/experiment/results/export/csv", response_class=FileResponse, tags=["Experimentation"])
 async def single_export_results_csv(experiment_name: str):
-    """Returns the results for the chosen experiment, creates csv results.csv if chosen"""
+    """Returns the results for the chosen experiment in csv format. The csv file is temporarily saved on the server
+    and deleted after it has been returned."""
+    def cleanup():
+        os.remove(temp_file)
     con = create_connection(db_path)
-    result_csv_path = export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
+    temp_file = export_results_to(con, ExportFormat.comma_separated.value, experiment_name)
     con.close()
-    return result_csv_path
+    return FileResponse(temp_file, background=BackgroundTask(cleanup))
 
 @app.post("/experiment/reset", tags=["Experimentation"])
 async def reset_experiment_results(experiment_name: str):
-    """Deletes all results from the given experiment from the results table if that experiment exists."""
+    """Deletes all results from the given experiment from the `results` table if that experiment exists."""
     con = create_connection(db_path)
     reset_exp_res(con, experiment_name)
     con.close()
@@ -346,11 +346,19 @@ async def reset_experiment_results(experiment_name: str):
 
 @app.post("/experiment/delete", tags=["Experimentation"])
 async def delete_experiment(experiment_name: str):
-    """Deletes an experiment from the experiments table if it exists there"""
+    """Deletes an experiment from the `experiments` table if it exists there."""
     con = create_connection(db_path)
     delete_exp(con, experiment_name)
     con.close()
     # TODO what would be the best response model
+
+@app.get("/authenticate", tags=["Security"])
+async def authenticate_admin(pwd: str):
+    """Is used by the frontend for simple blocking of experiment requests. THIS IS NOT A SECURE WAY TO DO SO."""
+    m = hashlib.sha256()
+    m.update(pwd.encode("UTF-8"))
+    if m.hexdigest() != admin_pwd_hash:
+        raise HTTPException(HTTP_401_UNAUTHORIZED)
 
 
 # Helper methods
@@ -362,8 +370,10 @@ def check_cat_values(instance):
         if instance.__dict__[key] not in cat_attr_check[key]:
             raise HTTPException(400, f"Please use a correct value for attribute '{key}'")
 
+
+# Run main script
+
 if __name__ == "__main__":
-    # This is needed for multiprocessing to run correctly on windows
 
     num_processes = mp.cpu_count() - 2 # will raise NotImplementedError if count cannot be determined
     manager = mp.Manager()

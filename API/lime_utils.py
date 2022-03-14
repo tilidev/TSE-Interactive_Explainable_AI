@@ -113,7 +113,7 @@ class LimeHelper():
         :return: a list of jsons with the keys attribute and influence
         """
         instance_df = pd.DataFrame(instance, index = [0])
-        instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True)
+        instance_df.drop(columns=["ident",AttributeNames.NN_recommendation.value,AttributeNames.NN_confidence.value], inplace=True) # TODO if pydantic model changes, this must change to!
         exp = self.get_lime_exp(self.predict_fn, instance_df, num_features)
         exp_dict = exp.__dict__
         #exp_dict also contains keys random_state,mode,domain_mapper,intercepts,score,local_pred,predict_proba, class_names,top_labels that are not needed
