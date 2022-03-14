@@ -132,6 +132,8 @@ export default {
   },
   watch: {
     instanceInfo(newInstance) {
+      this.whatif = false;
+      console.log("New");
       this.modifiedInstance = Object.assign({}, newInstance);
     },
   },

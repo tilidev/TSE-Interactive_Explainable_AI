@@ -168,9 +168,11 @@ export default {
         }
       }
       this.generateTreeMap();
+      this.isLoading = false;
     },
     getResult(href, result) {
       if (!result) {
+        d3.select("#" + this.id).html(null);
         const axios = require("axios");
         axios
           .get(this.apiUrl + "explanations/" + this.expType + "?uid=" + href)
@@ -306,7 +308,6 @@ export default {
         .attr("font-size", "15px")
         .attr("margin-top", "16px")
         .attr("fill", "white");
-      this.isLoading = false;
     },
   },
 };
