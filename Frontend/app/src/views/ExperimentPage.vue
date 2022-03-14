@@ -11,7 +11,7 @@
           @click="goBack()"
         >
           <fa-icon size="xl" icon="arrow-left"></fa-icon>
-          <div>Back to last loan application</div>
+          <div>Back to previous loan application</div>
       </div>
       <instance-view
         :instanceInfo="instanceInfo"
