@@ -1,4 +1,4 @@
-# Team Project Software Development - NAME
+# Team Project Software Development - Development of an interactive explainable AI application
 
 ---
 
