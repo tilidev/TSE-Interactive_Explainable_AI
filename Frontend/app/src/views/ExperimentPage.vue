@@ -19,7 +19,9 @@
         :allowMod="allowMod"
         :allowWhatIf="allowWhatIf"
       ></instance-view>
-      <div class="text-right space-x-4 justify-end flex">
+      <div class="text-right flex justify-end">
+        <span class="bg-white flex items-center space-x-4 p-4 shadow-md">
+        <div class="text-lg font-bold mr-4">Do you approve this loan application?</div>
         <default-button
           :color="'positive'"
           :hoverColor="'positive-dark'"
@@ -32,6 +34,7 @@
           @click="submitDecision(false)"
           >Reject</default-button
         >
+        </span>
       </div>
     </div>
     <div v-if="done">
