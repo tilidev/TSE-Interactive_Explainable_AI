@@ -72,7 +72,9 @@
               :href="experimentLink"
               >{{ experimentLink }}</a
             >
-            <div class="col-start-1 col-span-2 font-bold">Number of participants</div>
+            <div class="col-start-1 col-span-2 font-bold">
+              Number of participants
+            </div>
             <div class="col-start-3 col-span-3">
               {{ experimentData.num_participants }}
             </div>
@@ -109,6 +111,9 @@
 
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
+/**
+ * An overlay displaying properties and options regarding an existing experiment
+ */
 export default {
   components: { DefaultButton },
   mounted() {
@@ -116,10 +121,17 @@ export default {
   },
   data() {
     return {
+      /**
+       * The experiment information provided by the API
+       */
       experimentData: {},
     };
   },
   computed: {
+    /**
+     * Generates a link to start the experiment based on the experiment name
+     * @returns {String} The experiment link
+     */
     experimentLink() {
       return (
         window.location.href.replace("admin", "") +
@@ -129,9 +141,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * Downloads the results file from the API to the user's device
+     * @param {Boolean} csv - true will download results as csv, false as JSON
+     */
     downloadFile(csv) {
       const axios = require("axios");
-
       axios
         .get(
           this.apiUrl +
@@ -153,6 +168,9 @@ export default {
         })
         .catch(console.error);
     },
+    /**
+     * Resets the experiment after confirmation by the user. This deletes all recorded answers but not the experiment itself.
+     */
     resetExperiment() {
       if (
         confirm(
@@ -168,6 +186,9 @@ export default {
         this.sendExperimentRequest();
       }
     },
+    /**
+     * Deletes the entire experiment after confirmation by the user. This includes the experiment data and all recorded answers.
+     */
     deleteExperiment() {
       if (
         confirm(
@@ -183,6 +204,9 @@ export default {
         this.$emit("close");
       }
     },
+    /**
+     * Sends a request to the API to get the experiment data and saves it in the experimentData variable
+     */
     sendExperimentRequest() {
       const axios = require("axios");
       axios
@@ -194,7 +218,13 @@ export default {
     },
   },
   props: {
-    experimentName: String,
+    /**
+     * The experiment's name
+     */
+    experimentName: {
+      type: String,
+      required: true,
+    },
   },
   inject: ["apiUrl"],
 };

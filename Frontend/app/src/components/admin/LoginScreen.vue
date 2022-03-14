@@ -15,20 +15,33 @@
 
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
+/**
+ * A login screen component that controls access to the admin panel
+ */
 export default {
   components: { DefaultButton },
   inject: ["apiUrl"],
   methods: {
+    /**
+     * Is trigerred when the user clicks the login button.
+     * Sends the password to the API to check if it's correct.
+     * Shows an error message if the password is wrong or emits the 'logged-in' event if it's correct.
+     */
     clickLogin() {
       const axios = require("axios");
       axios
         .get(this.apiUrl + "authenticate?pwd=" + this.userInput)
-        .then(() => this.$emit("logged-in"))
+        .then(() => {
+          this.$emit("logged-in");
+        })
         .catch(() => alert("Sorry, wrong password!"));
     },
   },
   data() {
     return {
+      /**
+       * The password typed into the input field by the user
+       */
       userInput: "",
     };
   },

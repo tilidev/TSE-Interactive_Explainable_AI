@@ -31,7 +31,9 @@
               auto-cols-max auto-rows-auto
             "
           >
-            <div class="col-start-1 col-span-2 font-bold pt-2">Experiment name</div>
+            <div class="col-start-1 col-span-2 font-bold pt-2">
+              Experiment name
+            </div>
             <input
               class="col-start-3 col-span-3 rounded p-2"
               :class="getBorderStyling('name')"
@@ -184,31 +186,70 @@
 
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
+/**
+ * An overlay where the user can create a new experiment
+ */
 export default {
   data() {
     return {
+      /**
+       * The experiment name entered by the user
+       */
       name: "",
+      /**
+       * The experiment description entered by the user
+       */
       description: "",
+      /**
+       * String of comma-separated loan application ids entered by the user
+       */
       applications: "",
+      /**
+       * Array with the application ids
+       */
       applicationArray: [],
+      /**
+       * Link to a survey entered by the user
+       */
       surveyLink: "",
+      /**
+       * Whether modification and what-if-analysis should be allowed.
+       * Can be 'both', 'modonly' or 'none'
+       */
       modwhatif: "both",
+      /**
+       * The explanation type for the experiment. Can be 'lime', 'shap' or 'dice'.
+       */
       explanation: "lime",
+      /**
+       * An object in which errorMessages are saved for every attribute where the input contains errors.
+       */
       errorMessages: {},
     };
   },
   inject: ["apiUrl"],
   components: { DefaultButton },
   props: {
+    /**
+     * An array of all existing experiments, used to prevent duplicates
+     */
     existingExperiments: Array,
   },
   methods: {
+    /**
+     * @param {String} attribute - The attribute/field for which the border styling is applied
+     * @returns {String} Tailwind classes for border styling, red border if there's an error with the attribute, regular border otherwise
+     */
     getBorderStyling(attribute) {
       if (this.errorMessages[attribute]) {
         return "border-2 border-negative";
       }
       return "border";
     },
+    /**
+     * Sends a post request to the API to create the experiment.
+     * Emits the 'close' event afterwards.
+     */
     createExperiment() {
       const axios = require("axios");
       let requestBody = {};
@@ -233,6 +274,10 @@ export default {
         this.$emit("close");
       });
     },
+    /**
+     * Validates the inputs and sets error messages if the input is invalid for a certain attribute/field.
+     * If there are no errors, the createExperiment() method is called.
+     */
     validateInput() {
       this.errorMessages = {};
 
@@ -253,7 +298,7 @@ export default {
           "Error, description can't be longer than 500 characters";
       }
 
-      this.applications = this.applications.replace(/\s/g, '');
+      this.applications = this.applications.replace(/\s/g, "");
       const applicationsPattern = RegExp("^[0-9]{1,3}(,[0-9]{1,3})*$");
       if (!applicationsPattern.test(this.applications) && this.applications) {
         this.errorMessages.applications =
