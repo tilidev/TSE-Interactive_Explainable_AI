@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div @keypress.enter="clickLogin">
     <div class="font-bold text-lg mb-4">
       Please enter the admin password to enter
     </div>
     <input
+      autofocus="true"
       class="mb-4 rounded border-2 p-2"
       v-model="userInput"
       type="password"
@@ -34,7 +35,10 @@ export default {
         .then(() => {
           this.$emit("logged-in");
         })
-        .catch(() => alert("Sorry, wrong password!"));
+        .catch(() => {
+          this.userInput = "";
+          alert("Sorry, wrong password!");
+        });
     },
   },
   data() {
