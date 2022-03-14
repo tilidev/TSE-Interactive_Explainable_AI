@@ -17,18 +17,11 @@
       :instanceInfo="instanceInfo"
       class="mb-4 mt-8"
     ></dice-explanation>
-    <tree-map
-      v-else-if="Object.keys(instanceInfo).length && this.detailed == false"
+   <tree-map
+      v-else-if="Object.keys(instanceInfo).length"
       :expType="expType"
       :instance="instanceInfo"
-      :detailView="false"
-      :whatif="false"
-    ></tree-map>
-    <tree-map
-      v-else-if="Object.keys(instanceInfo).length && this.detailed == true"
-      :expType="expType"
-      :instance="instanceInfo"
-      :detailView="true"
+      :detailView= this.detailed
       :whatif="false"
     ></tree-map>
   </div>
@@ -38,13 +31,14 @@
 import InfoCard from "../components/InfoCard.vue";
 import DiceExplanation from "../components/explanations/DiceExplanation.vue";
 import TreeMap from "../components/explanations/TreeMap.vue";
-import OutlineButton from '../components/buttons/OutlineButton.vue';
+import OutlineButton from "../components/buttons/OutlineButton.vue";
 
 export default {
   data() {
     return {
       modifiedInstance: {},
-      detailed: false
+      detailed: true,
+      modified: false,
     };
   },
   components: { InfoCard, DiceExplanation, TreeMap, OutlineButton },
