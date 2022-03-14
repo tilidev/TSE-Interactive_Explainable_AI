@@ -50,7 +50,17 @@
       </div>
       <div class="flex flex-col justify-start space-y-12">
         <div class="flex flex-col space-y-4 -mt-2">
-          <div class="text-lg">AI Recommendation</div>
+          <div class="text-lg">
+            <span
+              v-if="
+                newPrediction != null &&
+                JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance)
+              "
+            >
+              Original
+            </span>
+            AI Recommendation
+          </div>
           <div class="flex space-x-4">
             <recommendation-vis
               class=""
@@ -63,8 +73,14 @@
             />
           </div>
         </div>
-        <div class="flex flex-col space-y-4" v-if="newPrediction != null && JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance)">
-          <div class="text-lg">New Recommendation</div>
+        <div
+          class="flex flex-col space-y-4"
+          v-if="
+            newPrediction != null &&
+            JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance)
+          "
+        >
+          <div class="text-lg">New AI Recommendation</div>
           <div class="flex space-x-4">
             <recommendation-vis
               class=""
@@ -90,7 +106,7 @@
         class="col-start-1 mt-4 mr-4"
         @click="console.log('Generate Explanation')"
         v-if="modificationEnabled && allowWhatIf"
-        >Generate Explanation</default-button
+        >Generate New Explanation</default-button
       >
       <clear-button
         class="col-start-2 mt-4"
