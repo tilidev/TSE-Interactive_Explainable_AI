@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="isLoading"
-      class="mt-4 flex items-center justify-start space-x-2"
+      class="my-4 flex items-center justify-start space-x-2"
     >
       <svg
         role="status"
