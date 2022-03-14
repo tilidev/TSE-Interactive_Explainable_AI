@@ -97,7 +97,10 @@ An overview of the different tables and their strucutre is provided below. Below
 ___
 
 **Database Table Structure:**
-![Database Table Structure](/uploads/4ad0c44ad40601306c83409a1cda3c51/image.png)
+![Database Table Structure](/uploads/4ad0c44ad40601306c83409a1cda3c51/image.png) 
+All applications from the GCD are stored in the applicants table. The attributes foreign_worker, status_sex_ and classification_ were dropped and NN_recommendation and NN_confidence added. These two attributes refer to the actual model prediction for this application and were determined using the `smote_ey.tf` model.\
+The dice table contains the pregenerated counterfactuals for the applications of the GCD. The counterfactuals column contains this information in json format. These jsons have the key 'counterfactuals' referring to a list of 5 counterfactuals in json format. This is necessary because SQLite cannot store lists.\
+The experimentation functionality is covered by the databases experiments and results. In the experiments table all the relevant information for the defined experiments, like the type of explanation and ids of applications that should be shown are stored in json format. The json contains the keys, which are defined for the ExperimentInformation model in the `models.py` file. The results table is used to store the decisions of a user for a certain experiment. They are stored in json format. The json contains jsons in the SingleResult format defined in the `models.py` folder. Their loan id is the key to references those SingleResult jsons.
 ___
 
 **Database Interaction:**
