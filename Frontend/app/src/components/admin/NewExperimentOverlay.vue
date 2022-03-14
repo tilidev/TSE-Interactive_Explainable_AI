@@ -173,7 +173,7 @@
               :color="'positive'"
               :hoverColor="'positive-dark'"
               class="col-start-1"
-              @click="validateInput"
+              @click="clickCreate"
             >
               Create
             </default-button>
@@ -229,13 +229,17 @@ export default {
   },
   inject: ["apiUrl"],
   components: { DefaultButton },
-  props: {
-    /**
-     * An array of all existing experiments, used to prevent duplicates
-     */
-    existingExperiments: Array,
-  },
   methods: {
+    /**
+     * Triggered when the user clicks 'Create'
+     * Gets a list with existing experiments from the API and calls the validateInput methods with it.
+     */
+    clickCreate() {
+      const axios = require('axios');
+      axios.get(this.apiUrl + "experiment/all").then((response) => {
+        this.validateInput(response.data);
+    });
+    },
     /**
      * @param {String} attribute - The attribute/field for which the border styling is applied
      * @returns {String} Tailwind classes for border styling, red border if there's an error with the attribute, regular border otherwise
@@ -277,8 +281,9 @@ export default {
     /**
      * Validates the inputs and sets error messages if the input is invalid for a certain attribute/field.
      * If there are no errors, the createExperiment() method is called.
+     * @param {Array} experimentList - List of all existing experiments
      */
-    validateInput() {
+    validateInput(experimentList) {
       this.errorMessages = {};
 
       for (const attribute of ["name", "description", "applications"]) {
@@ -289,7 +294,7 @@ export default {
       if (this.name.length > 100) {
         this.errorMessages.name =
           "Error, name can't be longer than 100 characters";
-      } else if (this.existingExperiments.includes(this.name)) {
+      } else if (experimentList.includes(this.name)) {
         this.errorMessages.name =
           "Error, an experiment with this name already exists";
       }

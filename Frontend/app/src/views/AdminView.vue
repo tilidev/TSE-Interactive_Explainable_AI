@@ -26,7 +26,6 @@
     ></existing-experiment-overlay>
     <new-experiment-overlay
       v-if="showNewOverlay"
-      :existingExperiments="experimentList"
       @close="closeOverlay"
     >
     </new-experiment-overlay>
@@ -62,7 +61,6 @@ export default {
     sendExperimentRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "experiment/all").then((response) => {
-        console.log(response.data);
         this.experimentList = response.data;
       });
     },
