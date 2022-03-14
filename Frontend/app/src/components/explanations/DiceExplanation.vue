@@ -33,7 +33,7 @@
           </tbody>
         </table>
         <div>
-          <div class="flex mt-8 mb-4">
+          <div class="flex my-4">
             <div class="bg-primary h-6 w-6 mr-4"></div>
             Original application
           </div>

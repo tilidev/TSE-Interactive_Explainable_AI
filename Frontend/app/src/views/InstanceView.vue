@@ -74,7 +74,7 @@
         </div>
       </div>
       <div>
-        <div class="flex mt-8 mb-4">
+        <div class="flex my-4">
           <div class="bg-positive h-6 w-6 mr-4"></div>
           <div class="text-positive-dark font-bold">
             Influencing towards approval
