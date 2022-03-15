@@ -89,6 +89,8 @@ The Back-end files can be found in the folder "API/". Here is a short summary ab
 
 
 `smote_ey.tf/`:
+- the trained tensorflow model from the xai reference project 
+- used for AI recommendation and confidence and explanation generation
 
 
 `Data/`:
@@ -117,6 +119,8 @@ ___
 
 **Database Interaction:**
 ![Database Interaction](/uploads/b58c7e493f24e5a1926cde76ecc5e64a/image.png)
+
+___
 
 Explanation Task flow: `rgb(133, 192, 255)`\
 Explanation Result flow: `rgb(217, 155, 255)`
