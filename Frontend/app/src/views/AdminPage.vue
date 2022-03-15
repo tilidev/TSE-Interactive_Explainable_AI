@@ -14,7 +14,7 @@
 <script>
 import LoginScreen from "../components/admin/LoginScreen.vue";
 import NavigationButton from "../components/buttons/NavigationButton.vue";
-import AdminView from "../components/admin/AdminView.vue";
+import AdminView from "../components/admin/AdminPanel.vue";
 
 export default {
   data() {
