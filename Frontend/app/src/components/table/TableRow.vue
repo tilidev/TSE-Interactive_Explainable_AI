@@ -8,12 +8,13 @@
       })
     "
   >
-    <td v-if="rowData.id || rowData.id === 0" class="py-5 px-8 text-primary">{{ rowData.id }}</td>
+    <td v-if="rowData.id || rowData.id === 0" class="py-5 px-8 text-primary">
+      {{ rowData.id }}
+    </td>
     <td
       class="py-5 px-8"
       v-for="attrName in filteredAttributes"
       :key="attrName"
-      :class="getHighlightStyling(attrName)"
     >
       {{ rowData[attrName] }}
     </td>
@@ -32,14 +33,6 @@ import RecommendationVis from "../ui/RecommendationVis.vue";
 import ConfidenceVis from "../ui/ConfidenceVis.vue";
 
 export default {
-  methods: {
-    getHighlightStyling(attribute) {
-      if (this.highlight.has(attribute)) {
-        return "font-bold text-modified"
-      }
-      return ""
-    }
-  },
   components: { RecommendationVis, ConfidenceVis },
   data() {
     return {
@@ -63,10 +56,6 @@ export default {
       type: Object,
       required: true,
     },
-    highlight: { 
-      type: Set,
-      default: new Set([])
-       },
   },
 };
 </script>
