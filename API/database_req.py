@@ -212,7 +212,6 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 def export_results_to(con, format, exp_name = None):
     """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
     and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
-    #TODO check that format is only csv when exp name is given
     query = "SELECT * FROM results WHERE results != 'NULL'" 
     if exp_name:
         exp_name = exp_name.replace("'","''")
