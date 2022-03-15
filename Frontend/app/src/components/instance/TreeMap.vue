@@ -30,12 +30,31 @@
 <script>
 import * as d3 from "d3";
 
+/**
+ * Component for the treemap that visualizes the LIME and SHAP explanations
+ */
 export default {
   props: {
+    /**
+     * Helps d3 identify this TreeMap.
+     * If there are two treemaps displayed at the same time, they should have different ids
+     */
     id: String,
+    /**
+     * The Explanation type. Can be 'lime' or 'shap'
+     */
     expType: String,
+    /**
+     * The instance for which the explanation is shown.
+     */
     instance: Object,
+    /**
+     * True, if what-if analysis is enabled. Will make the treemap shrink
+     */
     whatif: Boolean,
+    /**
+     * If true the detail view is shown, if false the simple view
+     */
     detailView: Boolean,
   },
   watch: {
@@ -60,8 +79,17 @@ export default {
   },
   data() {
     return {
+      /**
+       * The reference provided by the API to check the status of the explanation request and get the results.
+       */
       href: "",
+      /**
+       * Indicates if the treemap is currently loading and controls if the loading animation is shown.
+       */
       isLoading: true,
+      /**
+       * Explanation data for the simple view
+       */
       simpleExpData: {
         name: "Explanation",
         children: [
@@ -72,6 +100,9 @@ export default {
           },
         ],
       },
+      /**
+       * Explanation data for the detail view
+       */
       detailExpData: {
         name: "Explanation",
         children: [
@@ -100,6 +131,11 @@ export default {
     this.sendExplanationRequest();
   },
   methods: {
+    /**
+     * Called once the exlanation result has been obtained from the API
+     * The method saves the data in the required structure and calls the generateTreemap method afterwards
+     * @param result - The explanation result
+     */
     saveData(result) {
       (this.simpleExpData = {
         name: "Explanation",
@@ -172,6 +208,13 @@ export default {
       }
       this.generateTreeMap();
     },
+    /**
+     * As long as the explanation result is null the method sends a request to the API to check if the result is ready
+     * and then calls itself again with a timeout
+     * If the result is ready, the saveData method is called
+     * @param result - The explanation result, null if there is no result yet
+     * @param expType - The current explanation type
+     */
     getResult(result, expType) {
       if (!result && expType == this.expType) {
         console.log(expType);
@@ -191,6 +234,10 @@ export default {
       }
       return result;
     },
+    /**
+     * Initiates the explanation request to the API
+     * Once the request is accepted by the API it calls the getResult method
+     */
     sendExplanationRequest() {
       const axios = require("axios");
       axios
@@ -202,6 +249,9 @@ export default {
           this.getResult(null, this.expType);
         });
     },
+    /**
+     * Generates the treemap using d3 based on the explanation data.
+     */
     generateTreeMap() {
       this.isLoading = true;
       d3.select("#" + this.id).html(null);
