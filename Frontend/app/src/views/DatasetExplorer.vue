@@ -39,8 +39,11 @@
         class="absolute inset-0 z-40 opacity-25 bg-black"
       ></div>
     </div>
-    <div class="flex flex-col items-center mx-8">
-      <div class="flex flex-col items-stretch" :class="getItemsClass()">
+    <div
+      class="flex flex-col mx-8"
+      :class="tableRows.length ? 'items-center' : 'items-stretch'"
+    >
+      <div class="flex flex-col items-stretch">
         <div class="flex space-x-4 mb-4 -mt-4 self-start">
           <navigation-button :type="'admin'"></navigation-button>
         </div>
@@ -99,7 +102,7 @@ export default {
       if (this.tableRows.length) {
         return "items-end";
       }
-      return "items-center";
+      return "items-start";
     },
     updateFilter(newFilter) {
       this.requestBody.filter = newFilter;

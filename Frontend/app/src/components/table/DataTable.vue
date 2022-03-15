@@ -16,7 +16,7 @@
       </tbody>
     </table>
   </div>
-  <div v-else-if="!tableRows[0] && optionsData.filter.length">
+  <div v-else-if="!tableRows[0] && optionsData.filter.length" class="mt-8">
     <div class="text-3xl font-bold py-2">Nothing to show</div>
     <div class="text-lg">Try removing filters to see more results</div>
   </div>
