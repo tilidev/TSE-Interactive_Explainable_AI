@@ -14,14 +14,14 @@
       class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white"
       v-if="allowSwitching"
     >
+      <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
+        DiCE
+      </div>
       <div :class="getStyling('lime')" @click="this.$emit('switch', 'lime')">
         LIME
       </div>
       <div :class="getStyling('shap')" @click="this.$emit('switch', 'shap')">
         SHAP
-      </div>
-      <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
-        DiCE
       </div>
     </div>
     <dice-explanation
@@ -120,7 +120,6 @@ export default {
       this.whatif = true;
     },
     getStyling(explanation) {
-      console.log(this.expType);
       if (explanation == this.expType) {
         return "underline text-positive cursor-pointer";
       }
@@ -133,7 +132,6 @@ export default {
   watch: {
     instanceInfo(newInstance) {
       this.whatif = false;
-      console.log("New");
       this.modifiedInstance = Object.assign({}, newInstance);
     },
   },

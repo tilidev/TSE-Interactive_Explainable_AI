@@ -26,7 +26,7 @@ export default {
     return {
       id: this.$route.params.id,
       instanceInfo: {},
-      expType: "lime",
+      expType: "dice",
     };
   },
   components: { InstanceView, NavigationButton },
