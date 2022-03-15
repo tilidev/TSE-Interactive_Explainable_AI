@@ -10,28 +10,30 @@
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
-      <div class="overflow-x-scroll">
-        <table
-          v-if="counterfactuals.length"
-          class="max-w-2xl table-auto text-primary shadow-lg text-left"
-        >
-          <thead class="bg-primary text-white">
-            <table-header
-              :labels="attributeData.labels"
-              :descriptions="attributeData.descriptions"
-              :attributes="Object.keys(counterfactuals[index])"
-            />
-          </thead>
-          <tbody class="divide-gray divide-y">
-            <table-row
-              :rowData="getBaseRow(counterfactuals[index])"
-            ></table-row>
-            <table-row
-              class="text-modified font-bold"
-              :rowData="counterfactuals[index]"
-            />
-          </tbody>
-        </table>
+      <div class="flex flex-col">
+        <div class="overflow-x-scroll shadow-md">
+          <table
+            v-if="counterfactuals.length"
+            class="max-w-2xl table-auto text-primary text-left"
+          >
+            <thead class="bg-primary text-white">
+              <table-header
+                :labels="attributeData.labels"
+                :descriptions="attributeData.descriptions"
+                :attributes="Object.keys(counterfactuals[index])"
+              />
+            </thead>
+            <tbody class="divide-gray divide-y">
+              <table-row
+                :rowData="getBaseRow(counterfactuals[index])"
+              ></table-row>
+              <table-row
+                class="text-modified font-bold"
+                :rowData="counterfactuals[index]"
+              />
+            </tbody>
+          </table>
+        </div>
         <div>
           <div class="flex my-4">
             <div class="bg-primary h-6 w-6 mr-4"></div>
