@@ -266,7 +266,14 @@ export default {
             .attr("class", "tt-name text-left pb-2 font-bold capitalize");
           tooltip
             .append("div")
-            .text(Math.round(d.data.value * 10000) / 100 + "%")
+            .text(
+              (d.parent.data.name == "negative" ||
+              d.parent.parent.data.name == "negative"
+                ? "-"
+                : "") +
+                Math.round(d.data.value * 10000) / 100 +
+                "%"
+            )
             .style(
               "color",
               colorScale(
@@ -309,7 +316,14 @@ export default {
         .attr("y", (d) => d.y0 + 45)
         .text(function (d) {
           if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
-            return Math.round(d.data.value * 10000) / 100 + "%";
+            return (
+              (d.parent.data.name == "negative" ||
+              d.parent.parent.data.name == "negative"
+                ? "-"
+                : "") +
+              Math.round(d.data.value * 10000) / 100 +
+              "%"
+            );
           }
         })
         .attr("font-size", "15px")
