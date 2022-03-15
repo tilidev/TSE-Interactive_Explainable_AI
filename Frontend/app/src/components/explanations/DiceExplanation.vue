@@ -6,9 +6,7 @@
         {{ index + 1 + " of " + counterfactuals.length }}
       </div>
     </div>
-    <div
-      class="-mx-4 space-x-4 flex justify-between items-center"
-    >
+    <div class="-mx-4 space-x-4 flex justify-between items-center">
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
@@ -29,8 +27,8 @@
               :rowData="getBaseRow(counterfactuals[index])"
             ></table-row>
             <table-row
+              class="text-modified font-bold"
               :rowData="counterfactuals[index]"
-              :highlight="getHighlightSet(counterfactuals[index])"
             />
           </tbody>
         </table>
@@ -83,6 +81,10 @@ export default {
     },
   },
   methods: {
+    /**
+     * Handles clicks on the arrow buttons to move through the counterfactuals
+     * @param {String} direction - The direction of the arrow, can be 'left' or 'right'
+     */
     handleClick(direction) {
       if (
         (this.index === 0 && direction === "left") ||
@@ -92,6 +94,13 @@ export default {
       }
       this.index += direction === "left" ? -1 : 1;
     },
+    /**
+    /**
+     * Returns classes for the arrow's style depending on the current position in the counterfactuals.
+     * Makes the button grayed out, when it's not possible to move left/right further
+     * @param {String} direction - The direction of the arrow, can be 'left' or 'right'
+     * @returns {String} Tailwind classes for button styling
+     */
     getArrowStyling(direction) {
       if (
         (this.index === 0 && direction === "left") ||
@@ -101,6 +110,9 @@ export default {
       }
       return "p-4 flex justify-center items-center rounded-full hover:bg-gray-light cursor-pointer";
     },
+    /**
+     * Sends a request to the API to get the counterfactuals and saves them to the counterfactuals variable
+     */
     sendDiceRequest() {
       const axios = require("axios");
       axios
@@ -109,9 +121,11 @@ export default {
         )
         .then((response) => {
           this.counterfactuals = response.data.counterfactuals;
-          console.log(this.counterfactuals);
         });
     },
+    /**
+     * Sends a request to the API to get the counterfactuals and saves them to the counterfactuals variable
+     */
     getBaseRow(cfRow) {
       return Object.fromEntries(
         Object.entries(this.instanceInfo).filter(
@@ -119,20 +133,16 @@ export default {
         )
       );
     },
-    getHighlightSet(row) {
-      const attributeArray = Object.keys(row);
-      return new Set(
-        attributeArray.filter((el) => {
-          return row[el] != this.instanceInfo[el];
-        })
-      );
-    },
   },
   data() {
     return {
-      variedAttributes: [],
-      filteredRows: [],
+      /**
+       * An array of all counterfactual instances
+       */
       counterfactuals: [],
+      /**
+       * The current index when moving through the counterfactual array
+       */
       index: 0,
     };
   },
