@@ -6,14 +6,16 @@
         {{ index + 1 + " of " + counterfactuals.length }}
       </div>
     </div>
-    <div class="-mx-4 flex space-x-4 justify-between items-center">
+    <div
+      class="-mx-4 space-x-4 flex justify-between items-center"
+    >
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
-      <div>
+      <div class="overflow-x-scroll">
         <table
           v-if="counterfactuals.length"
-          class="table-auto text-primary shadow-lg text-left"
+          class="max-w-2xl table-auto text-primary shadow-lg text-left"
         >
           <thead class="bg-primary text-white">
             <table-header
