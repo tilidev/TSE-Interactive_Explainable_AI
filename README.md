@@ -68,6 +68,11 @@ The Back-end files can be found in the folder "API/". Here is a short summary ab
 - defines timeout logic for explanation results
 
 `lime_utils.py`:
+- Helper class for the [lime](https://github.com/marcotcr/lime) explanation generation
+- uses code from the xai reference project
+- loads the german credit dataset and the `smote_ey.tf` model and fits a preprocessor
+- creates a lime explanainer
+- contains method to get lime explanation for a given instance and return it in the json format specified by the API 
 
 
 `shap_utils.py`:
