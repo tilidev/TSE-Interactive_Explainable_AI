@@ -71,8 +71,8 @@
 <script>
 import DataTable from "../components/table/DataTable.vue";
 import OutlineButton from "../components/buttons/OutlineButton.vue";
-import FilterOverlay from "../components/overlays/FilterOverlay.vue";
-import CustomizeOverlay from "../components/overlays/CustomizeOverlay.vue";
+import FilterOverlay from "../components/table/FilterOverlay.vue";
+import CustomizeOverlay from "../components/table/CustomizeOverlay.vue";
 import NavigationButton from "../components/buttons/NavigationButton.vue";
 
 export default {

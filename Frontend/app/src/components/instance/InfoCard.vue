@@ -133,7 +133,7 @@
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
 import ConfidenceVis from "../ui/ConfidenceVis.vue";
-import DropdownMenu from "../ui/DropdownMenu.vue";
+import DropdownMenu from "./DropdownMenu.vue";
 import RecommendationVis from "../ui/RecommendationVis.vue";
 import ClearButton from "../buttons/ClearButton.vue";
 import OutlineButton from "../buttons/OutlineButton.vue";

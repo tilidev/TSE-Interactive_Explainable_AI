@@ -87,7 +87,7 @@
 <script>
 import OutlineButton from "../buttons/OutlineButton.vue";
 import GrayButton from "../buttons/GrayButton.vue";
-import FilterMenu from "../ui/FilterMenu.vue";
+import FilterMenu from "./FilterMenu.vue";
 export default {
   components: { GrayButton, FilterMenu, OutlineButton },
   props: {
