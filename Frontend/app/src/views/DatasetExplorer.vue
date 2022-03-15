@@ -47,18 +47,17 @@
         <div class="flex justify-between pb-4 items-center">
           <div class="text-2xl font-bold">Dataset Explorer</div>
           <div class="flex flex-row-reverse gap-x-4 justify-start">
-          <outline-button @click="toggleCustomize = !toggleCustomize"
-            ><fa-icon icon="table" class="mr-2" />Customize</outline-button
-          >
-          <outline-button @click="toggleFilter = !toggleFilter"
-            ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
-          >
+            <outline-button @click="toggleCustomize = !toggleCustomize"
+              ><fa-icon icon="table" class="mr-2" />Customize</outline-button
+            >
+            <outline-button @click="toggleFilter = !toggleFilter"
+              ><fa-icon icon="filter" class="mr-2" />Filter</outline-button
+            >
           </div>
         </div>
         <data-table
           @apply-sorting="applySorting"
           :tableRows="tableRows"
-          :attributeData="attributeData"
           :optionsData="requestBody"
         />
       </div>
@@ -131,7 +130,7 @@ export default {
         let bottomOfWindow =
           document.documentElement.scrollTop + window.innerHeight >=
           document.documentElement.offsetHeight - window.innerHeight;
-        if (bottomOfWindow) {
+        if (bottomOfWindow && this.$route.name == "Dataset Explorer") {
           this.requestBody.offset += this.requestBody.limit;
           axios
             .post(this.apiUrl + "table", this.requestBody)
