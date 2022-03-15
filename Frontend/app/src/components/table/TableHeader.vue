@@ -50,24 +50,46 @@
 
 <script>
 export default {
-  mounted() {
-  },
+  /**
+   * A component for a table header
+   */
+  mounted() {},
   data() {
     return {
+      /**
+       * The text that should be displayed when the user hovers over the info icon next to an attribute
+       */
       hoverText: "",
     };
   },
   props: {
+    /**
+     * Object with labels for the attributes
+     */
     labels: Object,
+    /**
+     * Object with descriptions for the attributes
+     */
     descriptions: Object,
-    sorting: Object,
+    /**
+     * Array with all attributes to be displayed in the header
+     */
     attributes: Array,
+    /**
+     * Attribute by which the data is sorted
+     */
     sort_by: String,
+    /**
+     * true if data is sorted descending, false otherwise
+     */
     desc: Boolean,
   },
-  computed: {
-  },
   methods: {
+    /**
+    * Triggered when an attribute is clicked in the table header.
+    * Emits 'apply-sorting' event to the parent to sort by that attribute.
+    @param {String} attribute - The attribute clicked
+     */
     applySorting(attribute) {
       if (!this.sort_by) {
         return;
