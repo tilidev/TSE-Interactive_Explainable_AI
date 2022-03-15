@@ -34,8 +34,32 @@
       v-else-if="Object.keys(instanceInfo).length"
     >
       <div class="flex justify-between mb-4">
-        <div class="text-lg font-bold">
+        <div class="text-lg font-bold flex">
           Factors influencing AI Recommendation
+          <div>
+            <fa-icon
+              @click="hover = !hover"
+              @mouseover="hover = true"
+              @mouseleave="hover = false"
+              icon="info-circle"
+              class="ml-2"
+            />
+            <div v-if="hover" class="mt-8 absolute z-50">
+              <div
+                class="
+                  p-4
+                  max-w-2xl
+                  bg-white
+                  font-normal
+                  text-primary-dark
+                  shadow-blurred
+                  rounded
+                "
+              >
+                {{ descriptions[expType] }}
+              </div>
+            </div>
+          </div>
         </div>
         <div class="flex justify-end space-x-4">
           <div>Toggle detail view</div>
@@ -103,10 +127,15 @@ export default {
   },
   data() {
     return {
+      hover: false,
       modifiedInstance: {},
       detailed: false,
       modified: false,
       whatif: false,
+      descriptions: {
+        shap: "The SHAP values explain each attribute-value’s contribution to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
+        lime: "The SHAP values explain each attribute-value’s contribution to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
+      },
     };
   },
   components: { InfoCard, DiceExplanation, TreeMap, Toggle },
