@@ -91,11 +91,10 @@ export default {
       this.index += direction === "left" ? -1 : 1;
     },
     /**
-    /**
      * Returns classes for the arrow's style depending on the current position in the counterfactuals.
      * Makes the button grayed out, when it's not possible to move left/right further
      * @param {String} direction - The direction of the arrow, can be 'left' or 'right'
-     * @returns {String} Tailwind classes for button styling
+     * @returns {String} Tailwind classes for arrow styling
      */
     getArrowStyling(direction) {
       if (

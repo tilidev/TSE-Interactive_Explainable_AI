@@ -33,9 +33,9 @@
 </template>
 
 <script>
-import ExistingExperimentOverlay from "../components/admin/ExistingExperimentOverlay.vue";
-import NewExperimentOverlay from "../components/admin/NewExperimentOverlay.vue";
-import DefaultButton from "../components/buttons/DefaultButton.vue";
+import ExistingExperimentOverlay from "./ExistingExperimentOverlay.vue";
+import NewExperimentOverlay from "./NewExperimentOverlay.vue";
+import DefaultButton from "../buttons/DefaultButton.vue";
 export default {
   components: {
     DefaultButton,

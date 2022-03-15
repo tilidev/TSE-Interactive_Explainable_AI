@@ -66,6 +66,9 @@ import ClearButton from "@/components/buttons/ClearButton";
 import Slider from "@vueform/slider";
 import vClickOutside from "click-outside-vue3";
 
+/**
+ * Component for the filter menu for a certain attribute.
+ */
 export default {
   directives: {
     clickOutside: vClickOutside.directive,
@@ -81,14 +84,28 @@ export default {
   },
   data() {
     return {
+      /**
+       * The allowed range for a continuous attribute, can be modified by user through moving the slider
+       */
       allowedRange: Array,
+      /**
+       * The attribute values that should be filtered by (for categorical attributes)
+       */
       selectedValues: Array,
     };
   },
   methods: {
+    /**
+     * Triggered when the user clicks 'Cancel'
+     * Emits the 'cancel' event
+     */
     cancel() {
       this.$emit("cancel");
     },
+    /**
+     * Triggered when the user clicks 'Apply'
+     * Emits the 'apply' event and sends the new filter object as payload
+     */
     applyChanges() {
       if (this.attributeData.types[this.attribute] == "categorical") {
         this.$emit("apply", {
@@ -110,7 +127,14 @@ export default {
     Slider,
   },
   props: {
+    /**
+     * Object representing the currently applied filter for this attribute.
+     * Should be empty if there are no filters
+     */
     currentFilter: Object,
+    /**
+     * The attribute for which the filter menu should be displayed
+     */
     attribute: String,
   },
   inject: ["attributeData"],

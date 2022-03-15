@@ -49,7 +49,7 @@
 
 <script>
 import DefaultButton from "../components/buttons/DefaultButton.vue";
-import InstanceView from "./InstanceView.vue";
+import InstanceView from "../components/instance/InstanceView.vue";
 export default {
   mounted() {
     this.sendExperimentRequest();

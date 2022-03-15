@@ -116,9 +116,9 @@
 </template>
 
 <script>
-import InfoCard from "../components/InfoCard.vue";
-import DiceExplanation from "../components/explanations/DiceExplanation.vue";
-import TreeMap from "../components/explanations/TreeMap.vue";
+import InfoCard from "./InfoCard.vue";
+import DiceExplanation from "./DiceExplanation.vue";
+import TreeMap from "./TreeMap.vue";
 import Toggle from "@vueform/toggle";
 
 export default {

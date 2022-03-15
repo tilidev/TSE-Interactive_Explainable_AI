@@ -17,7 +17,7 @@
 
 <script>
 import NavigationButton from "../components/buttons/NavigationButton.vue";
-import InstanceView from "./InstanceView.vue";
+import InstanceView from "../components/instance/InstanceView.vue";
 export default {
   mounted() {
     this.sendInstanceRequest();
