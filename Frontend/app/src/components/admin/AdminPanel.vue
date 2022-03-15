@@ -24,10 +24,7 @@
       @close="closeOverlay"
       :experimentName="showExistingOverlay"
     ></existing-experiment-overlay>
-    <new-experiment-overlay
-      v-if="showNewOverlay"
-      @close="closeOverlay"
-    >
+    <new-experiment-overlay v-if="showNewOverlay" @close="closeOverlay">
     </new-experiment-overlay>
   </div>
 </template>
@@ -37,6 +34,9 @@ import ExistingExperimentOverlay from "./ExistingExperimentOverlay.vue";
 import NewExperimentOverlay from "./NewExperimentOverlay.vue";
 import DefaultButton from "../buttons/DefaultButton.vue";
 export default {
+  /**
+   * Component for the admin panel.
+   */
   components: {
     DefaultButton,
     ExistingExperimentOverlay,
@@ -47,17 +47,34 @@ export default {
   },
   data() {
     return {
+      /**
+       * Array of all existing experiments
+       */
       experimentList: [],
+      /**
+       * Name of an existing experiment for which the overlay is shown.
+       * If empty, no overlay is displayed.
+       */
       showExistingOverlay: "",
+      /**
+       * Determines if the New Experiment Overlay is shown.
+       */
       showNewOverlay: false,
     };
   },
   methods: {
+    /**
+     * Triggered when an overlay emits the 'close' event.
+     * This method closes the overlay.
+     */
     closeOverlay() {
       this.showExistingOverlay = "";
       this.showNewOverlay = false;
       this.sendExperimentRequest();
     },
+    /**
+     * Sends a request to the api to get the existing experiments
+     */
     sendExperimentRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "experiment/all").then((response) => {

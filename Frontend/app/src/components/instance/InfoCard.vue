@@ -105,13 +105,19 @@
       <default-button
         class="col-start-1 mt-4 mr-4"
         @click="this.$emit('generate-explanation', modifiedInstance)"
-        v-if="JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) && allowWhatIf"
+        v-if="
+          JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) &&
+          allowWhatIf
+        "
         >Generate New Explanation</default-button
       >
       <clear-button
         class="col-start-2 mt-4"
         @click="resetInstance()"
-        v-if="JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) && allowWhatIf"
+        v-if="
+          JSON.stringify(instanceInfo) != JSON.stringify(modifiedInstance) &&
+          allowWhatIf
+        "
         >Reset</clear-button
       >
       <outline-button
@@ -132,11 +138,24 @@ import RecommendationVis from "../ui/RecommendationVis.vue";
 import ClearButton from "../buttons/ClearButton.vue";
 import OutlineButton from "../buttons/OutlineButton.vue";
 
+/**
+ * This component displays a given instance and the AI recommendation.
+ * Depending on the props it also allows modification and generating the new explanation and what-if analysis.
+ */
 export default {
   data() {
     return {
+      /**
+       * The attribute for which a dropdown menu is displayed, if empty no menu is shown.
+       */
       dropdownAttribute: "",
+      /**
+       * Specifies whether the user has enabled the modification
+       */
       modificationEnabled: false,
+      /**
+       * The new AI prediction if the instance has been modified
+       */
       newPrediction: null,
     };
   },
@@ -149,13 +168,27 @@ export default {
     ClearButton,
   },
   props: {
+    /**
+     * Object with the original instance (attributes as keys and corresponding values)
+     */
     instanceInfo: Object,
-    attributeData: Object,
+    /**
+     * Specifies if the user can modify the instance.
+     */
     modifiable: Boolean,
+    /**
+     * Object with the user-modified instance (attributes as keys and corresponding values)
+     */
     modifiedInstance: Object,
+    /**
+     * Specifies if the 'Generate New Explanation' button is shown and if the user can see the what-if analysis
+     */
     allowWhatIf: Boolean,
   },
   methods: {
+    /**
+     * Sends a request to the API to get the new AI prediction if the instance has been modified
+     */
     sendPredictionRequest() {
       // eslint-disable-next-line no-unused-vars
       const { id, NN_recommendation, NN_confidence, ...reducedInstance } =
@@ -167,18 +200,32 @@ export default {
           this.newPrediction = response.data;
         });
     },
+    /**
+     * Triggered when user clicks 'Reset'
+     * Resets the InfoCard and emits the 'reset-instance' event
+     */
     resetInstance() {
       this.modificationEnabled = false;
       this.dropdownAttribute = "";
       this.newPrediction = null;
       this.$emit("reset-instance");
     },
+    /**
+     * Returns classes for the value styling depending on if it's modified
+     * @param {String} attribute - The attribute name
+     * @returns {String} Tailwind classes for attribute value styling
+     */
     getValueStyling(attribute) {
       if (this.instanceInfo[attribute] != this.modifiedInstance[attribute]) {
         return "text-modified font-bold";
       }
       return "";
     },
+    /**
+     * Triggered when the dropdown menu emits the 'apply-value' event.
+     * Passes on the information to the parent by emitting the 'apply-modification' event with the new modification
+     * and calls the sendPredictionRequest() method.
+     */
     applyValue(value) {
       const modification = { attribute: this.dropdownAttribute, value: value };
       this.dropdownAttribute = "";
@@ -186,7 +233,7 @@ export default {
       this.sendPredictionRequest();
     },
   },
-  inject: ["reducedCategories", "apiUrl"],
+  inject: ["reducedCategories", "apiUrl", "attributeData"],
 };
 </script>
 

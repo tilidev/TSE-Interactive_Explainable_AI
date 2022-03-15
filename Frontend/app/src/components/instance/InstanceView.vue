@@ -3,7 +3,6 @@
     <info-card
       :instanceInfo="instanceInfo"
       :modifiedInstance="modifiedInstance"
-      :attributeData="attributeData"
       :modifiable="allowMod"
       :allowWhatIf="expType == 'dice' ? false : allowWhatIf"
       @apply-modification="applyModification"
