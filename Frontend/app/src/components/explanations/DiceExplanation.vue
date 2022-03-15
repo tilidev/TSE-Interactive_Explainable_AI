@@ -1,5 +1,5 @@
 <template>
-  <div class="text-left px-8 py-4 shadow-md bg-white">
+  <div class="text-left px-8 py-4 shadow-md flex-col flex bg-white">
     <div class="flex justify-between">
       <h2 class="font-bold text-lg mb-4">Counterfactual Explanations</h2>
       <div class="text-lg">
@@ -10,46 +10,40 @@
       <div :class="getArrowStyling('left')" @click="handleClick('left')">
         <fa-icon icon="arrow-left" size="2x" />
       </div>
-      <div class="flex flex-col">
-        <div class="overflow-x-scroll shadow-md">
-          <table
-            v-if="counterfactuals.length"
-            class="max-w-2xl table-auto text-primary text-left"
-          >
-            <thead class="bg-primary text-white">
-              <table-header
-                :labels="attributeData.labels"
-                :descriptions="attributeData.descriptions"
-                :attributes="Object.keys(counterfactuals[index])"
-              />
-            </thead>
-            <tbody class="divide-gray divide-y">
-              <table-row
-                :rowData="getBaseRow(counterfactuals[index])"
-              ></table-row>
-              <table-row
-                class="text-modified font-bold"
-                :rowData="counterfactuals[index]"
-              />
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <div class="flex my-4">
-            <div class="bg-primary h-6 w-6 mr-4"></div>
-            Original application
-          </div>
-          <div class="flex">
-            <div class="bg-modified h-6 w-6 mr-4"></div>
-            <div class="text-modified font-bold">
-              Counterfactual application
-            </div>
-          </div>
-        </div>
+      <div class="shadow-md overflow-x-scroll">
+        <table
+          v-if="counterfactuals.length"
+          class="max-w-2xl table-auto text-primary text-left"
+        >
+          <thead class="bg-primary text-white">
+            <table-header
+              :labels="attributeData.labels"
+              :descriptions="attributeData.descriptions"
+              :attributes="Object.keys(counterfactuals[index])"
+            />
+          </thead>
+          <tbody class="divide-gray divide-y">
+            <table-row
+              :rowData="getBaseRow(counterfactuals[index])"
+            ></table-row>
+            <table-row
+              class="text-modified font-bold"
+              :rowData="counterfactuals[index]"
+            />
+          </tbody>
+        </table>
       </div>
       <div :class="getArrowStyling('right')" @click="handleClick('right')">
         <fa-icon icon="arrow-right" size="2x" />
       </div>
+    </div>
+    <div class="flex my-4">
+      <div class="bg-primary h-6 w-6 mr-4"></div>
+      Original application
+    </div>
+    <div class="flex">
+      <div class="bg-modified h-6 w-6 mr-4"></div>
+      <div class="text-modified font-bold">Counterfactual application</div>
     </div>
   </div>
 </template>
