@@ -125,7 +125,15 @@ ___
 **Database Interaction:**
 ![Database Interaction](/uploads/b58c7e493f24e5a1926cde76ecc5e64a/image.png)
 
+
 ___
+
+### XAI Explanations
+
+The XAI methods used in this project are `LIME`, `SHAP` and `DICE`. As the generation of counterfactuals using `DICE` takes a large amount of time (1,5 - 3 minutes), the counterfactuals have been pre-generated for each instance of the GCD dataset and stored in the data table. They can thus not be dynamically generated. \
+For `SHAP` and `LIME` however, the explanations are computed in the back-end, which makes it possible to dynamically generate what-if analysis for modified dataset-instances.\
+To efficiently generate explanations, the API scans the number of available CPU cores of the server it is running on, and generated calculation processes accordingly. The sole task of these calculation processes is to generate explanations when clients request them.\
+The requested explanation tasks are saved in a FIFO-queue to which all calculation processes have access. One of the running calculation processes will take the task from the queue and will return it in a process-shared dictionary when it has finished generating the explanation. The user can access the generated explanation using the id returned by the API when the explanation was scheduled.
 
 Explanation Task flow: `rgb(133, 192, 255)`\
 Explanation Result flow: `rgb(217, 155, 255)`
