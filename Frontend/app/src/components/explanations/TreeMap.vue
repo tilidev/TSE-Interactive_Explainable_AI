@@ -45,7 +45,9 @@ export default {
       this.sendExplanationRequest();
     },
     whatif() {
-      this.generateTreeMap();
+      if (!this.isLoading) {
+        this.generateTreeMap();
+      }
     },
     detailView() {
       this.generateTreeMap();
@@ -58,6 +60,7 @@ export default {
   },
   data() {
     return {
+      href: "",
       isLoading: true,
       simpleExpData: {
         name: "Explanation",
@@ -168,21 +171,23 @@ export default {
         }
       }
       this.generateTreeMap();
-      this.isLoading = false;
     },
-    getResult(href, result) {
-      if (!result) {
+    getResult(result, expType) {
+      if (!result && expType == this.expType) {
+        console.log(expType);
         d3.select("#" + this.id).html(null);
         const axios = require("axios");
         axios
-          .get(this.apiUrl + "explanations/" + this.expType + "?uid=" + href)
+          .get(
+            this.apiUrl + "explanations/" + this.expType + "?uid=" + this.href
+          )
           .then((response) => {
             if (response.data.values) {
               result = response.data.values;
               this.saveData(result);
             }
           });
-        setTimeout(() => this.getResult(href, result), 1000);
+        setTimeout(() => this.getResult(result, expType), 1000);
       }
       return result;
     },
@@ -193,12 +198,14 @@ export default {
           instance: this.instance,
         })
         .then((response) => {
-          let href = response.data.href;
-          this.getResult(href, null);
+          this.href = response.data.href;
+          this.getResult(null, this.expType);
         });
     },
     generateTreeMap() {
+      this.isLoading = true;
       d3.select("#" + this.id).html(null);
+      d3.select("#tootltip" + this.id).html(null);
       const detailView = this.detailView;
       const w = this.whatif ? 640 : 1320;
       const h = 500;
@@ -308,6 +315,7 @@ export default {
         .attr("font-size", "15px")
         .attr("margin-top", "16px")
         .attr("fill", "white");
+      this.isLoading = false;
     },
   },
 };
