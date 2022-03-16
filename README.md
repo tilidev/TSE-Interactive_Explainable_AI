@@ -11,6 +11,18 @@
 
 ### Environment and dependencies
 
+#### Frontend
+
+1. Make sure [Node.js](https://nodejs.org/en/) is installed on your system
+2. ```shell
+npm install -g @vue/cli
+npm install -g @vue/cli-service
+cd Frontend/app
+npm install
+```
+
+#### Backend
+
 ### Run application
 
 Terminal 1:
