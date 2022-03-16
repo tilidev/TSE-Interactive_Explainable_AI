@@ -14,7 +14,8 @@
 #### Frontend
 
 1. Make sure [Node.js](https://nodejs.org/en/) is installed on your system
-2. ```shell
+2. Run the following commands in a terminal in the project base directory
+```shell
 npm install -g @vue/cli
 npm install -g @vue/cli-service
 cd Frontend/app
