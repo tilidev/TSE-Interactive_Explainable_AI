@@ -156,3 +156,4 @@ Explanation Result flow: `rgb(217, 155, 255)`
 
 ## Front-End
 
+You can find detailed documentation of all components used in the Frontend [here](Frontend/app/docs)
