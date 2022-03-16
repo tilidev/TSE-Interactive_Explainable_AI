@@ -45,15 +45,15 @@ The starting page is "/dataset". To access the admin panel, use "/admin".
 
 ## Project structure
 
-The application consists of a desktop front-end gui and a backend api server. The front-end is built with the [VUE](https://vuejs.org)-Javascript framework, the back-end api with the [FastAPI](https://fastapi.tiangolo.com)-python framework.
+The application consists of a web-based frontend GUI and a backend API server. The frontend is built with the [Vue.js](https://vuejs.org) framework, the API with the [FastAPI](https://fastapi.tiangolo.com)-Python framework.
 
 ![project structure](/uploads/47aa8caab144de1185aaf9e9fa3f06b5/image.png)
 
-## Back-End
+## Backend
 
 ### Overview of Files
 
-The Back-end files can be found in the folder "API/". Here is a short summary about what each file or directory does:
+The Backend files can be found in the folder "API/". Here is a short summary about what each file or directory does:
 
 `main.py`:
 - starting point for FastAPI process
@@ -144,7 +144,7 @@ ___
 ### XAI Explanations
 
 The XAI methods used in this project are `LIME`, `SHAP` and `DICE`. As the generation of counterfactuals using `DICE` takes a large amount of time (1,5 - 3 minutes), the counterfactuals have been pre-generated for each instance of the GCD dataset and stored in the data table. They can thus not be dynamically generated. \
-For `SHAP` and `LIME` however, the explanations are computed in the back-end, which makes it possible to dynamically generate what-if analysis for modified dataset-instances.\
+For `SHAP` and `LIME` however, the explanations are computed in the backend, which makes it possible to dynamically generate what-if analysis for modified dataset instances.\
 To efficiently generate explanations, the API scans the number of available CPU cores of the server it is running on, and generated calculation processes accordingly. The sole task of these calculation processes is to generate explanations when clients request them.\
 The requested explanation tasks are saved in a FIFO-queue to which all calculation processes have access. One of the running calculation processes will take the task from the queue and will return it in a process-shared dictionary when it has finished generating the explanation. The user can access the generated explanation using the id returned by the API when the explanation was scheduled.
 
