@@ -132,7 +132,7 @@ export default {
       modified: false,
       whatif: false,
       descriptions: {
-        shap: "The SHAP values explain each attribute-value’s contribution to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
+        shap: "The SHAP values explain each attribute-value’s contribution in percentage points to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
         lime: "The SHAP values explain each attribute-value’s contribution to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
       },
     };
