@@ -129,7 +129,7 @@ attribute_constraints = [
         attr_name : AttributeNames.history,
         const_type : categorical,
         category : financial_cat,
-        values : ['delay payment of previous loans', 'paid back previous loans at this bank', 'paid back all previous loans', 'no problems with current loans'],
+        values : ['delay payment of previous loans', 'paid back previous loans at this bank', 'paid back all previous loans', 'no problems with current loans', 'other loans exist at other banks'],
         attr_description : "How reliably the applicant handled previous or current loans"
     },
     {

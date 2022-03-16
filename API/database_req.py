@@ -130,8 +130,11 @@ def create_order_query(sort:str):
 #for create_experiment
 def exp_creation(con, exp_name:str, exp_info:str):
     """Checks if the experiment already exists in the database and adds it to the experiments table if not."""
+    exp_name = exp_name.replace("'","''")
     if not check_exp_exists(con, exp_name):
         c = con.cursor()
+        #single quotes need to be replaced with double single quotes as otherwise sql assumes it indicates the end of a string
+        exp_info = exp_info.replace("'","''")
         insert_query = f"INSERT INTO experiments (name, information) VALUES ('{exp_name}','{exp_info}')"
         c.execute(insert_query)
         con.commit()
@@ -140,7 +143,7 @@ def exp_creation(con, exp_name:str, exp_info:str):
 #for experiment_list
 def get_all_exp(con):
     """Returns a list of all experiments"""
-    query = 'SELECT name FROM experiments'
+    query = "SELECT name FROM experiments"
     c = con.cursor()
     results = c.execute(query).fetchall()
     res_list = []
@@ -152,6 +155,7 @@ def get_all_exp(con):
 def get_exp_info(con, name:str):
     """If the given experiment is in the database the corresponding experiment information is returned in 
     json format."""
+    name = name.replace("'","''")
     query = f"SELECT information FROM experiments WHERE name = '{name}'"
     c = con.cursor()
     results = c.execute(query).fetchall()
@@ -171,15 +175,16 @@ def create_id(con, exp_name:str):
     """Queries the database for already existing ids for that experiment and chooses the lowest available id.
     For this id and the experiment name an entry in the results table is created, where later the results can be added.
     :returns: json with key client_id and the newly generated id or None if the experiment does not exist"""
+    exp_name = exp_name.replace("'","''")
     if check_exp_exists(con, exp_name):
-        query_existing_id = f'SELECT client_id FROM results WHERE experiment_name = "{exp_name}"'
+        query_existing_id = f"SELECT client_id FROM results WHERE experiment_name = '{exp_name}'"
         c = con.cursor()
         ids = c.execute(query_existing_id).fetchall()
         if len(ids) > 0:
             return_id = max(ids)[0] + 1 # makes sure there is no id with higher value, max also works with single valued tuples
         else:
             return_id = 0
-        query_insert = f'INSERT INTO results (experiment_name, client_id, results) VALUES("{exp_name}",{return_id}, NULL)'
+        query_insert = f"INSERT INTO results (experiment_name, client_id, results) VALUES('{exp_name}',{return_id}, NULL)"
         c.execute(query_insert)
         con.commit()
         return_dict = {
@@ -196,6 +201,7 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
         dict[res.loan_id] = res.json()
     #get json for the results list, as sqllite cannot save lists
     json_str = json.dumps(dict)
+    exp_name = exp_name.replace("'","''")
     query = f"UPDATE results SET results = '{json_str}' WHERE experiment_name = '{exp_name}' AND client_id = {client_id}"
     c = con.cursor()
     c.execute(query)
@@ -206,9 +212,9 @@ def add_res(con, exp_name:str, client_id: int, results: List[ExperimentResults.S
 def export_results_to(con, format, exp_name = None):
     """Returns the experiment results. If an exp_name is given, only the results for that experiment are returned
     and it is possible to choose between csv and json format. If no exp_name is given, the result is returned in json format."""
-    #TODO check that format is only csv when exp name is given
     query = "SELECT * FROM results WHERE results != 'NULL'" 
     if exp_name:
+        exp_name = exp_name.replace("'","''")
         query += f" AND experiment_name =  '{exp_name}'"
     con.row_factory = sql.Row
     c = con.cursor()
@@ -249,7 +255,8 @@ def export_results_to(con, format, exp_name = None):
 #for reset_experiment_results
 def reset_exp_res(con, exp_name:str):
     """Deletes all results for an experiment with the given name from the results table."""    
-    reset_query = f'DELETE FROM results WHERE experiment_name = "{exp_name}"'
+    exp_name.replace("'","''")
+    reset_query = f"DELETE FROM results WHERE experiment_name = '{exp_name}'"
     c = con.cursor()
     c.execute(reset_query)
     con.commit()
@@ -257,11 +264,12 @@ def reset_exp_res(con, exp_name:str):
 #for delete_experiment
 def delete_exp(con, exp_name: str):
     """Checks if the experiment exists and deletes it from the experiments table if yes."""
+    exp_name = exp_name.replace("'","''")
     if check_exp_exists(con, exp_name):
         c = con.cursor()
-        delete_query_exp = f'DELETE FROM experiments WHERE name = "{exp_name}"'
+        delete_query_exp = f"DELETE FROM experiments WHERE name = '{exp_name}'"
         c.execute(delete_query_exp)
-        delete_query_res = f'DELETE FROM results WHERE experiment_name ="{exp_name}"'
+        delete_query_res = f"DELETE FROM results WHERE experiment_name ='{exp_name}'"
         c.execute(delete_query_res)
         con.commit()
 
@@ -286,7 +294,7 @@ def get_cf(con, instance_id: int):
     """For that instance id the pregenerated counterfactuals are returned from the dice table if the id is
     between 0 and 999."""
     if instance_id in range(number_of_applications):
-        query = f'SELECT counterfactuals FROM dice WHERE instance_id = {instance_id}'
+        query = f"SELECT counterfactuals FROM dice WHERE instance_id = {instance_id}"
         c = con.cursor()
         results = c.execute(query).fetchall()
         result = results[0]
@@ -297,7 +305,7 @@ def get_cf(con, instance_id: int):
 
 def check_exp_exists(con, exp_name: str):
     """Checks whether or not an experiment with the given name exists in the table `experiments`. Returns true if it exists."""
-    exists_query = f'SELECT name FROM experiments WHERE name = "{exp_name}"'
+    exists_query = f"SELECT name FROM experiments WHERE name = '{exp_name}'"
     query_res = con.execute(exists_query).fetchall()
     if len(query_res) > 0:
         return True

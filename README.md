@@ -1,4 +1,4 @@
-# Team Project Software Development - NAME
+# Team Project Software Development - Development of an interactive explainable AI application
 
 ---
 
@@ -68,6 +68,11 @@ The Back-end files can be found in the folder "API/". Here is a short summary ab
 - defines timeout logic for explanation results
 
 `lime_utils.py`:
+- Helper class for the [lime](https://github.com/marcotcr/lime) explanation generation
+- uses code from the xai reference project
+- loads the german credit dataset and the `smote_ey.tf` model and fits a preprocessor
+- creates a lime explanainer
+- contains method to get lime explanation for a given instance and return it in the json format specified by the API 
 
 
 `shap_utils.py`:
@@ -77,15 +82,26 @@ The Back-end files can be found in the folder "API/". Here is a short summary ab
 
 
 `DataLoader_ey.py`:
+- taken from the xai reference project and slightly adapted
+- method data_loader to load the credit data, drop the unused columns and remove outliers
+- preprocessing method for preparing data for model prediction
+- method for adding AI recommendation and confidence
 
 
 `database.db`:
+- SQLite database for application, counterfactual information and experimentation information storage
+- overview over structure and methods provided below
 
 
 `smote_ey.tf/`:
+- the trained tensorflow model from the xai reference project 
+- used for AI recommendation and confidence and explanation generation
 
 
 `Data/`:
+- folder containing the raw data that was read into the database
+- contains the german credit dataset in csv format and 
+- contains the counterfactuals in json format, the `all_counterfactuals.json` contains the initially generated counterfactuals, the `cfs_response_format.json` a reformatted version of the counterfactuals that was added to the database
 
 
 
@@ -97,11 +113,27 @@ An overview of the different tables and their strucutre is provided below. Below
 ___
 
 **Database Table Structure:**
-![Database Table Structure](/uploads/4ad0c44ad40601306c83409a1cda3c51/image.png)
+![Database Table Structure](/uploads/4ad0c44ad40601306c83409a1cda3c51/image.png) 
+All cleaned applications from the GCD are stored in the applicants table. The attributes foreign_worker, status_sex_ and classification_ were dropped and NN_recommendation and NN_confidence added. These two attributes refer to the actual model prediction for this application and were determined using the `smote_ey.tf` model.\
+The dice table contains the pregenerated counterfactuals for the applications of the GCD. The counterfactuals column contains this information in json format. These jsons have the key 'counterfactuals' referring to a list of 5 counterfactuals in json format. This is necessary because SQLite cannot store lists.\
+The elements in the dice table have the primary key instance_id, which refers to the ids in the applicants table. Therefore when an element in the applicants table is deleted or changes its id, the according element in the dice table should be deleted or changed as well.\
+The experimentation functionality is covered by the databases experiments and results. In the experiments table all the relevant information for the defined experiments, like the type of explanation and ids of applications that should be shown are stored in json format. The json contains the keys, which are defined for the ExperimentInformation model in the `models.py` file. The results table is used to store the decisions of a user for a certain experiment. They are stored in json format. The json contains jsons in the SingleResult format defined in the `models.py` folder. Their loan id is the key to reference those SingleResult jsons.\
+The key experiment_name of the results table references the attribute name in the experiments table. Therefore when an experiment is deleted or changes its name, this change should also apply to the results table.
+
 ___
 
 **Database Interaction:**
 ![Database Interaction](/uploads/b58c7e493f24e5a1926cde76ecc5e64a/image.png)
+
+
+___
+
+### XAI Explanations
+
+The XAI methods used in this project are `LIME`, `SHAP` and `DICE`. As the generation of counterfactuals using `DICE` takes a large amount of time (1,5 - 3 minutes), the counterfactuals have been pre-generated for each instance of the GCD dataset and stored in the data table. They can thus not be dynamically generated. \
+For `SHAP` and `LIME` however, the explanations are computed in the back-end, which makes it possible to dynamically generate what-if analysis for modified dataset-instances.\
+To efficiently generate explanations, the API scans the number of available CPU cores of the server it is running on, and generated calculation processes accordingly. The sole task of these calculation processes is to generate explanations when clients request them.\
+The requested explanation tasks are saved in a FIFO-queue to which all calculation processes have access. One of the running calculation processes will take the task from the queue and will return it in a process-shared dictionary when it has finished generating the explanation. The user can access the generated explanation using the id returned by the API when the explanation was scheduled.
 
 Explanation Task flow: `rgb(133, 192, 255)`\
 Explanation Result flow: `rgb(217, 155, 255)`
