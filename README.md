@@ -38,9 +38,9 @@ cd Frontend/app/
 npm run serve
 ```
 
-The API interactive docs are accessible with http://localhost:8000/docs.
+Interactive API docs are accessible with http://localhost:8000/docs.
 The root for all API requests is http://localhost:8000/. \
-The application gui is accessible with http://localhost:8080/.
+The application GUI is accessible with http://localhost:8080/.
 The starting page is "/dataset". To access the admin panel, use "/admin".
 
 ## Project structure
