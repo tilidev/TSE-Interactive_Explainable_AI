@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="flex justify-start mb-4 ml-1" v-if="expType == 'shap' && baseValue">
+      <span class="font-bold mr-2">Average AI prediction: </span>
+      <span class="text-positive"
+        >Approve with {{ Math.round((1 - baseValue) * 100) }} % confidence
+      </span> 
+    </div>
     <div
       v-if="isLoading"
       class="my-4 flex items-center justify-start space-x-2"
@@ -83,6 +89,10 @@ export default {
        * The reference provided by the API to check the status of the explanation request and get the results.
        */
       href: "",
+      /**
+       * The base value provided by SHAP
+       */
+      baseValue: 0,
       /**
        * Indicates if the treemap is currently loading and controls if the loading animation is shown.
        */
@@ -227,6 +237,7 @@ export default {
           .then((response) => {
             if (response.data.values) {
               result = response.data.values;
+              this.baseValue = response.data.base_value;
               this.saveData(result);
             }
           });
@@ -380,6 +391,7 @@ export default {
         .attr("margin-top", "16px")
         .attr("fill", "white");
       this.isLoading = false;
+      console.log(this.baseValue);
     },
   },
 };
