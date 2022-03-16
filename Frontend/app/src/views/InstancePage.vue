@@ -18,25 +18,47 @@
 <script>
 import NavigationButton from "../components/buttons/NavigationButton.vue";
 import InstanceView from "../components/instance/InstanceView.vue";
+/**
+ * Component for the instance/application page. Contains navigation buttons and the instance view.
+ */
 export default {
   mounted() {
     this.sendInstanceRequest();
   },
   data() {
     return {
+      /**
+       * The instance id. Provided by an url parameter
+       */
       id: this.$route.params.id,
+      /**
+       * The instance information.
+       */
       instanceInfo: {},
+      /**
+       * The explanation type to be shown, can be 'lime', 'shap' or 'dice'
+       */
       expType: "dice",
     };
   },
   components: { InstanceView, NavigationButton },
   methods: {
+    /**
+     * Triggered when the user switches the explanation type
+     * @param {String} expType - The new explanation type, can be 'lime', 'shap' or 'dice'
+     */
     switchExp(expType) {
       this.expType = expType;
     },
+    /**
+     * Navigates back to the dataset explorer.
+     */
     backToDataset() {
       this.$router.push("/dataset");
     },
+    /**
+     * Sends an API request to get the instance information.
+     */
     sendInstanceRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "instance/" + this.id).then((response) => {

@@ -75,13 +75,31 @@ import FilterOverlay from "../components/table/FilterOverlay.vue";
 import CustomizeOverlay from "../components/table/CustomizeOverlay.vue";
 import NavigationButton from "../components/buttons/NavigationButton.vue";
 
+/**
+ * Component for the Dataset Explore page. Contains a navigation button, filter and customize buttons and the Data Table.
+ */
 export default {
   data() {
     return {
+      /**
+       * Indicates if the customize overlay is shown
+       */
       toggleCustomize: false,
+      /**
+       * Indicates if the filter overlay is shown
+       */
       toggleFilter: false,
+      /**
+       * Indicates if user is at the top of page
+       */
       isAtPageTop: true,
+      /**
+       * The table rows to be displayed in the Data Table
+       */
       tableRows: [],
+      /**
+       * Request body for the POST /table request
+       */
       requestBody: {
         filter: [],
         attributes: ["balance", "duration", "amount", "employment", "age"],
@@ -98,33 +116,45 @@ export default {
     this.loadMoreRows();
   },
   methods: {
-    getItemsClass() {
-      if (this.tableRows.length) {
-        return "items-end";
-      }
-      return "items-start";
-    },
+    /**
+     * Called when the 'update-filter' event is emitted by the Filter overlay
+     * Inititates a new table request which includes the new filter
+     *@param {Object} newFilter - The new filter
+     */
     updateFilter(newFilter) {
       this.requestBody.filter = newFilter;
       this.requestBody.offset = 0;
       this.scrollUp();
       this.sendTableRequest();
     },
+    /**
+     * Called when the 'apply' event is emitted by the customize overlay
+     * Inititates a new table request which includes the new attributes
+     *@param {Array} attributes - The attributes to be displayed in the table
+     */
     applyCustomization(attributes) {
       this.requestBody.attributes = attributes;
       this.sendTableRequest();
       this.toggleCustomize = false;
     },
+    /**
+     * Scrolls up to page top
+     */
     scrollUp() {
       window.scrollTo(0, 0);
     },
+    /**
+     * Sends the POST /table request and stores the results in the tableRows variable.
+     */
     sendTableRequest() {
       const axios = require("axios");
-      console.log(this.requestBody);
       axios.post(this.apiUrl + "table", this.requestBody).then((response) => {
         this.tableRows = response.data;
       });
     },
+    /**
+     * Dynamically loads more rows from the API when the user scrolls down on the page.
+     */
     loadMoreRows() {
       window.onscroll = () => {
         this.isAtPageTop =
@@ -143,6 +173,11 @@ export default {
         }
       };
     },
+    /**
+     * Called when the Data Table emits the 'apply-sorting' event.
+     * Sends a table request with the new sorting information
+     * @param {Object} sorting - The new sorting to be applied.
+     */
     applySorting(sorting) {
       this.requestBody.sort_by = sorting.sort_by;
       this.requestBody.desc = sorting.desc;

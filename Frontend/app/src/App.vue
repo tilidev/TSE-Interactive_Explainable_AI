@@ -2,48 +2,37 @@
   <router-view class="m-8" />
 </template>
 
-<style lang="scss">
-@import url('https://cdn.jsdelivr.net/npm/plusplusjakartasans@latest/plusjakartasans.css');
-#app {
-  font-family: 'Plus Jakarta Sans', Helvetica, Arial sans-serif;
-  word-spacing: 0.08rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
-
 <script>
-
+/**
+ * Main component for the whole application.
+ */
 export default {
   data() {
     return {
+      /**
+       * The api url used everywhere else in the project
+       */
       apiUrl: "http://localhost:8000/",
+      /**
+       * Object with all attributes in their categories
+       */
       attributeCategories: {
         financial: [],
         personal: [],
         loan: [],
         prediction: [],
       },
+      /**
+       * Object with all attributes in their categories, excluding the prediction category
+       */
       reducedCategories: {
         financial: [],
         personal: [],
         loan: [],
       },
+      /**
+       * Obejct with general attribute data
+       */
       attributeData: {
         descriptions: {},
         labels: {
@@ -81,6 +70,9 @@ export default {
     this.sendAttributeRequest();
   },
   methods: {
+    /**
+     * Sends API request to get the attribute information and saves it in the attributeData, attributeCategories and reducedCategories variables.
+     */
     sendAttributeRequest() {
       const axios = require("axios");
       axios.get(this.apiUrl + "attributes/information").then((response) => {
@@ -101,7 +93,7 @@ export default {
               attr
             );
           }
-            if (this.reducedCategories[this.attributeData.categories[attr]]) {
+          if (this.reducedCategories[this.attributeData.categories[attr]]) {
             this.reducedCategories[this.attributeData.categories[attr]].push(
               attr
             );
@@ -120,3 +112,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+@import url("https://cdn.jsdelivr.net/npm/plusplusjakartasans@latest/plusjakartasans.css");
+#app {
+  font-family: "Plus Jakarta Sans", Helvetica, Arial sans-serif;
+  word-spacing: 0.08rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+</style>

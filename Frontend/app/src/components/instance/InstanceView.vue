@@ -43,7 +43,7 @@
               icon="info-circle"
               class="ml-2"
             />
-            <div v-if="hover" class="mt-8 absolute z-50">
+            <div v-if="hover" class="mt-4 text-sm absolute z-50">
               <div
                 class="
                   p-4
@@ -120,39 +120,75 @@ import DiceExplanation from "./DiceExplanation.vue";
 import TreeMap from "./TreeMap.vue";
 import Toggle from "@vueform/toggle";
 
+/**
+ * Component for the instance view. Contains the instance info card and the explanation visualization
+ */
 export default {
   mounted() {
     this.modifiedInstance = Object.assign({}, this.instanceInfo);
   },
   data() {
     return {
+      /**
+       * True while the user hovers over the info button. In that case the description overlay is shown.
+       */
       hover: false,
+      /**
+       * The instance modified by the user
+       */
       modifiedInstance: {},
+      /**
+       * If detail view is enabled
+       */
       detailed: false,
+      /**
+       * If the instance is modified
+       */
       modified: false,
+      /**
+       * If whatif analysis is enabled
+       */
       whatif: false,
+      /**
+       * Descriptions for the lime and shap explanations
+       */
       descriptions: {
-        shap: "The SHAP values explain each attribute-value’s contribution in percentage points to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
-        lime: "The SHAP values explain each attribute-value’s contribution to the difference between the average model prediction over the entire dataset (Approve, 66% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 4% - the exact difference to the average model prediction.",
+        shap: "The SHAP values explain each attribute value’s contribution in percentage points to the difference between the average AI prediction over the entire dataset (Approve, 65% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 5% - the exact difference to the average model prediction.",
+        lime: "The lime values explain each attribute-value's contribution to the local prediction score in percentage points. Lime fits a linear model approximating the AI decision at that point. Therefore the sum of all the lime values plus the local intercept value that has also been fitted add up to the local prediction score. This means that if we would leave the lime value for a certain attribute out when doing the addition, the local prediction score would be changed by the amount of that value.",
       },
     };
   },
   components: { InfoCard, DiceExplanation, TreeMap, Toggle },
   methods: {
+    /**
+     * Resets the current instance
+     */
     reset() {
       this.modifiedInstance = Object.assign({}, this.instanceInfo);
       this.whatif = false;
     },
+    /**
+     * Generates the explanation for the what if analysis
+     * @param {Object} modifiedInstance - Information for the modified instance
+     */
     generateExplanation(modifiedInstance) {
       this.modifiedInstance = Object.assign({}, modifiedInstance);
       this.whatif = true;
     },
+    /**
+     * Returns styling classes for the explanation names in the menu
+     * @returns {String} - Tailwind classes for styling
+     */
     getStyling(explanation) {
       if (explanation == this.expType) {
         return "underline text-positive cursor-pointer";
       }
       return "cursor-pointer";
     },
+    /**
+     * Applies a new modification to the modified instance
+     * @param {Object} modification - The new modification
+     */
     applyModification(modification) {
       this.modifiedInstance[modification["attribute"]] = modification["value"];
     },
@@ -165,13 +201,28 @@ export default {
   },
   inject: ["attributeData"],
   props: {
+    /**
+     * Object with instance information
+     */
     instanceInfo: {
       type: Object,
       required: true,
     },
+    /**
+     * Specifies if modification is allowed
+     */
     allowMod: Boolean,
+    /**
+     * Specifies if what-if analysis is allowed
+     */
     allowWhatIf: Boolean,
+    /**
+     * The default explanation type
+     */
     expType: String,
+    /**
+     * Specifies if the user can switch between explanation typess
+     */
     allowSwitching: Boolean,
   },
 };

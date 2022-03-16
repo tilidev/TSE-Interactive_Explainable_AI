@@ -1,10 +1,13 @@
 <template>
   <div>
-    <div class="flex justify-start mb-4 ml-1" v-if="expType == 'shap' && baseValue">
+    <div
+      class="flex justify-start mb-4 ml-1"
+      v-if="expType == 'shap' && baseValue"
+    >
       <span class="font-bold mr-2">Average AI prediction: </span>
       <span class="text-positive"
         >Approve with {{ Math.round((1 - baseValue) * 100) }} % confidence
-      </span> 
+      </span>
     </div>
     <div
       v-if="isLoading"

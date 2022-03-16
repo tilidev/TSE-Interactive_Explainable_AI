@@ -1,7 +1,33 @@
 <template>
   <div class="text-left px-8 py-4 shadow-md flex-col flex bg-white">
     <div class="flex justify-between">
-      <h2 class="font-bold text-lg mb-4">Counterfactual Explanations</h2>
+      <div class="flex font-bold text-lg mb-4">
+        Counterfactual Explanations
+        <div>
+          <fa-icon
+            @click="hover = !hover"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+            icon="info-circle"
+            class="ml-2"
+          />
+          <div v-if="hover" class="mt-4 text-sm absolute z-50">
+            <div
+              class="
+                p-4
+                max-w-2xl
+                bg-white
+                font-normal
+                text-primary-dark
+                shadow-blurred
+                rounded
+              "
+            >
+              {{ description }}
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="text-lg">
         {{ index + 1 + " of " + counterfactuals.length }}
       </div>
@@ -139,6 +165,14 @@ export default {
        * The current index when moving through the counterfactual array
        */
       index: 0,
+      /**
+       * Description for DiCE that shows when the user hovers over the info button
+       */
+      description: "The goal of counterfactual explanations is to modify the values of a given loan application in such a way that the AI prediction of the modified instance leads to the opposite prediction. In the table below, you can switch between 5 counterfactuals for the loan application above. The second row shows the modified values that lead to the new prediction while the first row shows the original values for these attributes.",
+      /**
+       * True while the user hovers over the info button. In that case the description overlay is shown.
+       */
+      hover: false
     };
   },
 };

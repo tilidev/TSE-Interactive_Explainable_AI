@@ -16,9 +16,15 @@ import LoginScreen from "../components/admin/LoginScreen.vue";
 import NavigationButton from "../components/buttons/NavigationButton.vue";
 import AdminView from "../components/admin/AdminPanel.vue";
 
+/**
+ * Page for the Admin Panel. Wraps the admin panel itself, the navigation button and a login screen.
+ */
 export default {
   data() {
     return {
+      /**
+       * True if user is logged in, false otherwise
+       */
       authenticated: false,
     };
   },
