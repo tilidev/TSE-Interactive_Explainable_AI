@@ -230,7 +230,6 @@ export default {
      */
     getResult(result, expType) {
       if (!result && expType == this.expType) {
-        console.log(expType);
         d3.select("#" + this.id).html(null);
         const axios = require("axios");
         axios
@@ -394,7 +393,6 @@ export default {
         .attr("margin-top", "16px")
         .attr("fill", "white");
       this.isLoading = false;
-      console.log(this.baseValue);
     },
   },
 };

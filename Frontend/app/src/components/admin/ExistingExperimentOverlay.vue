@@ -213,7 +213,6 @@ export default {
         .get(this.apiUrl + "experiment?name=" + this.experimentName)
         .then((response) => {
           this.experimentData = response.data;
-          console.log(this.experimentData);
         });
     },
   },

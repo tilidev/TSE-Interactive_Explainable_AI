@@ -183,7 +183,6 @@ export default {
         .get(this.apiUrl + "instance/" + this.instanceIds[this.currentIndex])
         .then((response) => {
           this.instanceInfo = response.data;
-          console.log("done");
         });
     },
   },
