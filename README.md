@@ -91,9 +91,10 @@ The Backend files can be found in the folder "API/". Here is a short summary abo
 
 
 `shap_utils.py`:
-
+- Helper methods and class for SHAP explanations
 
 `preproc.pickle`:
+- serialized python object for shap preprocessor
 
 
 `DataLoader_ey.py`:
