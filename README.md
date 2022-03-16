@@ -24,6 +24,8 @@ npm install
 
 #### Backend
 
+The python requirements are saved in the API folder. Depending on your os, choose the requirements file and create an environment with either conda or install directly with pip.
+
 ### Run application
 
 Terminal 1:
