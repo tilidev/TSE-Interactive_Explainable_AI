@@ -64,17 +64,28 @@
               class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentData.survey_link"
               v-if="experimentData.survey_link"
-            ></a>
+              >{{ experimentData.survey_link }}</a
+            >
             <div class="col-start-1 col-span-2 font-bold">Experiment link</div>
             <a
               class="col-start-3 col-span-3 text-primary-light underline"
               :href="experimentLink"
               >{{ experimentLink }}</a
             >
-            <default-button class="col-start-1 col-span-2"
+            <div class="col-start-1 col-span-2 font-bold">
+              Number of participants
+            </div>
+            <div class="col-start-3 col-span-3">
+              {{ experimentData.num_participants }}
+            </div>
+            <default-button
+              @click="downloadFile(true)"
+              class="col-start-1 col-span-2"
               >Download results (CSV)</default-button
             >
-            <default-button class="col-start-3 col-span-1"
+            <default-button
+              @click="downloadFile(false)"
+              class="col-start-3 col-span-1"
               >Download results (JSON)</default-button
             >
             <default-button
@@ -100,6 +111,9 @@
 
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
+/**
+ * An overlay displaying properties and options regarding an existing experiment
+ */
 export default {
   components: { DefaultButton },
   mounted() {
@@ -107,10 +121,17 @@ export default {
   },
   data() {
     return {
+      /**
+       * The experiment information provided by the API
+       */
       experimentData: {},
     };
   },
   computed: {
+    /**
+     * Generates a link to start the experiment based on the experiment name
+     * @returns {String} The experiment link
+     */
     experimentLink() {
       return (
         window.location.href.replace("admin", "") +
@@ -120,6 +141,36 @@ export default {
     },
   },
   methods: {
+    /**
+     * Downloads the results file from the API to the user's device
+     * @param {Boolean} csv - true will download results as csv, false as JSON
+     */
+    downloadFile(csv) {
+      const axios = require("axios");
+      axios
+        .get(
+          this.apiUrl +
+            "single/experiment/results/export/" +
+            (csv ? "csv" : "") +
+            "?experiment_name=" +
+            this.experimentName,
+          { responseType: "blob" }
+        )
+        .then((response) => {
+          const blob = new Blob([response.data], {
+            type: csv ? "text/csv" : "application/json",
+          });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = this.experimentName + "_results";
+          link.click();
+          URL.revokeObjectURL(link.href);
+        })
+        .catch(console.error);
+    },
+    /**
+     * Resets the experiment after confirmation by the user. This deletes all recorded answers but not the experiment itself.
+     */
     resetExperiment() {
       if (
         confirm(
@@ -135,6 +186,9 @@ export default {
         this.sendExperimentRequest();
       }
     },
+    /**
+     * Deletes the entire experiment after confirmation by the user. This includes the experiment data and all recorded answers.
+     */
     deleteExperiment() {
       if (
         confirm(
@@ -150,18 +204,26 @@ export default {
         this.$emit("close");
       }
     },
+    /**
+     * Sends a request to the API to get the experiment data and saves it in the experimentData variable
+     */
     sendExperimentRequest() {
       const axios = require("axios");
       axios
         .get(this.apiUrl + "experiment?name=" + this.experimentName)
         .then((response) => {
           this.experimentData = response.data;
-          console.log(this.experimentData);
         });
     },
   },
   props: {
-    experimentName: String,
+    /**
+     * The experiment's name
+     */
+    experimentName: {
+      type: String,
+      required: true,
+    },
   },
   inject: ["apiUrl"],
 };

@@ -12,7 +12,15 @@
 </template>
 
 <script>
+/**
+ * Component that displays a visualization of the AI's recommendation
+ */
 export default {
-  props: { recommendation: String },
+  props: {
+    /**
+     * The AI recommendation, can be 'Approve' or 'Reject'
+     */
+    recommendation: String,
+  },
 };
 </script>

@@ -1,19 +1,20 @@
 <template>
   <tr
-    class="bg-white hover:bg-gray cursor-pointer"
+    class="bg-white hover:bg-gray cursor-pointer text-sm"
     @click="
-      this.router.push({
+      this.$router.push({
         name: 'Application View',
         params: { id: rowData.id },
       })
     "
   >
-    <td v-if="rowData.id || rowData.id === 0" class="py-5 px-8 text-primary">{{ rowData.id }}</td>
+    <td v-if="rowData.id || rowData.id === 0" class="py-5 px-8 text-primary">
+      {{ rowData.id }}
+    </td>
     <td
       class="py-5 px-8"
       v-for="attrName in filteredAttributes"
       :key="attrName"
-      :class="getHighlightStyling(attrName)"
     >
       {{ rowData[attrName] }}
     </td>
@@ -27,26 +28,18 @@
 </template>
 
 <script>
-import router from "../../router/index.js";
 import RecommendationVis from "../ui/RecommendationVis.vue";
 import ConfidenceVis from "../ui/ConfidenceVis.vue";
-
+/**
+ * Component for a single table row
+ */
 export default {
-  methods: {
-    getHighlightStyling(attribute) {
-      if (this.highlight.has(attribute)) {
-        return "font-bold text-modified"
-      }
-      return ""
-    }
-  },
   components: { RecommendationVis, ConfidenceVis },
-  data() {
-    return {
-      router: router,
-    };
-  },
   computed: {
+    /**
+     * Filters the attributes to exclude the special attributes id, NN_recommendation and NN_confidence
+     * @returns {Array} The filtered attributes
+     */
     filteredAttributes() {
       const attributeArray = Object.keys(this.rowData);
       return attributeArray.filter((el) => {
@@ -59,14 +52,13 @@ export default {
     },
   },
   props: {
+    /**
+     * Object with the attributes and values to be displayed in this table row.
+     */
     rowData: {
       type: Object,
       required: true,
     },
-    highlight: { 
-      type: Set,
-      default: new Set([])
-       },
   },
 };
 </script>

@@ -31,7 +31,9 @@
               auto-cols-max auto-rows-auto
             "
           >
-            <div class="col-start-1 col-span-2 font-bold pt-2">Experiment name</div>
+            <div class="col-start-1 col-span-2 font-bold pt-2">
+              Experiment name
+            </div>
             <input
               class="col-start-3 col-span-3 rounded p-2"
               :class="getBorderStyling('name')"
@@ -171,7 +173,7 @@
               :color="'positive'"
               :hoverColor="'positive-dark'"
               class="col-start-1"
-              @click="validateInput"
+              @click="clickCreate"
             >
               Create
             </default-button>
@@ -184,31 +186,74 @@
 
 <script>
 import DefaultButton from "../buttons/DefaultButton.vue";
+/**
+ * An overlay where the user can create a new experiment
+ */
 export default {
   data() {
     return {
+      /**
+       * The experiment name entered by the user
+       */
       name: "",
+      /**
+       * The experiment description entered by the user
+       */
       description: "",
+      /**
+       * String of comma-separated loan application ids entered by the user
+       */
       applications: "",
+      /**
+       * Array with the application ids
+       */
       applicationArray: [],
+      /**
+       * Link to a survey entered by the user
+       */
       surveyLink: "",
+      /**
+       * Whether modification and what-if-analysis should be allowed.
+       * Can be 'both', 'modonly' or 'none'
+       */
       modwhatif: "both",
+      /**
+       * The explanation type for the experiment. Can be 'lime', 'shap' or 'dice'.
+       */
       explanation: "lime",
+      /**
+       * An object in which errorMessages are saved for every attribute where the input contains errors.
+       */
       errorMessages: {},
     };
   },
   inject: ["apiUrl"],
   components: { DefaultButton },
-  props: {
-    existingExperiments: Array,
-  },
   methods: {
+    /**
+     * Triggered when the user clicks 'Create'
+     * Gets a list with existing experiments from the API and calls the validateInput methods with it.
+     */
+    clickCreate() {
+      const axios = require('axios');
+      axios.get(this.apiUrl + "experiment/all").then((response) => {
+        this.validateInput(response.data);
+    });
+    },
+    /**
+     * @param {String} attribute - The attribute/field for which the border styling is applied
+     * @returns {String} Tailwind classes for border styling, red border if there's an error with the attribute, regular border otherwise
+     */
     getBorderStyling(attribute) {
       if (this.errorMessages[attribute]) {
         return "border-2 border-negative";
       }
       return "border";
     },
+    /**
+     * Sends a post request to the API to create the experiment.
+     * Emits the 'close' event afterwards.
+     */
     createExperiment() {
       const axios = require("axios");
       let requestBody = {};
@@ -233,7 +278,12 @@ export default {
         this.$emit("close");
       });
     },
-    validateInput() {
+    /**
+     * Validates the inputs and sets error messages if the input is invalid for a certain attribute/field.
+     * If there are no errors, the createExperiment() method is called.
+     * @param {Array} experimentList - List of all existing experiments
+     */
+    validateInput(experimentList) {
       this.errorMessages = {};
 
       for (const attribute of ["name", "description", "applications"]) {
@@ -244,7 +294,7 @@ export default {
       if (this.name.length > 100) {
         this.errorMessages.name =
           "Error, name can't be longer than 100 characters";
-      } else if (this.existingExperiments.includes(this.name)) {
+      } else if (experimentList.includes(this.name)) {
         this.errorMessages.name =
           "Error, an experiment with this name already exists";
       }
@@ -253,11 +303,11 @@ export default {
           "Error, description can't be longer than 500 characters";
       }
 
-      this.applications.replace(" ", "");
+      this.applications = this.applications.replace(/\s/g, "");
       const applicationsPattern = RegExp("^[0-9]{1,3}(,[0-9]{1,3})*$");
       if (!applicationsPattern.test(this.applications) && this.applications) {
         this.errorMessages.applications =
-          "Error, invalid format or application ids";
+          "Error, invalid format of application ids";
       }
       if (
         this.modwhatif === "both" &&
@@ -265,6 +315,10 @@ export default {
       ) {
         this.errorMessages.modwhatif =
           "Error, What-if analysis is not possible with this explanation type";
+      }
+      const urlPattern = /\b(https?:\/\/\S*\b)/g;
+      if (!urlPattern.test(this.surveyLink) && this.surveyLink) {
+        this.errorMessages.surveyLink = "Error, invalid url format";
       }
       if (Object.keys(this.errorMessages).length === 0) {
         this.createExperiment();

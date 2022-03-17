@@ -13,6 +13,7 @@
         rounded-md
       "
     >
+      <!-- The button's content -->
       <slot />
     </button>
     <button
@@ -34,8 +35,14 @@
 </template>
 
 <script>
+/**
+ * Component for a gray button to be used in the filter and customize menus
+ */
 export default {
   props: {
+    /**
+     * Specifies if the button should be marked as selected
+     */
     selected: Boolean,
   },
 };
