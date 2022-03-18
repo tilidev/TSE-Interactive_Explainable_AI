@@ -1,35 +1,47 @@
 # To run these tests, cd to the API folder, run the main app
-# and once the API has finished startup, run pytest in another terminal session
+# and once the API has finished startup, run pytest -s in another terminal session
 
-#imports
+# imports
 
 import requests
-from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY, HTTP_404_NOT_FOUND, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
+from starlette.status import (
+    HTTP_422_UNPROCESSABLE_ENTITY,
+    HTTP_404_NOT_FOUND,
+    HTTP_202_ACCEPTED,
+    HTTP_400_BAD_REQUEST,
+)
 import time
 import numpy as np
+from tqdm import tqdm
+import threading
 
 # Helper methods
 
 api_path = "http://localhost:8000/"
 
+
 def route(path: str):
     """Will return the appended root path with the input string"""
     return api_path + path
 
+
 def r_get(path: str):
     """Will return the requests response object.
-    
+
     :param: path: The request's path relative to the server root."""
     return requests.get(route(path))
 
+
 def r_post(path: str, json):
     """Will return the requests response object for a post request.
-    
+
     :param: path: The request's path relative to the server root.
     :param: json: The data (request body) that should be passed to the post request"""
     return requests.post(route(path), json=json)
 
+
 # Test methods
+
 
 def test_get_instance_by_id():
     res = r_get("instance/0").json()
@@ -39,51 +51,242 @@ def test_get_instance_by_id():
     assert res.status_code == HTTP_404_NOT_FOUND
     res = r_get("instance/1000")
     assert res.status_code == HTTP_404_NOT_FOUND
-    res = r_get("instance/124asghla") # gibberish query
+    res = r_get("instance/124asghla")  # gibberish query
     assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
+
 
 def test_table_bad_request():
     request_data = {
-        "filter" : [
-            {"attribute" : "balance", "lower_bound" : 2000, "upper_bound" : 5000} # should be categorical
+        "filter": [
+            {
+                "attribute": "balance",
+                "lower_bound": 2000,
+                "upper_bound": 5000,
+            }  # should be categorical
         ],
-        "attributes" : ["amount"],
-        "limit" : 10,
-        "offset" : 0
+        "attributes": ["amount"],
+        "limit": 10,
+        "offset": 0,
     }
 
     res = r_post("table", request_data)
-    assert res.status_code == HTTP_400_BAD_REQUEST
+    assert len(res.json()) == 0
 
-def test_table_normal():
-    pass
+    # checking if pydantic data validation works for filter "assets"
+    request_data = {
+        "filter": [
+            {"attribute": "assets", "lower_bound": ["car", "real estate"]},
+            {"attribute": "housing", "values": ["for free", "own"]},
+            {
+                "attribute": "employment",
+                "values": ["unemployed", "between 1 and 4 years", "more than 7 years"],
+            },
+            {"attribute": "amount", "lower_bound": 1140, "upper_bound": 8612},
+        ],
+        "attributes": ["balance", "duration", "amount", "age", "savings"],
+        "sort_by": "id",
+        "sort_ascending": True,
+        "desc": False,
+        "limit": 100,
+        "offset": 0,
+    }
+    res = r_post("table", request_data)
+    assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_table_false_values():
+    # false values for balance
+    request_data = {
+        "filter": [
+            {"attribute": "assets", "values": ["car", "real estate"]},
+            {"attribute": "housing", "values": ["for free", "own"]},
+            {
+                "attribute": "employment",
+                "values": ["unemployed", "between 1 and 4 years", "more than 7 years"],
+            },
+            {"attribute": "amount", "lower_bound": 1140, "upper_bound": 8612},
+        ],
+        "attributes": ["balance", "duration", "amount", "age", "savings"],
+        "sort_by": "id",
+        "sort_ascending": True,
+        "desc": False,
+        "limit": 100,
+        "offset": 0,
+    }
+    res = r_post("table", request_data)
+    assert res.status_code == 200
+
 
 def test_time_table():
-    request_data = """{"filter":[
-        {"attribute":"assets",
-        "values":["car","real estate"]},
-        {"attribute":"housing",
-        "values":["for free","own"]},
-        {"attribute":"employment",
-        "values":["unemployed","between 1 and 4 years","more than 7 years"]},
-        {"attribute":"amount",
-        "lower_bound":1140,
-        "upper_bound":8612}],
-        "attributes":["balance","duration","amount","age","savings"],
-        "sort_by":"id",
-        "sort_ascending":true,
-        "desc":false,
-        "limit":100,
-        "offset":0}"""
+    request_data = {
+        "filter": [
+            {"attribute": "assets", "values": ["car", "real estate"]},
+            {"attribute": "housing", "values": ["for free", "own"]},
+            {
+                "attribute": "employment",
+                "values": ["unemployed", "between 1 and 4 years", "more than 7 years"],
+            },
+            {"attribute": "amount", "lower_bound": 1140, "upper_bound": 8612},
+        ],
+        "attributes": ["balance", "duration", "amount", "age", "savings"],
+        "sort_by": "id",
+        "sort_ascending": True,
+        "desc": False,
+        "limit": 100,
+        "offset": 0,
+    }
     times = []
-    for _ in range(100):
+    from tqdm import tqdm
+
+    for _ in tqdm(range(1000)):
         start = time.time_ns()
         res = r_post("table", request_data)
         end = time.time_ns()
-        assert (end - start)/1e6 < 10 # assert less than 10 milliseconds
-        times.append((end - start)/1e6)
-    print(np.mean(times))
+        times.append((end - start) / 1e6)
+    print("Average table request duration in ms: ", np.mean(times))
+    assert np.mean(times) < 50  # assert less than 50 milliseconds per request on average
     assert len(res.json()) > 0
 
 
+def test_exp_generation_lime():
+    request_data = {
+            "instance": {
+                "id" : -1,
+                "balance": "above 200 EUR",
+                "duration": 12,
+                "history": "paid back previous loans at this bank",
+                "purpose": "repair",
+                "amount": 2096,
+                "savings": "no savings account at this bank",
+                "employment": "between 4  and 7 years",
+                "available_income": "between 25 and 35%",
+                "residence": "between 4 and 7 years",
+                "assets": "real estate",
+                "age": 49,
+                "other_loans": "no additional loans",
+                "housing": "own",
+                "previous_loans": "1",
+                "job": "unskilled (permanent resident)",
+                "other_debtors": "none",
+                "people_liable": "3 and more",
+                "telephone": "none"
+            },
+            "num_features": 18
+        }
 
+    res = r_post("explanations/lime", request_data)
+    assert res.status_code == HTTP_202_ACCEPTED
+    assert res.json()["status"] == "in progress"
+    uid = res.json()["href"]
+
+    while res.json()["status"] == "in progress":
+        res = r_get(f"explanations/lime?uid={uid}")
+        if res.json()["status"] == "terminated":
+            assert len(res.json()["values"]) == 18
+
+def test_multiple_lime():
+    uids = []
+    num_trials = 20
+    request_data = {
+            "instance": {
+                "id" : -1,
+                "balance": "above 200 EUR",
+                "duration": 12,
+                "history": "paid back previous loans at this bank",
+                "purpose": "repair",
+                "amount": 2096,
+                "savings": "no savings account at this bank",
+                "employment": "between 4  and 7 years",
+                "available_income": "between 25 and 35%",
+                "residence": "between 4 and 7 years",
+                "assets": "real estate",
+                "age": 49,
+                "other_loans": "no additional loans",
+                "housing": "own",
+                "previous_loans": "1",
+                "job": "unskilled (permanent resident)",
+                "other_debtors": "none",
+                "people_liable": "3 and more",
+                "telephone": "none"
+            },
+            "num_features": 18
+        }
+
+    for _ in range(num_trials):
+        res = r_post("explanations/lime", request_data)
+        uids.append(res.json()["href"])
+
+    def thread_worker(uid):
+        res = r_get(f"explanations/lime?uid={uid}").json()
+        while res["status"] != "terminated":
+            res = r_get(f"explanations/lime?uid={uid}").json()
+        
+        assert len(res["values"]) == 18
+    
+    threads = []
+
+    for i in range(num_trials):
+        t = threading.Thread(target=thread_worker, args=(uids[i],))
+        t.start()
+        threads.append(t)
+
+    print("Testing multiple lime requests:")
+    for i in tqdm(range(num_trials)):
+        threads[i].join()
+
+
+def test_multiple_shap():
+    uids = []
+    num_trials = 10
+    request_data = {
+            "instance": {
+                "id" : -1,
+                "balance": "above 200 EUR",
+                "duration": 12,
+                "history": "paid back previous loans at this bank",
+                "purpose": "repair",
+                "amount": 2096,
+                "savings": "no savings account at this bank",
+                "employment": "between 4  and 7 years",
+                "available_income": "between 25 and 35%",
+                "residence": "between 4 and 7 years",
+                "assets": "real estate",
+                "age": 49,
+                "other_loans": "no additional loans",
+                "housing": "own",
+                "previous_loans": "1",
+                "job": "unskilled (permanent resident)",
+                "other_debtors": "none",
+                "people_liable": "3 and more",
+                "telephone": "none"
+            }
+        }
+
+    for _ in range(num_trials):
+        res = r_post("explanations/shap", request_data)
+        uids.append(res.json()["href"])
+
+    def thread_worker(uid):
+        res = r_get(f"explanations/shap?uid={uid}").json()
+        while res["status"] != "terminated":
+            res = r_get(f"explanations/shap?uid={uid}").json()
+        
+        assert len(res["values"]) == 18
+        assert "base_value" in res.keys()
+    
+    threads = []
+
+    for i in range(num_trials):
+        t = threading.Thread(target=thread_worker, args=(uids[i],))
+        t.start()
+        threads.append(t)
+
+    print(f"Testing multiple ({num_trials}) shap requests:")
+    for i in tqdm(range(num_trials)):
+        threads[i].join()
+
+def test_explanation_processes_running():
+    print("Checking if explanation processes are still alive:")
+    process_ids = r_get("processes").json()["exp_pids"]
+    for pid in tqdm(process_ids):
+        assert r_get(f"processes/status?p_id={pid}").json()["status"] == "running"
