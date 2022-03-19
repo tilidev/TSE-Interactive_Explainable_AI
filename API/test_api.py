@@ -290,3 +290,6 @@ def test_explanation_processes_running():
     process_ids = r_get("processes").json()["exp_pids"]
     for pid in tqdm(process_ids):
         assert r_get(f"processes/status?p_id={pid}").json()["status"] == "running"
+
+# Testing for experimental mode
+

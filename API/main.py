@@ -84,12 +84,11 @@ app.add_middleware(
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes, aswell as sorting.'''
     con = create_connection(db_path)
-    attributes = [str]
+    attributes = []
     for i in request.attributes:
         attributes.append(i.value)
     attributes.append(AttributeNames.NN_recommendation.value)
     attributes.append(AttributeNames.NN_confidence.value)
-    attributes = attributes[1:]
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     con.close()
     return table_Response
