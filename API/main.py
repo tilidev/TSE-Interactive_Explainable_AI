@@ -7,7 +7,7 @@ import pickle
 import psutil
 import hashlib
 
-from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from starlette.background import BackgroundTask
 import json
 
@@ -262,11 +262,16 @@ async def explanation_uids():
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
-    """Create an experiment setup and save it to the database"""
+    """Create an experiment setup and save it to the database. What-if analysis """
+    # TODO remove number of participants if provided!
     #check legal boolean combination
+    if len(exp_info.loan_ids) == 0:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Experiment loan applications must be specified")
     if exp_info.iswhatif:
         if exp_info.ismodify == False:
-            return
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="What-if explanation only possible if ismodify = True")
+    if not set(exp_info.loan_ids).issubset(set(range(1000))):
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Please specify loan-ids in the correct range.")
     exp = exp_info.json()
     con = create_connection(db_path)
     exp_creation(con, exp_info.experiment_name, exp)
@@ -303,7 +308,19 @@ async def generate_client_id(gen: GenerateClientID):
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
     """Adds the user-generated experiment results mapped to the client_id to the `results` table in the database."""
+    # TODO check correct loan ids
     con = create_connection(db_path)
+    exp = get_exp_info(con, results.experiment_name)
+    if not exp: # {} is falsy and returned if experiment does not exist
+        raise HTTPException(HTTP_404_NOT_FOUND, f"Experiment with name {results.experiment_name} not found")
+    l_ids = exp["loan_ids"]
+    if len(results.results) != len(l_ids):
+        raise HTTPException(HTTP_400_BAD_REQUEST, f"Found {len(results.results)} results but should be {len(l_ids)}")
+    check_loan_ids = set({})
+    for res in results.results:
+        check_loan_ids.add(res.loan_id)
+    if set(l_ids) != check_loan_ids:
+        raise HTTPException(HTTP_400_BAD_REQUEST, "loan_ids in results are not same as in experiment info")
     add_res(con, results.experiment_name, results.client_id, results.results)
     con.close()
 

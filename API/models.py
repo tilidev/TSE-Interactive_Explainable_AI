@@ -176,7 +176,7 @@ class ClientIDResponse(BaseModel):
 class ExperimentResults(BaseModel):
     """JSON format for experiment results"""
     class SingleResult(BaseModel):
-        loan_id : int 
+        loan_id : int = Field(ge=0, lt=1000)
         choice : RecommendationType
 
     experiment_name : str

@@ -3,6 +3,7 @@
 
 # imports
 
+import pytest
 import requests
 from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
@@ -42,6 +43,8 @@ def r_post(path: str, json):
 
 # Test methods
 
+def test_empty_results():
+    assert len(r_get("result_uids").json()) == 0
 
 def test_get_instance_by_id():
     res = r_get("instance/0").json()
@@ -234,7 +237,10 @@ def test_multiple_lime():
     for i in tqdm(range(num_trials)):
         threads[i].join()
 
+    # Making sure the results are all saved in the dictionary
+    assert len(r_get("result_uids").json()) == num_trials + 1
 
+@pytest.mark.skip(reason="Takes too long.")
 def test_multiple_shap():
     uids = []
     num_trials = 10
@@ -293,3 +299,121 @@ def test_explanation_processes_running():
 
 # Testing for experimental mode
 
+def test_good_exp_creation():
+    data = {
+        "loan_ids" : [0, 12, 100],
+        "ismodify" : True,
+        "iswhatif" : False,
+        "exp_type" : "lime",
+        "experiment_name" : "Pytesting Experiments",
+        "description" : "This is an experiment with a description"
+    }
+
+    r = r_post("experiment/creation", data)
+    assert r.status_code == HTTP_202_ACCEPTED
+
+def test_outofbounds_exp_creation():
+    data = {
+        "loan_ids" : [80, -12, 900, 1200],
+        "ismodify" : True,
+        "iswhatif" : False,
+        "exp_type" : "lime",
+        "experiment_name" : "Secondtest",
+        "description" : "any description"
+    }
+
+    r = r_post("experiment/creation", data)
+    assert r.status_code == HTTP_400_BAD_REQUEST
+    assert r.json()["detail"] == "Please specify loan-ids in the correct range."
+
+def test_wrongcombination_exp_creation():
+    data = {
+        "loan_ids" : [100, 12],
+        "ismodify" : False,
+        "iswhatif" : True,
+        "exp_type" : "lime",
+        "experiment_name" : "Secondtest",
+        "description" : "any description"
+    }
+
+    r = r_post("experiment/creation", data)
+    assert r.status_code == HTTP_400_BAD_REQUEST
+    assert r.json()["detail"] == "What-if explanation only possible if ismodify = True"
+
+def test_empytlist_exp_creation():
+    data = {
+        "loan_ids" : [],
+        "ismodify" : False,
+        "iswhatif" : False,
+        "exp_type" : "shap",
+        "experiment_name" : "Thirdtest",
+        "description" : "any description"
+    }
+
+    r = r_post("experiment/creation", data)
+    assert r.status_code == HTTP_400_BAD_REQUEST
+    assert r.json()["detail"] == "Experiment loan applications must be specified"
+
+def test_get_experiment():
+    r = r_get("experiment?name=Pytesting Experiments")
+    assert r.status_code == 200
+
+def test_experiment_id():
+    for _ in range(20):
+        r = r_post("experiment/generate_id", {"experiment_name" : "Pytesting Experiments"})
+    assert r.json()["client_id"] == 19
+
+def test_generate_results():
+    data = {
+        "experiment_name" : "Pytesting Experiments",
+        "client_id" : 0,
+        "results" : [
+            {"loan_id" : 0, "choice" : "approve"},
+            {"loan_id" : 12, "choice" : "approve"},
+            {"loan_id" : 100, "choice" : "approve"}
+        ] 
+    }
+    r = r_post("experiment/results", data)
+    assert r.status_code == HTTP_202_ACCEPTED
+
+def test_falseid_generate_results():
+    # False loan_id
+    data = {
+        "experiment_name" : "Pytesting Experiments",
+        "client_id" : 1,
+        "results" : [
+            {"loan_id" : 69, "choice" : "approve"},
+            {"loan_id" : 120, "choice" : "approve"},
+            {"loan_id" : 100, "choice" : "approve"}
+        ] 
+    }
+    r = r_post("experiment/results", data)
+    assert r.status_code == HTTP_400_BAD_REQUEST
+
+def test_falselength_generate_results():
+    data = {
+        "experiment_name" : "Pytesting Experiments",
+        "client_id" : 1,
+        "results" : [
+            {"loan_id" : 1, "choice" : "approve"},
+            {"loan_id" : 12, "choice" : "approve"},
+            {"loan_id" : 100, "choice" : "approve"},
+            {"loan_id" : 100, "choice" : "approve"}
+        ] 
+    }
+    r = r_post("experiment/results", data)
+    assert r.status_code == HTTP_400_BAD_REQUEST
+    assert "results but should be" in r.json()["detail"]
+
+def test_falsename_generate_results():
+    data = {
+        "experiment_name" : "THISNAMEISWRONG",
+        "client_id" : 0,
+        "results" : [
+            {"loan_id" : 0, "choice" : "approve"},
+            {"loan_id" : 12, "choice" : "approve"},
+            {"loan_id" : 100, "choice" : "approve"}
+        ] 
+    }
+    r = r_post("experiment/results", data)
+    assert r.status_code == HTTP_404_NOT_FOUND
