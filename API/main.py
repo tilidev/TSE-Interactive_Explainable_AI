@@ -7,7 +7,7 @@ import pickle
 import psutil
 import hashlib
 
-from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from starlette.background import BackgroundTask
 import json
 
@@ -59,7 +59,7 @@ manager = None
 num_processes = None
 process_ids = []
 task_queue = None # tasks will be inputted here
-results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
+results : Dict[UUID, Any] = {} # finished tasks will be inputted here
 tf_model = load_model("smote_ey.tf")
 
 # hash for admin password, not secure, idea is only to 
@@ -84,12 +84,11 @@ app.add_middleware(
 async def table_view(request: TableRequest):
     '''Returns a list of "limit" instances for the table view from a specific offset. Can have filters and chosen attributes, aswell as sorting.'''
     con = create_connection(db_path)
-    attributes = [str]
+    attributes = []
     for i in request.attributes:
         attributes.append(i.value)
     attributes.append(AttributeNames.NN_recommendation.value)
     attributes.append(AttributeNames.NN_confidence.value)
-    attributes = attributes[1:]
     table_Response = get_applications_custom(con, request.offset, attributes, request.limit, json_str=True, filters=request.filter, sort = request.sort_by, sort_asc= request.sort_ascending)
     con.close()
     return table_Response
@@ -155,8 +154,6 @@ async def schedule_explanation_generation(
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
-    #TODO adapt documentation to removed dice
-    #TODO: assume that each attribute is in the instance_info
 
     check_cat_values(instance)
 
@@ -173,8 +170,6 @@ async def schedule_explanation_generation(
 
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
-# TODO add check for XAI-method differentiation when getting the results
-
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
@@ -182,7 +177,6 @@ async def lime_explanation(uid: UUID):
         res = results[uid]
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
-        #TODO delete entry in dictionary
 
         return res
     else: # In this case, there is no dict entry with this uuid
@@ -196,10 +190,6 @@ async def shap_explanation(uid: UUID):
         res = results[uid]
         if type(res) != ShapResponse:
             return ShapResponse(status=ResponseStatus.wrong_method)
-
-        #TODO delete entry in dictionary
-
-        #TODO make call to check all dict entries
         return res
     else:
         return ShapResponse(status=ResponseStatus.not_existing)
@@ -263,11 +253,19 @@ async def explanation_uids():
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
-    """Create an experiment setup and save it to the database"""
+    """Create an experiment setup and save it to the database. What-if analysis is dependent on the modification menu.
+    Will yield a HTTPException if iswhatif is true but ismodify is false.
+    Number of participants will get ignored if provided, will only be added once users truly complete the experiment"""
+    # remove number of participants, attribute has been added on model later on and must now be caught during creation
+    exp_info.num_participants = None
     #check legal boolean combination
+    if len(exp_info.loan_ids) == 0:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Experiment loan applications must be specified")
     if exp_info.iswhatif:
         if exp_info.ismodify == False:
-            return
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="What-if explanation only possible if ismodify = True")
+    if not set(exp_info.loan_ids).issubset(set(range(1000))):
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Please specify loan-ids in the correct range.")
     exp = exp_info.json()
     con = create_connection(db_path)
     exp_creation(con, exp_info.experiment_name, exp)
@@ -305,6 +303,17 @@ async def generate_client_id(gen: GenerateClientID):
 async def results_to_database(results: ExperimentResults):
     """Adds the user-generated experiment results mapped to the client_id to the `results` table in the database."""
     con = create_connection(db_path)
+    exp = get_exp_info(con, results.experiment_name)
+    if not exp: # {} is falsy and returned if experiment does not exist
+        raise HTTPException(HTTP_404_NOT_FOUND, f"Experiment with name {results.experiment_name} not found")
+    l_ids = exp["loan_ids"]
+    if len(results.results) != len(l_ids):
+        raise HTTPException(HTTP_400_BAD_REQUEST, f"Found {len(results.results)} results but should be {len(l_ids)}")
+    check_loan_ids = set({})
+    for res in results.results:
+        check_loan_ids.add(res.loan_id)
+    if set(l_ids) != check_loan_ids:
+        raise HTTPException(HTTP_400_BAD_REQUEST, "loan_ids in results are not same as in experiment info")
     add_res(con, results.experiment_name, results.client_id, results.results)
     con.close()
 
