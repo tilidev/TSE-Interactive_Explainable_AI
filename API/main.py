@@ -262,8 +262,11 @@ async def explanation_uids():
 
 @app.post("/experiment/creation", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def create_experiment(exp_info : ExperimentInformation):
-    """Create an experiment setup and save it to the database. What-if analysis """
-    # TODO remove number of participants if provided!
+    """Create an experiment setup and save it to the database. What-if analysis is dependent on the modification menu.
+    Will yield a HTTPException if iswhatif is true but ismodify is false.
+    Number of participants will get ignored if provided, will only be added once users truly complete the experiment"""
+    # remove number of participants, attribute has been added on model later on and must now be caught during creation
+    exp_info.num_participants = None
     #check legal boolean combination
     if len(exp_info.loan_ids) == 0:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Experiment loan applications must be specified")
@@ -308,7 +311,6 @@ async def generate_client_id(gen: GenerateClientID):
 @app.post("/experiment/results", status_code=HTTP_202_ACCEPTED, tags=["Experimentation"])
 async def results_to_database(results: ExperimentResults):
     """Adds the user-generated experiment results mapped to the client_id to the `results` table in the database."""
-    # TODO check correct loan ids
     con = create_connection(db_path)
     exp = get_exp_info(con, results.experiment_name)
     if not exp: # {} is falsy and returned if experiment does not exist
