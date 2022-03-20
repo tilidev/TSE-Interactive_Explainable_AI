@@ -417,3 +417,7 @@ def test_falsename_generate_results():
     }
     r = r_post("experiment/results", data)
     assert r.status_code == HTTP_404_NOT_FOUND
+
+# TODO test deletion of experiment
+
+# TODO test reset of experiment

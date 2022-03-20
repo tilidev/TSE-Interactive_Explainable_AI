@@ -59,7 +59,7 @@ manager = None
 num_processes = None
 process_ids = []
 task_queue = None # tasks will be inputted here
-results : Dict[UUID, Any] = {} # finished tasks will be inputted here, TODO deleted tasks must be removed after client has received them.
+results : Dict[UUID, Any] = {} # finished tasks will be inputted here
 tf_model = load_model("smote_ey.tf")
 
 # hash for admin password, not secure, idea is only to 
@@ -154,8 +154,6 @@ async def schedule_explanation_generation(
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
     if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
-    #TODO adapt documentation to removed dice
-    #TODO: assume that each attribute is in the instance_info
 
     check_cat_values(instance)
 
@@ -172,8 +170,6 @@ async def schedule_explanation_generation(
 
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
-# TODO add check for XAI-method differentiation when getting the results
-
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
@@ -181,7 +177,6 @@ async def lime_explanation(uid: UUID):
         res = results[uid]
         if type(res) != LimeResponse:
             return LimeResponse(status=ResponseStatus.wrong_method)
-        #TODO delete entry in dictionary
 
         return res
     else: # In this case, there is no dict entry with this uuid
@@ -195,10 +190,6 @@ async def shap_explanation(uid: UUID):
         res = results[uid]
         if type(res) != ShapResponse:
             return ShapResponse(status=ResponseStatus.wrong_method)
-
-        #TODO delete entry in dictionary
-
-        #TODO make call to check all dict entries
         return res
     else:
         return ShapResponse(status=ResponseStatus.not_existing)
