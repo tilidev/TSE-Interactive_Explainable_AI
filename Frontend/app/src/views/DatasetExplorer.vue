@@ -134,6 +134,7 @@ export default {
      */
     applyCustomization(attributes) {
       this.requestBody.attributes = attributes;
+      this.requestBody.offset = 0;
       this.sendTableRequest();
       this.toggleCustomize = false;
     },
