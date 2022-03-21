@@ -67,6 +67,9 @@ export default {
     detailView: Boolean,
   },
   watch: {
+    windowWidth() {
+      this.generateTreeMap();
+    },
     instance() {
       d3.select("#" + this.id).html(null);
       this.isLoading = true;
@@ -88,6 +91,10 @@ export default {
   },
   data() {
     return {
+      /**
+       * The window's inner width
+       */
+      windowWidth: window.innerWidth,
       /**
        * The reference provided by the API to check the status of the explanation request and get the results.
        */
@@ -141,9 +148,21 @@ export default {
   },
   inject: ["attributeData", "apiUrl"],
   mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
     this.sendExplanationRequest();
   },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
+  },
   methods: {
+    /**
+     * Called when the window is resized
+     */
+    onResize() {
+      this.windowWidth = window.innerWidth;
+    },
     /**
      * Called once the exlanation result has been obtained from the API
      * The method saves the data in the required structure and calls the generateTreemap method afterwards
@@ -270,7 +289,9 @@ export default {
       d3.select("#" + this.id).html(null);
       d3.select("#tootltip" + this.id).html(null);
       const detailView = this.detailView;
-      const w = this.whatif ? 640 : 1320;
+      const w = this.whatif
+        ? (window.innerWidth - 32) * 0.45
+        : (window.innerWidth - 32) * 0.94;
       const h = 500;
       const hierarchy = d3
           .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
