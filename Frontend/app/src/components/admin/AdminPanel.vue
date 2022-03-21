@@ -33,10 +33,10 @@
 import ExistingExperimentOverlay from "./ExistingExperimentOverlay.vue";
 import NewExperimentOverlay from "./NewExperimentOverlay.vue";
 import DefaultButton from "../buttons/DefaultButton.vue";
-export default {
   /**
    * Component for the admin panel.
    */
+export default {
   components: {
     DefaultButton,
     ExistingExperimentOverlay,

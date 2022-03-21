@@ -11,10 +11,10 @@
 </template>
 
 <script>
-export default {
   /**
    * A configurable clear button component
    */
+export default {
   methods: {
      /**
      * Returns classes for the button's style depending on the props provided

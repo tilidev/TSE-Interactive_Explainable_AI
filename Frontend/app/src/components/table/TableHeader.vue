@@ -49,11 +49,10 @@
 </template>
 
 <script>
-export default {
   /**
    * A component for a table header
    */
-  mounted() {},
+export default {
   data() {
     return {
       /**

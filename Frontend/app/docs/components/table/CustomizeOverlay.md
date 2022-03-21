@@ -1,4 +1,7 @@
-# Customize
+# CustomizeOverlay
+
+Component for the overlay in which the user can customize the attributes
+displayed in the table.
 
 ## Props
 

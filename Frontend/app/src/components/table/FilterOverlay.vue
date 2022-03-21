@@ -88,24 +88,43 @@
 import OutlineButton from "../buttons/OutlineButton.vue";
 import GrayButton from "../buttons/GrayButton.vue";
 import FilterMenu from "./FilterMenu.vue";
+/**
+ * Component for the overlay in which the user can add filters.
+ */
 export default {
   components: { GrayButton, FilterMenu, OutlineButton },
   props: {
+    /**
+     * Array with information about currently applied filters
+     */
     currentFilters: Array,
   },
   data() {
     return {
+      /**
+       * New filters to be applied
+       */
       newFilters: this.currentFilters,
+      /**
+       * The attribute for which the filter menu is shown, when empty no filter menu is shown
+       */
       filterAttribute: "",
     };
   },
   inject: ["attributeData", "attributeCategories"],
 
   methods: {
+    /**
+     * Triggered when the user clicks 'Reset All'. Emits the update-filter event with an empty array of new filters.
+     */
     removeAllFilters() {
       this.newFilters = [];
       this.$emit("update-filter", this.newFilters);
     },
+    /**
+     * Adds a new filter. Emits the update-filter event with an array containing the new filter in addition to existing ones.
+     * @param filter - Object representing the new filter
+     */
     addFilter(filter) {
       if (this.findFilter(filter.attribute)) {
         this.removeFilter(filter.attribute);
@@ -126,6 +145,10 @@ export default {
       this.filterAttribute = "";
       this.$emit("update-filter", this.newFilters);
     },
+    /**
+     * Removes a filter.
+     * @param attribute - The attribute for which the filter should be removed
+     */
     removeFilter(attribute) {
       for (const i in this.newFilters) {
         if (Object.values(this.newFilters[i]).indexOf(attribute) > -1) {
@@ -135,8 +158,11 @@ export default {
         }
       }
     },
+    /**
+     * Finds existing filter for a given attribute
+     * @returns {Object} Existing filter for the attribute, null if there is none
+     */
     findFilter(attribute) {
-      // This is inefficient
       for (const filter of this.currentFilters) {
         if (Object.values(filter).indexOf(attribute) > -1) {
           return filter;

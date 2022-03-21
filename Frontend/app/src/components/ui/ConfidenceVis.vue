@@ -17,10 +17,10 @@
 </template>
 
 <script>
-export default {
   /**
    * Component that displays a visualization of the AI's confidence
    */
+export default {
   props: {
     /**
      * The value for the confidence

@@ -72,25 +72,41 @@
 import DefaultButton from "../buttons/DefaultButton.vue";
 import GrayButton from "../buttons/GrayButton.vue";
 import ClearButton from "../buttons/ClearButton.vue";
+/**
+ * Component for the overlay in which the user can customize the attributes displayed in the table.
+ */
 export default {
   components: { ClearButton, DefaultButton, GrayButton },
-  name: "Customize",
   props: {
+    /**
+     * Array with current attributes in the table
+     */
     currentAttributes: Array,
   },
   data() {
     return {
+      /**
+       * The attributes currently selected by the user
+       */
       selectedAttributes: [...this.currentAttributes],
     };
   },
   inject: ["attributeData", "reducedCategories"],
 
   methods: {
+    /**
+     * Adds an attribute to the selected attributes
+     * @param attr - The name of the attribute to be added
+     */
     addAttribute(attr) {
       if (this.selectedAttributes.length < 5) {
         this.selectedAttributes.push(attr);
       }
     },
+    /**
+     * Triggered when the user clicks 'Apply'
+     * Emits the apply event with the Array of selected attributes
+     */
     applyChanges() {
       this.$emit("apply", this.selectedAttributes);
     },

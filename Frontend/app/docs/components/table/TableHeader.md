@@ -1,5 +1,7 @@
 # TableHeader
 
+A component for a table header
+
 ## Props
 
 | Name           | Type      | Description                                             |

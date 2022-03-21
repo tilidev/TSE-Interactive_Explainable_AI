@@ -1,5 +1,7 @@
 # DefaultButton
 
+A configurable colored button component
+
 ## Slots
 
 | Name      | Description          |

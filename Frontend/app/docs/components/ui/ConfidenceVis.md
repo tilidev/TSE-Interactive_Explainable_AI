@@ -1,5 +1,7 @@
 # ConfidenceVis
 
+Component that displays a visualization of the AI's confidence
+
 ## Props
 
 | Name         | Type      | Description                                                        |
