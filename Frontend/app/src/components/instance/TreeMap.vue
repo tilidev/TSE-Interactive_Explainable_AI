@@ -288,7 +288,9 @@ export default {
       this.isLoading = true;
       d3.select("#" + this.id).html(null);
       d3.select("#tootltip" + this.id).html(null);
-      const detailView = this.detailView;
+      // Modification
+      // Force detailView to True 
+      const detailView = true;
       const w = this.whatif
         ? (window.innerWidth - 32) * 0.45
         : (window.innerWidth - 32) * 0.94;
@@ -300,7 +302,10 @@ export default {
         treemap = d3
           .treemap()
           .size([w, h])
-          .padding(this.detailView ? 1 : 2),
+          // Modification
+          // Change Padding
+          // .padding(this.detailView ? 1 : 2),
+          .padding(1),
         root = treemap(hierarchy);
 
       var colors = ["#15803d", "#b91c1c"],

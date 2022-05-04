@@ -60,6 +60,9 @@
             </div>
           </div>
         </div>
+        <!-- Modification -->
+        <!-- Disable Toggle Fucntionality -->
+        <!--
         <div class="flex justify-end space-x-4">
           <div>Toggle detail view</div>
           <Toggle
@@ -69,6 +72,7 @@
             }"
           />
         </div>
+        -->
       </div>
       <div class="flex justify-between">
         <div>
@@ -118,7 +122,9 @@
 import InfoCard from "./InfoCard.vue";
 import DiceExplanation from "./DiceExplanation.vue";
 import TreeMap from "./TreeMap.vue";
-import Toggle from "@vueform/toggle";
+// Modification
+// Disable Toggle functionality
+// import Toggle from "@vueform/toggle";
 
 /**
  * Component for the instance view. Contains the instance info card and the explanation visualization
@@ -158,7 +164,10 @@ export default {
       },
     };
   },
-  components: { InfoCard, DiceExplanation, TreeMap, Toggle },
+  // Modification
+  // Disable Toggle functionality
+  // components: { InfoCard, DiceExplanation, TreeMap, Toggle },
+  components: { InfoCard, DiceExplanation, TreeMap},
   methods: {
     /**
      * Resets the current instance
