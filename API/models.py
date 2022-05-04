@@ -134,9 +134,12 @@ class LimeResponse(BaseModel):
     '''JSON format for `LIME` model response.
     The actual results are only returned if the process is terminated.'''
     class LimeAttribute(BaseModel):
-        attr_name : AttributeNames = Field(alias=attr_name)
-        influence : float = Field(alias=influence)
+        attr_name: AttributeNames = Field(alias=attr_name)
+        influence: float = Field(alias=influence)
     status: ResponseStatus = Field(alias=status)
+    # Modification
+    # Adding base value for LIME
+    base_value: Optional[float] = Field(None, alias=base_value, description="The model's expected prediciton outcome which is used in the plot.\n`None`, when process has not terminated.")
     values: Optional[List[LimeAttribute]] = Field(None, alias=values, description="The <b>LIME</b> results.\n`None`, when process has not terminated.")
 
 class ShapResponse(BaseModel):

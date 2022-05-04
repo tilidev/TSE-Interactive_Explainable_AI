@@ -69,10 +69,14 @@ def explanation_worker(in_queue : Queue, res_out : dict):
                 num_features = job.task["num_features"]
             else:
                 num_features = all_features
-
-            lh_res = lh.get_lime_values(job.task["instance"].__dict__, num_features) #pass the instance in the required format
-            out = lh_res
-            res_out[job.uid] = LimeResponse(status=ResponseStatus.terminated, values=lh_res)
+            # Modification
+            # Add base value
+            lime_vals, lime_bval = lh.compute_response_lime(job.task["instance"].__dict__, num_features) #pass the instance in the required format
+            #lh_res = lh.compute_response_lime(job.task["instance"].__dict__, num_features) #pass the instance in the required format
+            out = LimeResponse(status=ResponseStatus.terminated, base_value=lime_bval, values=lime_vals)
+            #out = lh_res
+            #res_out[job.uid] = LimeResponse(status=ResponseStatus.terminated, values=lh_res)
+            res_out[job.uid] = out
         else:
             print(f"\033[93mWARNING:\033[0m \033[1m{job.exp_type.value}\033[0m is invalid for explanation with uuid {job.uid}. Fetching new job.")
             continue

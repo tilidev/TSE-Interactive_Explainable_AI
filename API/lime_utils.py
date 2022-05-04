@@ -106,7 +106,7 @@ class LimeHelper():
         lime_exp = self.explainer.explain_instance(data_le, prediction_function, num_features=num_features)
         return lime_exp
     
-    def get_lime_values(self,instance, num_features=6):
+    def compute_response_lime(self,instance, num_features=6):
         """
         Method that can be called by the API after initializing the LimeHelper
         :param instance: given Instance info, should be in json format
@@ -120,13 +120,16 @@ class LimeHelper():
         local_exp = exp_dict['local_exp']
         local_exp_list = local_exp[1] #get list with explanation tuples from dict
         #create list of values with attribute names instead of numbers that are returned by lime
-        value_list = []
+        lime_vals = []
         for tuple in local_exp_list:
             dict = {}
             dict[attr_name] = lime_exp_mapping[tuple[0]]
             dict[influence] = tuple[1]
-            value_list.append(json.loads(json.dumps(dict)))
-        return value_list
+            lime_vals.append(json.loads(json.dumps(dict)))
+        # Modification
+        # Add base value
+        lime_bval = exp_dict['intercept'][1]
+        return lime_vals, lime_bval
          
         
 
