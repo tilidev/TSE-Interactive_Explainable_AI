@@ -3,3 +3,7 @@ node_modules
 API/__pycache__/
 
 API/database.db
+
+experiments/
+*.db
+API/database.db

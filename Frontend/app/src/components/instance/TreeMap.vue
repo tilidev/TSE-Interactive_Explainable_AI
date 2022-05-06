@@ -164,7 +164,7 @@ export default {
       this.windowWidth = window.innerWidth;
     },
     /**
-     * Called once the exlanation result has been obtained from the API
+     * Called once the explanation result has been obtained from the API
      * The method saves the data in the required structure and calls the generateTreemap method afterwards
      * @param result - The explanation result
      */
@@ -260,6 +260,15 @@ export default {
               result = response.data.values;
               this.baseValue = response.data.base_value;
               this.saveData(result);
+              // ToDo - Remove Debug
+              // Debug
+              /*
+              var a = {attribute: 'similar', influence: this.baseValue};
+              var b = result;
+              console.log(b);
+              b.push(a);
+              console.log(b);
+              */
             }
           });
         setTimeout(() => this.getResult(result, expType), 1000);
@@ -308,7 +317,10 @@ export default {
           .padding(1),
         root = treemap(hierarchy);
 
-      var colors = ["#15803d", "#b91c1c"],
+      // Modification
+      // Change colors
+      //var colors = ["#15803d", "#b91c1c"],
+      var colors = ["#1E88E5", "#FF0D57"],
         colorScale = d3
           .scaleOrdinal() // the scale function
           .domain(["positive", "negative"]) // the data

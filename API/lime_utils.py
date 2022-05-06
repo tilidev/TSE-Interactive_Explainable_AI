@@ -121,14 +121,21 @@ class LimeHelper():
         local_exp_list = local_exp[1] #get list with explanation tuples from dict
         #create list of values with attribute names instead of numbers that are returned by lime
         lime_vals = []
+        attributes_influence = 0
         for tuple in local_exp_list:
             dict = {}
             dict[attr_name] = lime_exp_mapping[tuple[0]]
             dict[influence] = tuple[1]
+            attributes_influence += tuple[1]
             lime_vals.append(json.loads(json.dumps(dict)))
         # Modification
         # Add base value
+        pred_proba = exp_dict['predict_proba'][1]
+
+        #lime_bval = pred_proba - attributes_influence
+        #lime_bval = pred_proba
         lime_bval = exp_dict['intercept'][1]
+        
         return lime_vals, lime_bval
          
         

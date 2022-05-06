@@ -102,14 +102,14 @@
       </div>
       <div>
         <div class="flex my-4">
-          <div class="bg-positive h-6 w-6 mr-4"></div>
-          <div class="text-positive-dark font-bold">
+          <div class="bg-positive-chart h-6 w-6 mr-4"></div>
+          <div class="text-positive-chart font-bold">
             Influencing towards approval
           </div>
         </div>
         <div class="flex">
-          <div class="bg-negative h-6 w-6 mr-4"></div>
-          <div class="text-negative-dark font-bold">
+          <div class="bg-negative-chart h-6 w-6 mr-4"></div>
+          <div class="text-negative-chart font-bold">
             Influencing towards rejection
           </div>
         </div>

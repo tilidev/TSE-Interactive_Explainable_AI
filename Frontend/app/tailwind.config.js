@@ -23,10 +23,20 @@ module.exports = {
         'text': '#333333', // Color for normal text & titles
         'background': '#F6F1EB',
 
+        // Modification
+        // New Color Schemes
+        'positive-chart': '#1E88E5',
+        'negative-chart': '#FF0D57',
+
+
+
         // Colors for the color coding for low, medium and high
-        'cc-low': '#38bdf8',
-        'cc-medium': '#0284c7',
-        'cc-high': '#075985',
+        //'cc-low': '#38bdf8',
+        //'cc-medium': '#0284c7',
+        //'cc-high': '#075985',
+        'cc-low': '#D0CECE',
+        'cc-medium': '#AEAAAA',
+        'cc-high': '#757171',
       }
     },
   },

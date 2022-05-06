@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-if="recommendation == 'Approve'" class="text-positive font-bold">
+    <div v-if="recommendation == 'Approve'" class="text-positive-chart font-bold">
       <fa-icon icon="check-circle" size="lg"></fa-icon
       ><span class="ml-2">Approve</span>
     </div>
-    <div v-if="recommendation == 'Reject'" class="text-negative font-bold">
+    <div v-if="recommendation == 'Reject'" class="text-negative-chart font-bold">
       <fa-icon icon="times-circle" size="lg"></fa-icon
       ><span class="ml-2">Reject</span>
     </div>
