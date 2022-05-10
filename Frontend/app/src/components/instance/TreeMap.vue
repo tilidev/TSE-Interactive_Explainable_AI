@@ -366,7 +366,7 @@ export default {
             .text(
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
               Math.round(d.data.value * 10000) / 100 +
-              "%"
+              (this.expType === 'shap' ? "%" : "")
             )
             .style(
               "color",
@@ -415,7 +415,7 @@ export default {
               // Remove negative symbol
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
               Math.round(d.data.value * 10000) / 100 +
-              "%"
+              (this.expType === 'shap' ? "%" : "")
             );
           }
         })
