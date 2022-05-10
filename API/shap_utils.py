@@ -70,14 +70,21 @@ def get_pred_fn_helper(helper: ShapHelperV2):
         return result
     return predict_fn
 
-
-def compute_response_shap(instance : InstanceInfo, explainer : shap.KernelExplainer, cols: list, num_features=18):
+#Modification backup
+#Add shap explainer to try to extract prediction probability from model
+#def compute_response_shap(instance : InstanceInfo, explainer : shap.KernelExplainer, cols: list, sh: ShapHelperV2, num_features=18, ):
+def compute_response_shap(instance : InstanceInfo, explainer : shap.KernelExplainer, cols: list, num_features=18, ):
     data_dict = {col : [instance.__dict__[col]] for col in cols}
     data_for_explainer = pd.DataFrame(data_dict)
     
     shap_vals = explainer.shap_values(data_for_explainer, nsamples=500, l1_reg=f"num_features({num_features})")
     shap_bval = explainer.expected_value
 
+    #pred_proba = sh.model.predict(sh.preprocessor.transform(data_for_explainer))[0][0]
+    #pred_proba = instance.NN_confidence
+    #recomendation = instance.NN_recommendation
+
+    #return shap_bval, shap_vals, pred_proba, recomendation
     return shap_bval, shap_vals
 
 # Do not Use

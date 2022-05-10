@@ -1,33 +1,24 @@
 <template>
   <div>
-    <div
-      class="flex justify-start mb-4 ml-1"
-      v-if="expType == 'shap' && baseValue"
-    >
+    <!-- Modification
+      Remove Baseline Probability in text form
+      -->
+    <!--
+    <div class="flex justify-start mb-4 ml-1" v-if="expType == 'shap' && baseValue">
       <span class="font-bold mr-2">Average AI prediction: </span>
-      <span class="text-positive"
-        >Approve with {{ Math.round((1 - baseValue) * 100) }} % confidence
+      <span class="text-positive">Approve with {{ Math.round((1 - baseValue) * 100) }} % confidence
       </span>
     </div>
-    <div
-      v-if="isLoading"
-      class="my-4 flex items-center justify-start space-x-2"
-    >
-      <svg
-        role="status"
-        class="mr-2 w-8 h-8 text-gray-light animate-spin"
-        viewBox="0 0 100 101"
-        fill="primary"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+    -->
+    <div v-if="isLoading" class="my-4 flex items-center justify-start space-x-2">
+      <svg role="status" class="mr-2 w-8 h-8 text-gray-light animate-spin" viewBox="0 0 100 101" fill="primary"
+        xmlns="http://www.w3.org/2000/svg">
         <path
           d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-          fill="currentColor"
-        />
+          fill="currentColor" />
         <path
           d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentFill"
-        />
+          fill="currentFill" />
       </svg>
       <div>Loading...</div>
     </div>
@@ -132,6 +123,7 @@ export default {
               { name: "financial", children: [] },
               { name: "personal", children: [] },
               { name: "loan", children: [] },
+              { name: "baseline", children: [] },
             ],
           },
           {
@@ -140,6 +132,7 @@ export default {
               { name: "financial", children: [] },
               { name: "personal", children: [] },
               { name: "loan", children: [] },
+              { name: "baseline", children: [] },
             ],
           },
         ],
@@ -173,10 +166,7 @@ export default {
         name: "Explanation",
         children: [
           { name: "positive", children: [] },
-          {
-            name: "negative",
-            children: [],
-          },
+          { name: "negative", children: [], },
         ],
       }),
         (this.detailExpData = {
@@ -188,6 +178,7 @@ export default {
                 { name: "financial", children: [] },
                 { name: "personal", children: [] },
                 { name: "loan", children: [] },
+                { name: "baseline", children: [] },
               ],
             },
             {
@@ -196,6 +187,7 @@ export default {
                 { name: "financial", children: [] },
                 { name: "personal", children: [] },
                 { name: "loan", children: [] },
+                { name: "baseline", children: [] },
               ],
             },
           ],
@@ -206,26 +198,39 @@ export default {
         childElement.category = this.attributeData.categories[obj.attribute];
         childElement.value = Math.abs(obj.influence);
         childElement.attributeValue = this.instance[obj.attribute];
+
         let catObj;
         if (obj.influence < 0) {
           for (let category of this.detailExpData.children[0].children) {
-            if (
-              category.name === this.attributeData.categories[obj.attribute]
-            ) {
+            if (category.name === this.attributeData.categories[obj.attribute]) {
               catObj = category;
             }
           }
         } else {
           for (let category of this.detailExpData.children[1].children) {
-            if (
-              category.name === this.attributeData.categories[obj.attribute]
-            ) {
+            if (category.name === this.attributeData.categories[obj.attribute]) {
               catObj = category;
             }
           }
         }
         catObj.children.push(childElement);
       }
+      // Modification
+      // Add baseline value according to the prediction probability
+
+      let childElement = {};
+      childElement.name = "Baseline";
+      childElement.category = "baseline";
+      childElement.attributeValue = "baseline decision from historical data";
+
+      if (this.instance.NN_recommendation == 'Approve') {
+        childElement.value = Math.abs(1 - this.baseValue);
+        this.detailExpData.children[0].children[3].children.push(childElement);
+      } else {
+        childElement.value = Math.abs(this.baseValue);
+        this.detailExpData.children[1].children[3].children.push(childElement);
+      }
+
       for (let direction of [0, 1]) {
         for (let category of this.detailExpData.children[direction].children) {
           let sum = 0;
@@ -260,15 +265,6 @@ export default {
               result = response.data.values;
               this.baseValue = response.data.base_value;
               this.saveData(result);
-              // ToDo - Remove Debug
-              // Debug
-              /*
-              var a = {attribute: 'similar', influence: this.baseValue};
-              var b = result;
-              console.log(b);
-              b.push(a);
-              console.log(b);
-              */
             }
           });
         setTimeout(() => this.getResult(result, expType), 1000);
@@ -305,14 +301,14 @@ export default {
         : (window.innerWidth - 32) * 0.94;
       const h = 500;
       const hierarchy = d3
-          .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
-          .sum((d) => d.value) //sums every child values
-          .sort((a, b) => b.value - a.value), // and sort them in descending order
+        .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
+        .sum((d) => d.value) //sums every child values
+        .sort((a, b) => b.value - a.value), // and sort them in descending order
+        // Modification
+        // Change Padding
         treemap = d3
           .treemap()
           .size([w, h])
-          // Modification
-          // Change Padding
           // .padding(this.detailView ? 1 : 2),
           .padding(1),
         root = treemap(hierarchy);
@@ -320,11 +316,12 @@ export default {
       // Modification
       // Change colors
       //var colors = ["#15803d", "#b91c1c"],
-      var colors = ["#1E88E5", "#FF0D57"],
-        colorScale = d3
-          .scaleOrdinal() // the scale function
-          .domain(["positive", "negative"]) // the data
-          .range(colors); // the way the data should be shown
+      var colors = ["#1E88E5", "#FF0D57"];
+
+      var colorScale = d3
+        .scaleOrdinal() // the scale function
+        .domain(["positive", "negative"]) // the data
+        .range(colors); // the way the data should be shown
 
       const tooltip = d3
         .select("#tooltip" + this.id)
@@ -365,15 +362,14 @@ export default {
               d.data.name + (detailView ? ": " + d.data.attributeValue : "")
             )
             .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+          // Modification 
+          // Remove negative symbol
           tooltip
             .append("div")
             .text(
-              (d.parent.data.name == "negative" ||
-              d.parent.parent.data.name == "negative"
-                ? "-"
-                : "") +
-                Math.round(d.data.value * 10000) / 100 +
-                "%"
+              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
+              Math.round(d.data.value * 10000) / 100 +
+              "%"
             )
             .style(
               "color",
@@ -418,10 +414,9 @@ export default {
         .text(function (d) {
           if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
             return (
-              (d.parent.data.name == "negative" ||
-              d.parent.parent.data.name == "negative"
-                ? "-"
-                : "") +
+              // Modification 
+              // Remove negative symbol
+              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
               Math.round(d.data.value * 10000) / 100 +
               "%"
             );
@@ -448,9 +443,11 @@ export default {
   box-shadow: 0 1px 5px rgba(51, 51, 51, 0.5);
   padding: 1rem;
 }
+
 .tt-name {
   font-size: 1.4rem;
   font-weight: 1200;
 }
 </style>
-<style src="@vueform/toggle/themes/default.css"></style>
+<style src="@vueform/toggle/themes/default.css">
+</style>

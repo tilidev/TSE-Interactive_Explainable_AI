@@ -151,6 +151,10 @@ class ShapResponse(BaseModel):
     status: ResponseStatus = Field(alias=status)
     base_value: Optional[float] = Field(None, alias=base_value, description="The model's expected prediciton outcome which is used in the plot.\n`None`, when process has not terminated.")
     values: Optional[List[ShapAttribute]] = Field(None, alias=values, description="The <b>SHAP</b> results.\n`None`, when process has not terminated.")
+    # Modification Backup
+    # Adding prediction probability
+    #pred_proba: Optional[float] = Field(alias=pred_proba)
+    #recommendation: Optional[str] = Field(alias=recommendation)
 
 class DiceCounterfactualResponse(BaseModel):
     '''JSON format for `DICE` model response.

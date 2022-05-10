@@ -26,7 +26,9 @@ module.exports = {
         // Modification
         // New Color Schemes
         'positive-chart': '#1E88E5',
+        'positive-chart-dark': '#1D58D5',
         'negative-chart': '#FF0D57',
+        'negative-chart-dark': '#DF0854',
 
 
 

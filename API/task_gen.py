@@ -58,10 +58,14 @@ def explanation_worker(in_queue : Queue, res_out : dict):
             \n      Explanation type: \033[1m{job.exp_type.value}\033[0m")
 
         if job.exp_type == ExplanationType.shap:
-            shap_bval, shap_vals = compute_response_shap(job.task["instance"], shap_explainer, cols)
+            # Modification Backup
+            # Add sh to parameter to compute prediction
+            #shap_bval, shap_vals, pred_proba, recommendation  = compute_response_shap(job.task["instance"], shap_explainer, cols, sh)
+            shap_bval, shap_vals, = compute_response_shap(job.task["instance"], shap_explainer, cols)
 
             shap_attributes = [{"attribute" : cols[i], "influence" : shap_vals[0][i]} for i in range(len(cols))] # prepare format for response
 
+            #out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes, pred_proba=pred_proba, recommendation=recommendation)
             out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes)
             res_out[job.uid] = out
         elif job.exp_type == ExplanationType.lime:

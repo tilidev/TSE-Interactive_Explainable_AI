@@ -1,18 +1,9 @@
 <template>
   <div>
-    <info-card
-      :instanceInfo="instanceInfo"
-      :modifiedInstance="modifiedInstance"
-      :modifiable="allowMod"
-      :allowWhatIf="expType == 'dice' ? false : allowWhatIf"
-      @apply-modification="applyModification"
-      @generate-explanation="generateExplanation"
-      @reset-instance="reset"
-    ></info-card>
-    <div
-      class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white"
-      v-if="allowSwitching"
-    >
+    <info-card :instanceInfo="instanceInfo" :modifiedInstance="modifiedInstance" :modifiable="allowMod"
+      :allowWhatIf="expType == 'dice' ? false : allowWhatIf" @apply-modification="applyModification"
+      @generate-explanation="generateExplanation" @reset-instance="reset" @new-prediction="passPrediction"></info-card>
+    <div class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white" v-if="allowSwitching">
       <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
         DiCE
       </div>
@@ -23,29 +14,17 @@
         SHAP
       </div>
     </div>
-    <dice-explanation
-      v-if="instanceInfo.id != null && expType === 'dice'"
-      :instanceInfo="instanceInfo"
-      class="mb-4 mt-8"
-    ></dice-explanation>
-    <div
-      class="bg-white px-8 py-4 my-8 shadow-md"
-      v-else-if="Object.keys(instanceInfo).length"
-    >
+    <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo"
+      class="mb-4 mt-8"></dice-explanation>
+    <div class="bg-white px-8 py-4 my-8 shadow-md" v-else-if="Object.keys(instanceInfo).length">
       <div class="flex justify-between mb-4">
         <div class="text-lg font-bold flex">
           Factors influencing AI Recommendation
           <div>
-            <fa-icon
-              @click="hover = !hover"
-              @mouseover="hover = true"
-              @mouseleave="hover = false"
-              icon="info-circle"
-              class="ml-2"
-            />
+            <fa-icon @click="hover = !hover" @mouseover="hover = true" @mouseleave="hover = false" icon="info-circle"
+              class="ml-2" />
             <div v-if="hover" class="mt-4 text-sm absolute z-50">
-              <div
-                class="
+              <div class="
                   p-4
                   max-w-2xl
                   bg-white
@@ -53,8 +32,7 @@
                   text-primary-dark
                   shadow-blurred
                   rounded
-                "
-              >
+                ">
                 {{ descriptions[expType] }}
               </div>
             </div>
@@ -79,25 +57,13 @@
           <div class="text-left mb-2" v-if="whatif">
             Original Loan Application
           </div>
-          <tree-map
-            class="-ml-1"
-            :expType="expType"
-            :instance="instanceInfo"
-            :whatif="whatif"
-            :id="'left'"
-            :detailView="detailed"
-          ></tree-map>
+          <tree-map class="-ml-1" :expType="expType" :instance="instanceInfo" :whatif="whatif" :id="'left'"
+            :detailView="detailed"></tree-map>
         </div>
         <div v-if="whatif">
           <div class="text-right mb-2">Modified Loan Application</div>
-          <tree-map
-            class="-mr-1"
-            :expType="expType"
-            :instance="modifiedInstance"
-            :whatif="whatif"
-            :id="'right'"
-            :detailView="detailed"
-          ></tree-map>
+          <tree-map class="-mr-1" :expType="expType" :instance="modifiedInstance" :whatif="whatif" :id="'right'"
+            :detailView="detailed"></tree-map>
         </div>
       </div>
       <div>
@@ -167,7 +133,7 @@ export default {
   // Modification
   // Disable Toggle functionality
   // components: { InfoCard, DiceExplanation, TreeMap, Toggle },
-  components: { InfoCard, DiceExplanation, TreeMap},
+  components: { InfoCard, DiceExplanation, TreeMap },
   methods: {
     /**
      * Resets the current instance
@@ -183,6 +149,15 @@ export default {
     generateExplanation(modifiedInstance) {
       this.modifiedInstance = Object.assign({}, modifiedInstance);
       this.whatif = true;
+    },
+    /** 
+     * Modification
+     * Updates modifiedInstance prediction and confidence
+     * @param {Object} newPrediction - Prediction of new object
+    */
+    passPrediction(newPrediction) {
+      this.modifiedInstance.NN_confidence = newPrediction.NN_confidence;
+      this.modifiedInstance.NN_recommendation = newPrediction.NN_recommendation;
     },
     /**
      * Returns styling classes for the explanation names in the menu
