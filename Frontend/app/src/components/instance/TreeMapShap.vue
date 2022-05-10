@@ -21,17 +21,17 @@
 import * as d3 from "d3";
 
 /**
- * Component for the SHAP explanation visualizes the SHAP Original explanations
+ * Component for the SHAP TreeMap visualizes the SHAP explanations
  */
 export default {
   props: {
     /**
-     * Helps d3 identify this SHAP explanation.
-     * If there are two SHAP explanations displayed at the same time, they should have different ids
+     * Helps d3 identify this SHAP TreeMap.
+     * If there are two SHAP TreeMap displayed at the same time, they should have different ids
      */
     id: String,
     /**
-     * The Explanation type. Can be 'shap_orig'
+     * The Explanation type. Can be 'shap'
      */
     expType: String,
     /**
@@ -39,7 +39,7 @@ export default {
      */
     instance: Object,
     /**
-     * True, if what-if analysis is enabled. Will make the SHAP explanation to shrink
+     * True, if what-if analysis is enabled. Will make the SHAP TreeMap to shrink
      */
     whatif: Boolean,
   },

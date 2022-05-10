@@ -54,7 +54,7 @@ export default {
        */
       started: false,
       /**
-       * The explanation type, can be 'lime', 'shap', 'dice' or 'shap_orig'
+       * The explanation type, can be 'lime', 'lime_orig', 'shap', 'shap_orig' or 'dice'
        */
       expType: String,
       /**

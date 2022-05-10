@@ -69,7 +69,7 @@ def explanation_worker(in_queue : Queue, res_out : dict):
             #out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes, pred_proba=pred_proba, recommendation=recommendation)
             out = ShapResponse(status=ResponseStatus.terminated, base_value=shap_bval, values=shap_attributes)
             res_out[job.uid] = out
-        elif job.exp_type == ExplanationType.lime:
+        elif job.exp_type in [ExplanationType.lime, ExplanationType.lime_orig]:
             if job.task["num_features"] is not None:
                 num_features = job.task["num_features"]
             else:

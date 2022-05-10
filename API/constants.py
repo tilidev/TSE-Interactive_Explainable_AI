@@ -2,6 +2,7 @@ from enum import Enum
 
 class ExplanationType(str, Enum):
     lime = "lime"
+    lime_orig = "lime_orig"
     shap = "shap"
     shap_orig = "shap_orig"
     dice = "dice"

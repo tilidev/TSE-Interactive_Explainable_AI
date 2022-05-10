@@ -151,9 +151,9 @@ async def schedule_explanation_generation(
     ___
     '''
     #Modification
-    #Add also shap_orig as a valid explanation
+    #Add shap_orig and lime_orig as a valid explanations
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
-    if exp_method not in [ExplanationType.shap, ExplanationType.shap_orig, ExplanationType.lime]:
+    if exp_method not in [ExplanationType.shap, ExplanationType.shap_orig, ExplanationType.lime, ExplanationType.lime_orig]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
 
     check_cat_values(instance)
@@ -166,6 +166,7 @@ async def schedule_explanation_generation(
     #Add mapping for shap_orig
     response_mapping = {
         ExplanationType.lime :      LimeResponse,
+        ExplanationType.lime_orig :      LimeResponse,
         ExplanationType.shap :      ShapResponse,
         ExplanationType.shap_orig : ShapResponse
     }
@@ -175,6 +176,18 @@ async def schedule_explanation_generation(
     return ExplanationTaskScheduler(status=ResponseStatus.in_prog, href=str(job.uid))
 
 @app.get("/explanations/lime", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
+async def lime_explanation(uid: UUID):
+    '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
+    if uid in results.keys():
+        res = results[uid]
+        if type(res) != LimeResponse:
+            return LimeResponse(status=ResponseStatus.wrong_method)
+
+        return res
+    else: # In this case, there is no dict entry with this uuid
+        return LimeResponse(status=ResponseStatus.not_existing)
+
+@app.get("/explanations/lime_orig", response_model=LimeResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def lime_explanation(uid: UUID):
     '''Returns the <b>LIME</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
     if uid in results.keys():

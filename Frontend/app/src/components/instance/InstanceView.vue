@@ -11,11 +11,14 @@
       <div :class="getStyling('lime')" @click="this.$emit('switch', 'lime')">
         LIME
       </div>
+      <div :class="getStyling('lime_orig')" @click="this.$emit('switch', 'lime_orig')">
+        LIME Original
+      </div>
       <div :class="getStyling('shap')" @click="this.$emit('switch', 'shap')">
         SHAP
       </div>
       <div :class="getStyling('shap_orig')" @click="this.$emit('switch', 'shap_orig')">
-        SHAP
+        SHAP Original
       </div>
     </div>
     <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo"
@@ -53,15 +56,31 @@
           <div class="text-left mb-2" v-if="whatif">
             Original Loan Application
           </div>
+          <!--
           <tree-map class="-ml-1" v-if="instanceInfo.id != null && expType !== 'shap_orig'" :expType="expType"
-            :instance="instanceInfo" :whatif="whatif" :id="'left'" :detailView="detailed"></tree-map>
+          :instance="instanceInfo" :whatif="whatif" :id="'left'" :detailView="detailed"></tree-map>
+          -->
+          <tree-map-lime class="-ml-1" v-if="instanceInfo.id != null && expType === 'lime'" :expType="expType"
+            :instance="instanceInfo" :whatif="whatif" :id="'left'"></tree-map-lime>
+          <lime-exp class="-ml-1" v-if="instanceInfo.id != null && expType === 'lime_orig'" :expType="expType"
+            :instance="instanceInfo" :whatif="whatif" :id="'left'"></lime-exp>
+          <tree-map-shap class="-ml-1" v-if="instanceInfo.id != null && expType === 'shap'" :expType="expType"
+            :instance="instanceInfo" :whatif="whatif" :id="'left'"></tree-map-shap>
           <shap-exp class="-ml-1" v-if="instanceInfo.id != null && expType === 'shap_orig'" :expType="expType"
             :instance="instanceInfo" :whatif="whatif" :id="'left'"></shap-exp>
         </div>
         <div v-if="whatif">
           <div class="text-right mb-2">Modified Loan Application</div>
+          <!--
           <tree-map class="-mr-1" v-if="instanceInfo.id != null && expType !== 'shap_orig'" :expType="expType"
-            :instance="modifiedInstance" :whatif="whatif" :id="'right'" :detailView="detailed"></tree-map>
+          :instance="modifiedInstance" :whatif="whatif" :id="'right'" :detailView="detailed"></tree-map>
+          -->
+          <tree-map-lime class="-mr-1" v-if="instanceInfo.id != null && expType === 'lime'" :expType="expType"
+            :instance="modifiedInstance" :whatif="whatif" :id="'right'"></tree-map-lime>
+          <lime-exp class="-mr-1" v-if="instanceInfo.id != null && expType === 'lime_orig'" :expType="expType"
+            :instance="modifiedInstance" :whatif="whatif" :id="'right'"></lime-exp>
+          <tree-map-shap class="-mr-1" v-if="instanceInfo.id != null && expType === 'shap'" :expType="expType"
+            :instance="modifiedInstance" :whatif="whatif" :id="'right'"></tree-map-shap>
           <shap-exp class="-mr-1" v-if="instanceInfo.id != null && expType === 'shap_orig'" :expType="expType"
             :instance="modifiedInstance" :whatif="whatif" :id="'right'"></shap-exp>
         </div>
@@ -87,8 +106,11 @@
 <script>
 import InfoCard from "./InfoCard.vue";
 import DiceExplanation from "./DiceExplanation.vue";
-import TreeMap from "./TreeMap.vue";
+//import TreeMap from "./TreeMap.vue";
+import TreeMapLime from "./TreeMapLime.vue";
+import TreeMapShap from "./TreeMapShap.vue";
 import ShapExp from "./ShapExp.vue";
+import LimeExp from "./LimeExp.vue";
 // Modification
 // Disable Toggle functionality
 // import Toggle from "@vueform/toggle";
@@ -126,8 +148,9 @@ export default {
        * Descriptions for the lime, shap and shap_orig explanations
        */
       descriptions: {
+        lime: "LIME explanations fit a linear model approximating the AI system's decision recommendation to the loan application. LIME explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, which is the local intercept value of the linear model. Therefore, the sum of all attributes' influence and the baseline influence add up to the confidence value. This means that if we left the influence value for a certain attribute out when doing the addition, the confidence score would be changed by the amount of that influence value.",
+        lime_orig: "LIME explanations fit a linear model approximating the AI system's decision recommendation to the loan application. LIME explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, which is the local intercept value of the linear model. Therefore, the sum of all attributes' influence and the baseline influence add up to the confidence value. This means that if we left the influence value for a certain attribute out when doing the addition, the confidence score would be changed by the amount of that influence value.",
         shap: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. The explanation also shows the baseline influence calculated by analyzing how many applications have been approved and rejected historically. For this system, the baseline influence for approval is 65.4% and for rejections is 34.6%. This means that 65.4% of loan applications are approved, and 34.6% are rejected. For example, given an instance for which the model recommends “Approve” with an 80% confidence, the baseline influence contributes 65.4% of the confidence value. The influence of all attributes in the loan application balance in order to contribute to the remaining 14.6% - the difference between the baseline influence and the confidence. This means that attributes influencing towards approval counterbalance attributes influencing towards rejection.",
-        lime: "LIME explanations fit a linear model approximating the AI decision recommendation to the loan application. LIME explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, which is the local intercept value of the linear model. Therefore, the sum of all attributes' influence and the baseline influence add up to the confidence score. This means that if we left the influence value for a certain attribute out when doing the addition, the confidence score would be changed by the amount of that influence value.",
         shap_orig: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. The explanation also shows the baseline influence calculated by analyzing how many applications have been approved and rejected historically. For this system, the baseline influence for approval is 65.4% and for rejections is 34.6%. This means that 65.4% of loan applications are approved, and 34.6% are rejected. For example, given an instance for which the model recommends “Approve” with an 80% confidence, the baseline influence contributes 65.4% of the confidence value. The influence of all attributes in the loan application balance in order to contribute to the remaining 14.6% - the difference between the baseline influence and the confidence. This means that attributes influencing towards approval counterbalance attributes influencing towards rejection.",
       },
       /*
@@ -141,7 +164,8 @@ export default {
   // Modification
   // Disable Toggle functionality
   // components: { InfoCard, DiceExplanation, TreeMap, Toggle },
-  components: { InfoCard, DiceExplanation, TreeMap, ShapExp },
+  //components: { InfoCard, DiceExplanation, TreeMap, ShapExp },
+  components: { InfoCard, DiceExplanation, TreeMapLime, TreeMapShap, ShapExp, LimeExp },
   methods: {
     /**
      * Resets the current instance

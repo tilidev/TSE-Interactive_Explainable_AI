@@ -21,17 +21,17 @@
 import * as d3 from "d3";
 
 /**
- * Component for the SHAP explanation visualizes the SHAP Original explanations
+ * Component for the LIME explanation visualizes the LIME TreeMap
  */
 export default {
   props: {
     /**
-     * Helps d3 identify this SHAP explanation.
-     * If there are two SHAP explanations displayed at the same time, they should have different ids
+     * Helps d3 identify this LIME TreeMap.
+     * If there are two LIME TreeMap displayed at the same time, they should have different ids
      */
     id: String,
     /**
-     * The Explanation type. Can be 'shap_orig'
+     * The Explanation type. Can be 'lime'
      */
     expType: String,
     /**
@@ -39,7 +39,7 @@ export default {
      */
     instance: Object,
     /**
-     * True, if what-if analysis is enabled. Will make the SHAP explanation to shrink
+     * True, if what-if analysis is enabled. Will make the LIME TreeMap to shrink
      */
     whatif: Boolean,
   },
@@ -74,7 +74,7 @@ export default {
        */
       href: "",
       /**
-       * The base value provided by SHAP
+       * The base value provided by LIME
        */
       baseValue: 0,
       /**
@@ -279,8 +279,8 @@ export default {
             .append("div")
             .text(
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 10000) / 100
+              // + "%"
             )
             .style(
               "color",
@@ -328,8 +328,8 @@ export default {
               // Modification 
               // Remove negative symbol
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 10000) / 100
+              //+ "%"
             );
           }
         })

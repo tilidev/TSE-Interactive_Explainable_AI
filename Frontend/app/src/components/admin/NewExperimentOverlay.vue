@@ -81,6 +81,10 @@
                 <label for="lime">Lime</label>
               </span>
               <span class="space-x-2">
+                <input type="radio" id="lime_orig" name="explanation" v-model="explanation" value="lime_orig" />
+                <label for="lime_orig">LIME Original</label>
+              </span>
+              <span class="space-x-2">
                 <input type="radio" id="shap" name="explanation" v-model="explanation" value="shap" />
                 <label for="shap">SHAP</label>
               </span>
@@ -154,7 +158,7 @@ export default {
        */
       modwhatif: "both",
       /**
-       * The explanation type for the experiment. Can be 'lime', 'shap', 'dice' or 'shap_orig'.
+       * The explanation type for the experiment. Can be 'lime', 'lime_orig', 'shap', 'shap_orig' or 'dice'.
        */
       explanation: "lime",
       /**
