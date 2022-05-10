@@ -30,7 +30,7 @@ export default {
        */
       instanceInfo: {},
       /**
-       * The explanation type to be shown, can be 'lime', 'shap' or 'dice'
+       * The explanation type to be shown, can be 'lime', 'shap', 'dice' or 'shap_orig'
        */
       expType: "dice",
     };
@@ -39,7 +39,7 @@ export default {
   methods: {
     /**
      * Triggered when the user switches the explanation type
-     * @param {String} expType - The new explanation type, can be 'lime', 'shap' or 'dice'
+     * @param {String} expType - The new explanation type, can be 'lime', 'shap', 'dice' or 'shap_orig'
      */
     switchExp(expType) {
       this.expType = expType;

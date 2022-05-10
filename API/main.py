@@ -150,9 +150,10 @@ async def schedule_explanation_generation(
     The query parameter `num_features` is optional and if provided, will execute the <b>LIME</b> explanation with the corresponding number of features.
     ___
     '''
-
+    #Modification
+    #Add also shap_orig as a valid explanation
     #Dice should not be used here. requests are already pregenerated in the database and can be returned directly
-    if exp_method not in [ExplanationType.shap, ExplanationType.lime]:
+    if exp_method not in [ExplanationType.shap, ExplanationType.shap_orig, ExplanationType.lime]:
         raise HTTPException(status_code=400, detail="Please use LIME or SHAP")
 
     check_cat_values(instance)
@@ -161,9 +162,12 @@ async def schedule_explanation_generation(
     job.task = {"instance" : instance, "num_features" : num_features}
     task_queue.put(job)
 
+    #Modification
+    #Add mapping for shap_orig
     response_mapping = {
-        ExplanationType.lime : LimeResponse,
-        ExplanationType.shap : ShapResponse
+        ExplanationType.lime :      LimeResponse,
+        ExplanationType.shap :      ShapResponse,
+        ExplanationType.shap_orig : ShapResponse
     }
 
     results[job.uid] = response_mapping[exp_method](status=ResponseStatus.in_prog) # Default response after subtask has started
@@ -183,6 +187,18 @@ async def lime_explanation(uid: UUID):
         return LimeResponse(status=ResponseStatus.not_existing)
 
 @app.get("/explanations/shap", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
+async def shap_explanation(uid: UUID):
+    '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
+
+    if uid in results.keys():
+        res = results[uid]
+        if type(res) != ShapResponse:
+            return ShapResponse(status=ResponseStatus.wrong_method)
+        return res
+    else:
+        return ShapResponse(status=ResponseStatus.not_existing)
+
+@app.get("/explanations/shap_orig", response_model=ShapResponse, response_model_exclude_none=True, tags=["Explanations"])
 async def shap_explanation(uid: UUID):
     '''Returns the <b>SHAP</b> explanation results or the status of the processing of the original request (`schedule_explanation_generation`).'''
 

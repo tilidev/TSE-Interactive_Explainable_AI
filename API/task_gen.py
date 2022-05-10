@@ -57,7 +57,8 @@ def explanation_worker(in_queue : Queue, res_out : dict):
         print(f"\033[92mINFO:\033[0m Explainer process with id \033[96m{os.getpid()}\033[0m starting exlanation computation. \
             \n      Explanation type: \033[1m{job.exp_type.value}\033[0m")
 
-        if job.exp_type == ExplanationType.shap:
+
+        if job.exp_type in [ExplanationType.shap, ExplanationType.shap_orig]:
             # Modification Backup
             # Add sh to parameter to compute prediction
             #shap_bval, shap_vals, pred_proba, recommendation  = compute_response_shap(job.task["instance"], shap_explainer, cols, sh)

@@ -1,8 +1,7 @@
 <template>
   <div>
     <div class="absolute inset-0 z-40 opacity-25 bg-black"></div>
-    <div
-      class="
+    <div class="
         opacity-100
         fixed
         overflow-y-auto
@@ -11,35 +10,25 @@
         justify-center
         items-center
         z-50
-      "
-    >
+      ">
       <div class="relative mx-auto w-auto">
         <div class="bg-white w-100 rounded-lg shadow-md p-4">
           <div class="flex justify-between mb-8">
             <h4 class="text-xl font-bold">Create new experiment</h4>
-            <button
-              @click="this.$emit('close')"
-              class="bg-white hover:bg-gray-light px-2 py-0.5 rounded-full"
-            >
+            <button @click="this.$emit('close')" class="bg-white hover:bg-gray-light px-2 py-0.5 rounded-full">
               <fa-icon icon="times"></fa-icon>
             </button>
           </div>
-          <div
-            class="
+          <div class="
               grid grid-cols-auto grid-flow-col
               gap-x-8 gap-y-2
               auto-cols-max auto-rows-auto
-            "
-          >
+            ">
             <div class="col-start-1 col-span-2 font-bold pt-2">
               Experiment name
             </div>
-            <input
-              class="col-start-3 col-span-3 rounded p-2"
-              :class="getBorderStyling('name')"
-              v-model="name"
-              placeholder="Name for the experiment"
-            />
+            <input class="col-start-3 col-span-3 rounded p-2" :class="getBorderStyling('name')" v-model="name"
+              placeholder="Name for the experiment" />
             <div class="col-start-1"></div>
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.name }}
@@ -47,12 +36,9 @@
             <div class="col-start-1 col-span-2 font-bold row-span-2 pt-2">
               Description
             </div>
-            <textarea
-              placeholder="Describe your experiment"
-              v-model="description"
+            <textarea placeholder="Describe your experiment" v-model="description"
               :class="getBorderStyling('description')"
-              class="col-start-3 col-span-3 row-span-2 rounded resize-none p-2"
-            ></textarea>
+              class="col-start-3 col-span-3 row-span-2 rounded resize-none p-2"></textarea>
             <div class="col-start-1"></div>
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.description }}
@@ -60,12 +46,9 @@
             <div class="col-start-1 col-span-2 font-bold pt-2">
               Applications the user is shown
             </div>
-            <textarea
-              v-model="applications"
-              class="col-start-3 col-span-3 rounded resize-none p-2"
+            <textarea v-model="applications" class="col-start-3 col-span-3 rounded resize-none p-2"
               :class="getBorderStyling('applications')"
-              placeholder="IDs of the applications the user is shown, separated by comma (must be between 0 and 999)"
-            ></textarea>
+              placeholder="IDs of the applications the user is shown, separated by comma (must be between 0 and 999)"></textarea>
             <div class="col-start-1"></div>
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.applications }}
@@ -75,33 +58,15 @@
             </div>
             <div class="col-start-3 col-span-3 space-x-4">
               <span class="space-x-2">
-                <input
-                  v-model="modwhatif"
-                  type="radio"
-                  id="both"
-                  name="modwhatif"
-                  value="both"
-                />
+                <input v-model="modwhatif" type="radio" id="both" name="modwhatif" value="both" />
                 <label for="both">Modification and What-if</label>
               </span>
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="modonly"
-                  name="modwhatif"
-                  v-model="modwhatif"
-                  value="modonly"
-                />
+                <input type="radio" id="modonly" name="modwhatif" v-model="modwhatif" value="modonly" />
                 <label for="modonly">Modification only</label>
               </span>
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="none"
-                  name="modwhatif"
-                  value="none"
-                  v-model="modwhatif"
-                />
+                <input type="radio" id="none" name="modwhatif" value="none" v-model="modwhatif" />
                 <label for="none">None</label>
               </span>
             </div>
@@ -112,43 +77,23 @@
             <div class="col-start-1 col-span-2 font-bold">Explanation type</div>
             <div class="col-start-3 col-span-3 space-x-4">
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="lime"
-                  v-model="explanation"
-                  name="explanation"
-                  value="lime"
-                />
+                <input type="radio" id="lime" v-model="explanation" name="explanation" value="lime" />
                 <label for="lime">Lime</label>
               </span>
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="shap"
-                  name="explanation"
-                  v-model="explanation"
-                  value="shap"
-                />
+                <input type="radio" id="shap" name="explanation" v-model="explanation" value="shap" />
                 <label for="shap">SHAP</label>
               </span>
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="dice"
-                  name="explanation"
-                  v-model="explanation"
-                  value="dice"
-                />
+                <input type="radio" id="shap_orig" name="explanation" v-model="explanation" value="shap_orig" />
+                <label for="shap_orig">SHAP Original</label>
+              </span>
+              <span class="space-x-2">
+                <input type="radio" id="dice" name="explanation" v-model="explanation" value="dice" />
                 <label for="dice">Dice</label>
               </span>
               <span class="space-x-2">
-                <input
-                  type="radio"
-                  id="none"
-                  name="explanation"
-                  v-model="explanation"
-                  value="none"
-                />
+                <input type="radio" id="none" name="explanation" v-model="explanation" value="none" />
                 <label for="none">None</label>
               </span>
             </div>
@@ -160,21 +105,12 @@
               Survey link (optional)
             </div>
             <div class="col-start-1"></div>
-            <input
-              v-model="surveyLink"
-              class="col-start-3 col-span-3 rounded p-2"
-              :class="getBorderStyling('surveyLink')"
-              placeholder="URL to your survey"
-            />
+            <input v-model="surveyLink" class="col-start-3 col-span-3 rounded p-2"
+              :class="getBorderStyling('surveyLink')" placeholder="URL to your survey" />
             <div class="col-start-3 text-sm text-negative mb-2">
               {{ errorMessages.surveyLink }}
             </div>
-            <default-button
-              :color="'positive'"
-              :hoverColor="'positive-dark'"
-              class="col-start-1"
-              @click="clickCreate"
-            >
+            <default-button :color="'positive'" :hoverColor="'positive-dark'" class="col-start-1" @click="clickCreate">
               Create
             </default-button>
           </div>
@@ -218,7 +154,7 @@ export default {
        */
       modwhatif: "both",
       /**
-       * The explanation type for the experiment. Can be 'lime', 'shap' or 'dice'.
+       * The explanation type for the experiment. Can be 'lime', 'shap', 'dice' or 'shap_orig'.
        */
       explanation: "lime",
       /**
@@ -238,7 +174,7 @@ export default {
       const axios = require('axios');
       axios.get(this.apiUrl + "experiment/all").then((response) => {
         this.validateInput(response.data);
-    });
+      });
     },
     /**
      * @param {String} attribute - The attribute/field for which the border styling is applied

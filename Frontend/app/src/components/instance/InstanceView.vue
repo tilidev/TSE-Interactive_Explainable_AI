@@ -14,6 +14,9 @@
       <div :class="getStyling('shap')" @click="this.$emit('switch', 'shap')">
         SHAP
       </div>
+      <div :class="getStyling('shap_orig')" @click="this.$emit('switch', 'shap_orig')">
+        SHAP
+      </div>
     </div>
     <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo"
       class="mb-4 mt-8"></dice-explanation>
@@ -115,11 +118,12 @@ export default {
        */
       whatif: false,
       /**
-       * Descriptions for the lime and shap explanations
+       * Descriptions for the lime, shap and shap_orig explanations
        */
       descriptions: {
-        shap: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, the starting prediction value that the system calculates from all historical loan applications. For example, given an instance for which the model recommends to “Approve” with an 80% confidence, we expect that the baseline influence is 65% and that influence of all attributes in the loan application add up to the remaining 15% - the difference between the baseline influence and the confidence.",
+        shap: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. The explanation also shows the baseline influence calculated by analyzing how many applications have been approved and rejected historically. For this system, the baseline influence for approval is 65.4% and for rejections is 34.6%. This means that 65.4% of loan applications are approved, and 34.6% are rejected. For example, given an instance for which the model recommends “Approve” with an 80% confidence, the baseline influence contributes 65.4% of the confidence value. The influence of all attributes in the loan application balance in order to contribute to the remaining 14.6% - the difference between the baseline influence and the confidence. This means that attributes influencing towards approval counterbalance attributes influencing towards rejection.",
         lime: "LIME explanations fit a linear model approximating the AI decision recommendation to the loan application. LIME explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, which is the local intercept value of the linear model. Therefore, the sum of all attributes' influence and the baseline influence add up to the confidence score. This means that if we left the influence value for a certain attribute out when doing the addition, the confidence score would be changed by the amount of that influence value.",
+        shap_orig: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. The explanation also shows the baseline influence calculated by analyzing how many applications have been approved and rejected historically. For this system, the baseline influence for approval is 65.4% and for rejections is 34.6%. This means that 65.4% of loan applications are approved, and 34.6% are rejected. For example, given an instance for which the model recommends “Approve” with an 80% confidence, the baseline influence contributes 65.4% of the confidence value. The influence of all attributes in the loan application balance in order to contribute to the remaining 14.6% - the difference between the baseline influence and the confidence. This means that attributes influencing towards approval counterbalance attributes influencing towards rejection.",
       },
       /*
        * Modification

@@ -31,7 +31,7 @@
 import * as d3 from "d3";
 
 /**
- * Component for the treemap that visualizes the LIME and SHAP explanations
+ * Component for the treemap that visualizes the LIME, SHAP and SHAP Original explanations
  */
 export default {
   props: {
@@ -41,7 +41,7 @@ export default {
      */
     id: String,
     /**
-     * The Explanation type. Can be 'lime' or 'shap'
+     * The Explanation type. Can be 'lime', 'shap' or 'shap_orig'
      */
     expType: String,
     /**

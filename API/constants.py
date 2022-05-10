@@ -3,6 +3,7 @@ from enum import Enum
 class ExplanationType(str, Enum):
     lime = "lime"
     shap = "shap"
+    shap_orig = "shap_orig"
     dice = "dice"
     none = "none"
 
