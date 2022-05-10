@@ -4,14 +4,8 @@
       <navigation-button :type="'dataset'"></navigation-button>
       <navigation-button :type="'admin'"></navigation-button>
     </div>
-    <instance-view
-      :allowMod="true"
-      :allowWhatIf="true"
-      :expType="expType"
-      @switch="switchExp"
-      :allowSwitching="true"
-      :instanceInfo="instanceInfo"
-    ></instance-view>
+    <instance-view :allowMod="true" :allowWhatIf="true" :expType="expType" @switch="switchExp" :allowSwitching="true"
+      :instanceInfo="instanceInfo"></instance-view>
   </div>
 </template>
 
