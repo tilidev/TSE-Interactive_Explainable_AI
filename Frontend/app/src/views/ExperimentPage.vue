@@ -1,52 +1,38 @@
 <template>
   <div>
     <div class="absolute inset-0 bg-background" v-if="!started">
-      <default-button class="mt-8" @click="started = true"
-        >Start Experiment</default-button
-      >
+      <default-button class="mt-8" @click="started = true">Start Experiment</default-button>
     </div>
     <div v-if="!done && started">
-      <div
-        v-if="currentIndex"
-        class="flex space-x-2 mb-4 -mt-4 items-center cursor-pointer py-2"
-        @click="goBack()"
-      >
+      <!--
+      Modification
+      Remove navigation to previous loan application
+      -->
+      <!--
+      <div v-if="currentIndex" class="flex space-x-2 mb-4 -mt-4 items-center cursor-pointer py-2" @click="goBack()">
         <fa-icon size="xl" icon="arrow-left"></fa-icon>
         <div>Back to previous loan application</div>
       </div>
-      <instance-view
-        v-if="started"
-        :instanceInfo="instanceInfo"
-        :expType="expType"
-        :allowMod="allowMod"
-        :allowWhatIf="allowWhatIf"
-      ></instance-view>
+      -->
+      <instance-view v-if="started" :instanceInfo="instanceInfo" :expType="expType" :allowMod="allowMod"
+        :allowWhatIf="allowWhatIf" :resetInstance="resetInstance"></instance-view>
       <div class="text-right flex justify-end">
         <span class="bg-white flex items-center space-x-4 p-4 shadow-md">
           <div class="text-lg font-bold mr-4">
             Would you approve this loan application?
           </div>
-          <default-button
-            :color="'positive'"
-            :hoverColor="'positive-dark'"
-            @click="submitDecision(true)"
-            >Approve</default-button
-          >
-          <default-button
-            :color="'negative'"
-            :hoverColor="'negative-dark'"
-            @click="submitDecision(false)"
-            >Reject</default-button
-          >
+          <default-button :color="'positive-chart'" :hoverColor="'positive-chart-dark'" @click="submitDecision(true)">
+            Approve</default-button>
+          <default-button :color="'negative-chart'" :hoverColor="'negative-chart-dark'" @click="submitDecision(false)">
+            Reject</default-button>
         </span>
       </div>
     </div>
     <div v-if="done">
       <div class="text-3xl font-bold py-2">You completed the experiment</div>
       <div v-if="!surveyLink" class="text-lg">Thank you for participating!</div>
-      <a v-else :href="surveyLink" class="text-primary-light underline text-lg"
-        >Please click here to continue to the survey</a
-      >
+      <a v-else :href="surveyLink" class="text-primary-light underline text-lg">Please click here to continue to the
+        survey</a>
     </div>
   </div>
 </template>
@@ -107,6 +93,12 @@ export default {
        * Unique client id for the experiment participant
        */
       clientId: Number,
+      /*
+       * Modification
+       * New Propops
+       * Add prop to reset instance
+      * */
+      resetInstance: false,
     };
   },
   components: { InstanceView, DefaultButton },
@@ -179,10 +171,12 @@ export default {
      */
     sendInstanceRequest() {
       const axios = require("axios");
+      this.resetInstance = false;
       axios
         .get(this.apiUrl + "instance/" + this.instanceIds[this.currentIndex])
         .then((response) => {
           this.instanceInfo = response.data;
+          this.resetInstance = true;
         });
     },
   },

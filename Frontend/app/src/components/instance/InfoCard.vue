@@ -123,6 +123,12 @@ export default {
      * Specifies if the 'Generate New Explanation' button is shown and if the user can see the what-if analysis
      */
     allowWhatIf: Boolean,
+    /*
+       * Modification
+       * New Propops
+       * Add prop to reset modification functionality
+      * */
+    resetModificationFunction: Boolean,
   },
   methods: {
     /**
@@ -173,6 +179,15 @@ export default {
       this.dropdownAttribute = "";
       this.$emit("apply-modification", modification);
       this.sendPredictionRequest();
+    },
+  },
+  watch: {
+    // Modification
+    // Monitor change in loan application in experiment to reset the modification functionality.
+    resetModificationFunction() {
+      this.modificationEnabled = false;
+      this.dropdownAttribute = "";
+      this.newPrediction = null;
     },
   },
   inject: ["reducedCategories", "apiUrl", "attributeData"],

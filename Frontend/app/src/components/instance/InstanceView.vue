@@ -1,8 +1,9 @@
 <template>
   <div>
     <info-card :instanceInfo="instanceInfo" :modifiedInstance="modifiedInstance" :modifiable="allowMod"
-      :allowWhatIf="expType == 'dice' ? false : allowWhatIf" @apply-modification="applyModification"
-      @generate-explanation="generateExplanation" @reset-instance="reset" @new-prediction="passPrediction"></info-card>
+      :allowWhatIf="expType == 'dice' ? false : allowWhatIf" :resetModificationFunction="resetModificationFunction"
+      @apply-modification="applyModification" @generate-explanation="generateExplanation" @reset-instance="reset"
+      @new-prediction="passPrediction"></info-card>
     <div class="mt-4 flex p-4 font-bold space-x-4 -mb-4 shadow-md pl-8 bg-white" v-if="allowSwitching">
       <div :class="getStyling('dice')" @click="this.$emit('switch', 'dice')">
         DiCE
@@ -128,6 +129,12 @@ export default {
         shap: "The SHAP values explain each attribute value’s contribution in percentage points to the difference between the average AI prediction over the entire dataset (Approve, 65% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 5% - the exact difference to the average model prediction.",
         lime: "The lime values explain each attribute-value's contribution to the local prediction score in percentage points. Lime fits a linear model approximating the AI decision at that point. Therefore the sum of all the lime values plus the local intercept value that has also been fitted add up to the local prediction score. This means that if we would leave the lime value for a certain attribute out when doing the addition, the local prediction score would be changed by the amount of that value.",
       },
+      /*
+       * Modification
+       * New Propops
+       * Add prop to reset modification functionality
+      * */
+      resetModificationFunction: false,
     };
   },
   // Modification
@@ -141,6 +148,9 @@ export default {
     reset() {
       this.modifiedInstance = Object.assign({}, this.instanceInfo);
       this.whatif = false;
+      // Modification
+      // change prop in child to trigger the reset of modification functionality when experiment navigates to the next loan application
+      this.resetModificationFunction = !this.resetModificationFunction;
     },
     /**
      * Generates the explanation for the what if analysis
@@ -182,6 +192,11 @@ export default {
       this.whatif = false;
       this.modifiedInstance = Object.assign({}, newInstance);
     },
+    // Modification
+    // Monitor experiment parent component to trigger a reset of the modification functionality
+    resetInstance() {
+      this.reset();
+    },
   },
   inject: ["attributeData"],
   props: {
@@ -208,6 +223,12 @@ export default {
      * Specifies if the user can switch between explanation typess
      */
     allowSwitching: Boolean,
+    /*
+       * Modification
+       * New Propops
+       * Add prop to reset modification functionality
+      * */
+    resetInstance: Boolean,
   },
 };
 </script>
