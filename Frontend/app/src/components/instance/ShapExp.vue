@@ -1,15 +1,5 @@
 <template>
   <div>
-    <!-- Modification
-      Remove Baseline Probability in text form
-      -->
-    <!--
-    <div class="flex justify-start mb-4 ml-1" v-if="expType == 'shap' && baseValue">
-      <span class="font-bold mr-2">Average AI prediction: </span>
-      <span class="text-positive">Approve with {{ Math.round((1 - baseValue) * 100) }} % confidence
-      </span>
-    </div>
-    -->
     <div v-if="isLoading" class="my-4 flex items-center justify-start space-x-2">
       <svg role="status" class="mr-2 w-8 h-8 text-gray-light animate-spin" viewBox="0 0 100 101" fill="primary"
         xmlns="http://www.w3.org/2000/svg">
@@ -31,17 +21,17 @@
 import * as d3 from "d3";
 
 /**
- * Component for the treemap that visualizes the LIME, SHAP and SHAP Original explanations
+ * Component for the SHAP explanation visualizes the SHAP Original explanations
  */
 export default {
   props: {
     /**
-     * Helps d3 identify this TreeMap.
-     * If there are two treemaps displayed at the same time, they should have different ids
+     * Helps d3 identify this SHAP explanation.
+     * If there are two SHAP explanations displayed at the same time, they should have different ids
      */
     id: String,
     /**
-     * The Explanation type. Can be 'lime', 'shap' or 'shap_orig'
+     * The Explanation type. Can be 'shap_orig'
      */
     expType: String,
     /**
@@ -49,13 +39,9 @@ export default {
      */
     instance: Object,
     /**
-     * True, if what-if analysis is enabled. Will make the treemap shrink
+     * True, if what-if analysis is enabled. Will make the SHAP explanation to shrink
      */
     whatif: Boolean,
-    /**
-     * If true the detail view is shown, if false the simple view
-     */
-    detailView: Boolean,
   },
   watch: {
     windowWidth() {
@@ -70,9 +56,6 @@ export default {
       if (!this.isLoading) {
         this.generateTreeMap();
       }
-    },
-    detailView() {
-      this.generateTreeMap();
     },
     expType() {
       d3.select("#" + this.id).html(null);
@@ -105,7 +88,10 @@ export default {
         name: "Explanation",
         children: [
           { name: "positive", children: [] },
-          { name: "negative", children: [], },
+          {
+            name: "negative",
+            children: [],
+          },
         ],
       },
       /**
@@ -290,15 +276,16 @@ export default {
       this.isLoading = true;
       d3.select("#" + this.id).html(null);
       d3.select("#tootltip" + this.id).html(null);
-      // Modification
-      // Force detailView to True 
-      const detailView = true;
+
       const w = this.whatif
         ? (window.innerWidth - 32) * 0.45
         : (window.innerWidth - 32) * 0.94;
       const h = 500;
       const hierarchy = d3
-        .hierarchy(detailView ? this.detailExpData : this.simpleExpData)
+        // Pending Modification
+        // Change to simpleExpdata
+        //.hierarchy(this.simpleExpData)
+        .hierarchy(this.detailExpData)
         .sum((d) => d.value) //sums every child values
         .sort((a, b) => b.value - a.value), // and sort them in descending order
         // Modification
@@ -306,7 +293,6 @@ export default {
         treemap = d3
           .treemap()
           .size([w, h])
-          // .padding(this.detailView ? 1 : 2),
           .padding(1),
         root = treemap(hierarchy);
 
@@ -341,22 +327,22 @@ export default {
         .attr("height", (d) => d.y1 - d.y0)
         .attr("fill", function (d) {
           return colorScale(
-            detailView ? d.parent.parent.data.name : d.parent.data.name
+            d.parent.parent.data.name
           );
         })
         .attr("fill-opacity", 1.0)
         .on("mouseenter", function (event, d) {
-          if (detailView) {
-            tooltip
-              .append("div")
-              .text(d.parent.data.name)
-              .attr("class", "tt-category pb-1 text-left capitalize");
-          }
+
+          tooltip
+            .append("div")
+            .text(d.parent.data.name)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
 
           tooltip
             .append("div")
             .text(
-              d.data.name + (detailView ? ": " + d.data.attributeValue : "")
+              d.data.name + (": " + d.data.attributeValue)
             )
             .attr("class", "tt-name text-left pb-2 font-bold capitalize");
           // Modification 
@@ -371,7 +357,7 @@ export default {
             .style(
               "color",
               colorScale(
-                detailView ? d.parent.parent.data.name : d.parent.data.name
+                d.parent.parent.data.name
               )
             )
             .attr("class", "tt-value font-bold text-left");

@@ -53,13 +53,17 @@
           <div class="text-left mb-2" v-if="whatif">
             Original Loan Application
           </div>
-          <tree-map class="-ml-1" :expType="expType" :instance="instanceInfo" :whatif="whatif" :id="'left'"
-            :detailView="detailed"></tree-map>
+          <tree-map class="-ml-1" v-if="instanceInfo.id != null && expType !== 'shap_orig'" :expType="expType"
+            :instance="instanceInfo" :whatif="whatif" :id="'left'" :detailView="detailed"></tree-map>
+          <shap-exp class="-ml-1" v-if="instanceInfo.id != null && expType === 'shap_orig'" :expType="expType"
+            :instance="instanceInfo" :whatif="whatif" :id="'left'"></shap-exp>
         </div>
         <div v-if="whatif">
           <div class="text-right mb-2">Modified Loan Application</div>
-          <tree-map class="-mr-1" :expType="expType" :instance="modifiedInstance" :whatif="whatif" :id="'right'"
-            :detailView="detailed"></tree-map>
+          <tree-map class="-mr-1" v-if="instanceInfo.id != null && expType !== 'shap_orig'" :expType="expType"
+            :instance="modifiedInstance" :whatif="whatif" :id="'right'" :detailView="detailed"></tree-map>
+          <shap-exp class="-mr-1" v-if="instanceInfo.id != null && expType === 'shap_orig'" :expType="expType"
+            :instance="modifiedInstance" :whatif="whatif" :id="'right'"></shap-exp>
         </div>
       </div>
       <div>
@@ -84,6 +88,7 @@
 import InfoCard from "./InfoCard.vue";
 import DiceExplanation from "./DiceExplanation.vue";
 import TreeMap from "./TreeMap.vue";
+import ShapExp from "./ShapExp.vue";
 // Modification
 // Disable Toggle functionality
 // import Toggle from "@vueform/toggle";
@@ -136,7 +141,7 @@ export default {
   // Modification
   // Disable Toggle functionality
   // components: { InfoCard, DiceExplanation, TreeMap, Toggle },
-  components: { InfoCard, DiceExplanation, TreeMap },
+  components: { InfoCard, DiceExplanation, TreeMap, ShapExp },
   methods: {
     /**
      * Resets the current instance
