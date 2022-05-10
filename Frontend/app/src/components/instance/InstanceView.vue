@@ -25,15 +25,7 @@
             <fa-icon @click="hover = !hover" @mouseover="hover = true" @mouseleave="hover = false" icon="info-circle"
               class="ml-2" />
             <div v-if="hover" class="mt-4 text-sm absolute z-50">
-              <div class="
-                  p-4
-                  max-w-2xl
-                  bg-white
-                  font-normal
-                  text-primary-dark
-                  shadow-blurred
-                  rounded
-                ">
+              <div class="p-4 max-w-2xl bg-white font-normal text-primary-dark shadow-blurred rounded">
                 {{ descriptions[expType] }}
               </div>
             </div>
@@ -126,8 +118,8 @@ export default {
        * Descriptions for the lime and shap explanations
        */
       descriptions: {
-        shap: "The SHAP values explain each attribute value’s contribution in percentage points to the difference between the average AI prediction over the entire dataset (Approve, 65% confidence) and the actual prediction for the explained instance. Given an instance with an actual model prediction of “Approve” with 70 % confidence, we expect the SHAP values to add up to 5% - the exact difference to the average model prediction.",
-        lime: "The lime values explain each attribute-value's contribution to the local prediction score in percentage points. Lime fits a linear model approximating the AI decision at that point. Therefore the sum of all the lime values plus the local intercept value that has also been fitted add up to the local prediction score. This means that if we would leave the lime value for a certain attribute out when doing the addition, the local prediction score would be changed by the amount of that value.",
+        shap: "SHAP explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, the starting prediction value that the system calculates from all historical loan applications. For example, given an instance for which the model recommends to “Approve” with an 80% confidence, we expect that the baseline influence is 65% and that influence of all attributes in the loan application add up to the remaining 15% - the difference between the baseline influence and the confidence."
+        lime: "LIME explanations fit a linear model approximating the AI decision recommendation to the loan application. LIME explanations show the influence that each attribute of the loan application has on the AI system's decision recommendation in percentage points. Additionally, the explanation shows the baseline influence, which is the local intercept value of the linear model. Therefore, the sum of all attributes' influence and the baseline influence add up to the confidence score. This means that if we left the influence value for a certain attribute out when doing the addition, the confidence score would be changed by the amount of that influence value.",
       },
       /*
        * Modification
