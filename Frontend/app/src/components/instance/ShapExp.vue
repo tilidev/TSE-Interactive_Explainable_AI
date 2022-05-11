@@ -45,7 +45,7 @@ export default {
   },
   watch: {
     windowWidth() {
-      this.generateTreeMap();
+      this.generateShapExp();
     },
     instance() {
       d3.select("#" + this.id).html(null);
@@ -54,7 +54,7 @@ export default {
     },
     whatif() {
       if (!this.isLoading) {
-        this.generateTreeMap();
+        this.generateShapExp();
       }
     },
     expType() {
@@ -88,12 +88,13 @@ export default {
         name: "Explanation",
         children: [
           { name: "positive", children: [] },
-          {
-            name: "negative",
-            children: [],
-          },
+          { name: "negative", children: [], },
         ],
       },
+      /**
+       * Explanation data for the shap exp
+       */
+      ExpData: [],
     };
   },
   inject: ["attributeData", "apiUrl"],
@@ -115,7 +116,7 @@ export default {
     },
     /**
      * Called once the explanation result has been obtained from the API
-     * The method saves the data in the required structure and calls the generateTreemap method afterwards
+     * The method saves the data in the required structure and calls the generateShapExp method afterwards
      * @param result - The explanation result
      */
     saveData(result) {
@@ -126,6 +127,7 @@ export default {
           { name: "negative", children: [], },
         ],
       });
+
       for (let obj of result) {
         let childElement = {};
         childElement.name = this.attributeData.labels[obj.attribute];
@@ -155,7 +157,16 @@ export default {
         this.simpleExpData.children[1].children.push(childElement);
       }
 
-      this.generateTreeMap();
+      (this.ExpData = []);
+      for (let obj of result) {
+        let childElement = {};
+        childElement.name = this.attributeData.labels[obj.attribute];
+        childElement.category = this.attributeData.categories[obj.attribute];
+        childElement.value = obj.influence * -100;
+        childElement.attributeValue = this.instance[obj.attribute];
+        this.ExpData.push(childElement);
+      }
+      this.generateShapExp();
     },
     /**
      * As long as the explanation result is null the method sends a request to the API to check if the result is ready
@@ -201,38 +212,27 @@ export default {
     /**
      * Generates the treemap using d3 based on the explanation data.
      */
-    generateTreeMap() {
+    generateShapExp() {
       this.isLoading = true;
       d3.select("#" + this.id).html(null);
       d3.select("#tootltip" + this.id).html(null);
+
 
       const w = this.whatif
         ? (window.innerWidth - 32) * 0.45
         : (window.innerWidth - 32) * 0.94;
       const h = 500;
-      const hierarchy = d3
-        // Pending Modification
-        // Change to simpleExpdata
-        .hierarchy(this.simpleExpData)
-        .sum((d) => d.value) //sums every child values
-        .sort((a, b) => b.value - a.value), // and sort them in descending order
-        // Modification
-        // Change Padding
-        treemap = d3
-          .treemap()
-          .size([w, h])
-          .padding(1),
-        root = treemap(hierarchy);
+      //const h = 1000;
+      const margin = 100;
+
+
+      const data = this.ExpData.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+      var maxValue = Math.abs(data[0].value);
 
       // Modification
       // Change colors
       //var colors = ["#15803d", "#b91c1c"],
       var colors = ["#1E88E5", "#FF0D57"];
-
-      var colorScale = d3
-        .scaleOrdinal() // the scale function
-        .domain(["positive", "negative"]) // the data
-        .range(colors); // the way the data should be shown
 
       const tooltip = d3
         .select("#tooltip" + this.id)
@@ -242,100 +242,205 @@ export default {
         .select("#" + this.id) //make sure there's a svg element in your html file
         .append("svg")
         .attr("width", w)
-        .attr("height", h);
+        .attr("height", h + margin * 2);
+
+      const yScale = d3
+        .scaleBand()
+        .range([0, h])
+        .domain(data.map(s => s.name))
+        .padding(0.05);
+
+
+      const xScale = d3
+        .scaleLinear()
+        .range([0, w])
+        .domain([-maxValue * 1.05, maxValue * 1.05]);
 
       svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .enter()
-        .append("rect")
-        .attr("x", (d) => d.x0)
-        .attr("y", (d) => d.y0)
-        .attr("width", (d) => d.x1 - d.x0)
-        .attr("height", (d) => d.y1 - d.y0)
-        .attr("fill", function (d) {
-          return colorScale(
-            d.parent.data.name
-          );
-        })
-        .attr("fill-opacity", 1.0)
-        .on("mouseenter", function (event, d) {
+        .append("g")
+        .attr('transform', `translate(0, ${h + margin})`)
+        .call(d3.axisBottom(xScale));
 
+      const barGroups = svg
+        .selectAll("rect")
+        .data(data)
+        .enter();
+
+      barGroups
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", g => g.value > 0 ? (w / 2) : xScale(g.value))
+        .attr("y", g => yScale(g.name))
+        .attr("height", yScale.bandwidth())
+        .attr("width", g => g.value > 0 ? xScale(g.value) - (w / 2) : (w / 2) - xScale(g.value))
+        .attr("transform", `translate(0, ${margin})`)
+        .attr("fill", g => g.value > 0 ? colors[0] : colors[1])
+        .on("mouseenter", function (event, g) {
           tooltip
             .append("div")
-            .text(d.data.category)
+            .text(g.category)
             .attr("class", "tt-category pb-1 text-left capitalize");
 
+          tooltip
+            .append("div")
+            .text(
+              g.name + (": " + g.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
 
           tooltip
             .append("div")
             .text(
-              d.data.name + (": " + d.data.attributeValue)
-            )
-            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
-          // Modification 
-          // Remove negative symbol
-          tooltip
-            .append("div")
-            .text(
-              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(Math.abs(g.value) * 100) / 100
             )
             .style(
               "color",
-              colorScale(
-                d.parent.parent.data.name
-              )
+              g.value > 0 ? colors[0] : colors[1]
             )
             .attr("class", "tt-value font-bold text-left");
-
           tooltip
             .style("opacity", 1)
-            .style("margin-top", d.y0 + 8 + "px")
-            .style("margin-left", d.x0 + 8 + "px");
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
+            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
+
+      barGroups
+        .append("text")
+        .attr("x", (g) => g.value > 0 ? (w / 2) + 10 : (w / 2) - 140)
+        .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
+        .attr("text-anchor", "start")
+        .text(function (g) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value > 0) {
+            //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
+            return g.name.charAt(0).toUpperCase() + g.name.slice(1);
+          }
+        })
+        .attr("font-size", "15px")
+        .attr("font-weight", "600")
+        .attr("fill", "white")
+        .on("mouseenter", function (event, g) {
+          tooltip
+            .append("div")
+            .text(g.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              g.name + (": " + g.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              Math.round(Math.abs(g.value) * 100) / 100
+            )
+            .style(
+              "color",
+              g.value > 0 ? colors[0] : colors[1]
+            )
+            .attr("class", "tt-value font-bold text-left");
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
+            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
+
+      barGroups
+        .append("text")
+        .attr("x", (g) => g.value > 0 ? (w / 2) + 10 : (w / 2) - 10)
+        .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
+        .attr("text-anchor", "end")
+        .attr("class", "non-selectable")
+        .text(function (g) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value < 0) {
+            //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
+            return g.name.charAt(0).toUpperCase() + g.name.slice(1);
+          }
+        })
+        .attr("font-size", "15px")
+        .attr("font-weight", "600")
+        .attr("fill", "white")
+        .on("mouseenter", function (event, g) {
+          tooltip
+            .append("div")
+            .text(g.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              g.name + (": " + g.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              Math.round(Math.abs(g.value) * 100) / 100
+            )
+            .style(
+              "color",
+              g.value > 0 ? colors[0] : colors[1]
+            )
+            .attr("class", "tt-value font-bold text-left");
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
+            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
         })
         .on("mouseout", function () {
           tooltip.style("opacity", 0).selectAll("div").remove();
         });
 
       svg
-        .selectAll("text")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", (d) => d.x0 + 10)
-        .attr("y", (d) => d.y0 + 25)
-        .text(function (d) {
-          if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
-            return d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1);
-          }
-        })
-        .attr("font-size", "15px")
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', w / 4)
+        .attr('y', margin / 2)
+        .attr('text-anchor', 'middle')
+        .text('Rejected')
+        .attr("font-size", "24px")
         .attr("font-weight", "600")
-        .attr("fill", "white");
+        .attr("fill", colors[1]);
 
       svg
-        .selectAll("vals")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", (d) => d.x0 + 10)
-        .attr("y", (d) => d.y0 + 45)
-        .text(function (d) {
-          if (d.x1 - d.x0 >= 140 && d.y1 - d.y0 >= 50) {
-            return (
-              // Modification 
-              // Remove negative symbol
-              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
-            );
-          }
-        })
-        .attr("font-size", "15px")
-        .attr("margin-top", "16px")
-        .attr("fill", "white");
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', w * 3 / 4)
+        .attr('y', margin / 2)
+        .attr('text-anchor', 'middle')
+        .text('Approved')
+        .attr("font-size", "24px")
+        .attr("font-weight", "600")
+        .attr("fill", colors[0]);
+
+      svg
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', w / 2)
+        .attr('y', h + margin * 1.5)
+        .attr('text-anchor', 'middle')
+        .text('Influence')
+        .attr("font-size", "18px")
+        .attr("font-weight", "600");
+
+      svg
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", (w / 2) - 1.5)
+        .attr("y", 0 + margin - 10)
+        .attr("height", h + 10)
+        .attr("width", + 3)
+        .attr("fill", "black");
+
       this.isLoading = false;
     },
   },
@@ -353,6 +458,13 @@ export default {
   background: #fff;
   box-shadow: 0 1px 5px rgba(51, 51, 51, 0.5);
   padding: 1rem;
+}
+
+.non-selectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .tt-name {
