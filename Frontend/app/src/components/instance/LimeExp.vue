@@ -82,19 +82,13 @@ export default {
        */
       isLoading: true,
       /**
-       * Explanation data for the simple view
-       */
-      simpleExpData: {
-        name: "Explanation",
-        children: [
-          { name: "positive", children: [] },
-          { name: "negative", children: [], },
-        ],
-      },
-      /**
        * Explanation data for the lime exp
        */
-      ExpData: [],
+      ExpData: {
+        name: "Explanation",
+        baseline: {},
+        attributes: [],
+      }
     };
   },
   inject: ["attributeData", "apiUrl"],
@@ -120,29 +114,11 @@ export default {
      * @param result - The explanation result
      */
     saveData(result) {
-      (this.simpleExpData = {
+      (this.ExpData = {
         name: "Explanation",
-        children: [
-          { name: "positive", children: [] },
-          { name: "negative", children: [], },
-        ],
+        baseline: {},
+        attributes: [],
       });
-
-      for (let obj of result) {
-        let childElement = {};
-        childElement.name = this.attributeData.labels[obj.attribute];
-        childElement.category = this.attributeData.categories[obj.attribute];
-        childElement.value = Math.abs(obj.influence);
-        childElement.attributeValue = this.instance[obj.attribute];
-
-        if (obj.influence < 0) {
-          this.simpleExpData.children[0].children.push(childElement);
-        } else {
-          this.simpleExpData.children[1].children.push(childElement);
-        }
-      }
-      // Modification
-      // Add baseline value according to the prediction probability
 
       let childElement = {};
       childElement.name = "Baseline";
@@ -151,20 +127,19 @@ export default {
 
       if (this.instance.NN_recommendation == 'Approve') {
         childElement.value = Math.abs(1 - this.baseValue);
-        this.simpleExpData.children[0].children.push(childElement);
       } else {
         childElement.value = Math.abs(this.baseValue);
-        this.simpleExpData.children[1].children.push(childElement);
       }
 
-      (this.ExpData = []);
+      this.ExpData.baseline = childElement;
+
       for (let obj of result) {
         let childElement = {};
         childElement.name = this.attributeData.labels[obj.attribute];
         childElement.category = this.attributeData.categories[obj.attribute];
         childElement.value = obj.influence * -100;
         childElement.attributeValue = this.instance[obj.attribute];
-        this.ExpData.push(childElement);
+        this.ExpData.attributes.push(childElement);
       }
       this.generateLimeExp();
     },
@@ -226,7 +201,8 @@ export default {
       const margin = 100;
 
 
-      const data = this.ExpData.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+      //const data = this.ExpData.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+      const data = this.ExpData.attributes.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
       var maxValue = Math.abs(data[0].value);
 
       // Modification
@@ -403,7 +379,7 @@ export default {
       svg
         .append('text')
         .attr('class', 'label')
-        .attr('x', w / 4)
+        .attr('x', w * 3 / 8)
         .attr('y', margin / 2)
         .attr('text-anchor', 'middle')
         .text('Rejected')
@@ -414,7 +390,7 @@ export default {
       svg
         .append('text')
         .attr('class', 'label')
-        .attr('x', w * 3 / 4)
+        .attr('x', w * 5 / 8)
         .attr('y', margin / 2)
         .attr('text-anchor', 'middle')
         .text('Approved')
