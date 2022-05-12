@@ -198,7 +198,7 @@ export default {
         : (window.innerWidth - 32) * 0.94;
       const h = 500;
       //const h = 1000;
-      const margin = 100;
+      const margin = 50;
 
 
       //const data = this.ExpData.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
@@ -267,7 +267,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -289,7 +289,7 @@ export default {
         .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
         .attr("text-anchor", "start")
         .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value > 0) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > g.name.length * 10 && g.value > 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
@@ -313,7 +313,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -336,7 +336,7 @@ export default {
         .attr("text-anchor", "end")
         .attr("class", "non-selectable")
         .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value < 0) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > g.name.length * 10 && g.value < 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
@@ -360,7 +360,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -402,7 +402,7 @@ export default {
         .append('text')
         .attr('class', 'label')
         .attr('x', w / 2)
-        .attr('y', h + margin * 1.5)
+        .attr('y', h + margin * 2 - 20)
         .attr('text-anchor', 'middle')
         .text('Influence')
         .attr("font-size", "18px")

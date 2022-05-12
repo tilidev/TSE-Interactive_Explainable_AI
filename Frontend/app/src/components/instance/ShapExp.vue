@@ -86,7 +86,8 @@ export default {
        */
       ExpData: {
         name: "Explanation",
-        baseline: {},
+        baseProb: {},
+        outProb: {},
         attributes: [],
       },
     };
@@ -116,22 +117,29 @@ export default {
     saveData(result) {
       (this.ExpData = {
         name: "Explanation",
-        baseline: {},
+        baseProb: {},
+        outProb: {},
         attributes: [],
       });
 
       let childElement = {};
-      childElement.name = "Baseline";
-      childElement.category = "baseline";
-      childElement.attributeValue = "baseline decision from historical data";
+      childElement.name = "Base Pr.";
+      childElement.category = "Base Probability";
+      childElement.attributeValue = "base probability from historical data";
 
       if (this.instance.NN_recommendation == 'Approve') {
         childElement.value = Math.abs(1 - this.baseValue);
       } else {
         childElement.value = Math.abs(this.baseValue);
       }
+      this.ExpData.baseProb = childElement;
 
-      this.ExpData.baseline = childElement;
+      childElement = {};
+      childElement.name = "Decision Pr.";
+      childElement.category = "Decision Probability";
+      childElement.attributeValue = "Decision Probability";
+      childElement.value = this.instance.NN_confidence;
+      this.ExpData.outProb = childElement;
 
       for (let obj of result) {
         childElement = {};
@@ -204,19 +212,56 @@ export default {
         : (window.innerWidth - 32) * 0.94;
       const h = 500;
       //const h = 1000;
-      const margin = 100;
+      const margin = 50;
 
 
 
       const data = this.ExpData.attributes.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
-      console.log(data);
-      console.log(this.ExpData);
-      var maxValue = Math.abs(data[0].value);
+      const baseProb = this.ExpData.baseProb.value;
+      const outProb = this.ExpData.outProb.value;
 
-      // Modification
-      // Change colors
-      //var colors = ["#15803d", "#b91c1c"],
-      var colors = ["#1E88E5", "#FF0D57"];
+
+      // Convert effect values to plot values
+      var decreaseValue = outProb,
+        increaseValue = outProb,
+        totalDecrease = 0,
+        totalIncrease = 0;
+
+
+      for (let att of data) {
+        if (att.value < 0) {
+          totalDecrease += Math.abs(att.value);
+          att.plotValueLeft = decreaseValue;
+          decreaseValue += Math.abs(att.value);
+          att.plotValueRight = decreaseValue;
+          /*           //Debug
+                    console.log("decrease");
+                    console.log(att.plotValueLeft);
+                    console.log(att.value); */
+        } else {
+          totalIncrease += Math.abs(att.value);
+          att.plotValueRight = increaseValue;
+          increaseValue -= Math.abs(att.value);
+          att.plotValueLeft = increaseValue;
+          /* //Debug
+          console.log("increase");
+          console.log(att.plotValueLeft);
+          console.log(att.value); */
+        }
+
+      }
+
+
+      var colors = [];
+      if (this.instance.NN_recommendation == 'Approve') {
+        colors = ["#1E88E5", "#FF0D57"];
+      } else {
+        colors = ["#FF0D57", "#1E88E5"];
+      }
+
+      const padding = 0
+      const minX = Math.min(baseProb, outProb - totalIncrease) - padding;
+      const maxX = Math.max(outProb, outProb + totalDecrease) + padding;
 
       const tooltip = d3
         .select("#tooltip" + this.id)
@@ -226,7 +271,7 @@ export default {
         .select("#" + this.id) //make sure there's a svg element in your html file
         .append("svg")
         .attr("width", w)
-        .attr("height", h + margin * 2);
+        .attr("height", h + margin * 4);
 
       const yScale = d3
         .scaleBand()
@@ -238,11 +283,16 @@ export default {
       const xScale = d3
         .scaleLinear()
         .range([0, w])
-        .domain([-maxValue * 1.05, maxValue * 1.05]);
+        .domain([minX, maxX]);
 
       svg
         .append("g")
-        .attr('transform', `translate(0, ${h + margin})`)
+        .attr('transform', `translate(0, ${h + margin * 3})`)
+        .call(d3.axisBottom(xScale));
+
+      svg
+        .append("g")
+        .attr('transform', `translate(0, ${margin * 2})`)
         .call(d3.axisBottom(xScale));
 
       const barGroups = svg
@@ -250,14 +300,15 @@ export default {
         .data(data)
         .enter();
 
+
       barGroups
         .append("rect")
         .attr("class", "bar")
-        .attr("x", g => g.value > 0 ? (w / 2) : xScale(g.value))
-        .attr("y", g => yScale(g.name))
+        .attr("x", g => xScale(g.plotValueLeft))
+        .attr("y", 20)
         .attr("height", yScale.bandwidth())
-        .attr("width", g => g.value > 0 ? xScale(g.value) - (w / 2) : (w / 2) - xScale(g.value))
-        .attr("transform", `translate(0, ${margin})`)
+        .attr("width", g => xScale(g.plotValueRight) - xScale(g.plotValueLeft))
+        .attr("transform", `translate(0, ${margin * 2})`)
         .attr("fill", g => g.value > 0 ? colors[0] : colors[1])
         .on("mouseenter", function (event, g) {
           tooltip
@@ -275,7 +326,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -284,27 +335,24 @@ export default {
             .attr("class", "tt-value font-bold text-left");
           tooltip
             .style("opacity", 1)
-            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
-            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
+            .style("margin-top", margin * 2 + 20 + yScale.bandwidth() + "px")
+            .style("margin-left", xScale(g.plotValueLeft) + "px");
         })
         .on("mouseout", function () {
           tooltip.style("opacity", 0).selectAll("div").remove();
         });
 
       barGroups
-        .append("text")
-        .attr("x", (g) => g.value > 0 ? (w / 2) + 10 : (w / 2) - 140)
-        .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
-        .attr("text-anchor", "start")
-        .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value > 0) {
-            //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
-            return g.name.charAt(0).toUpperCase() + g.name.slice(1);
-          }
-        })
-        .attr("font-size", "15px")
-        .attr("font-weight", "600")
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", g => xScale(g.plotValueLeft))
+        .attr("y", 20)
+        .attr("height", yScale.bandwidth())
+        .attr("width", g => xScale(g.plotValueRight) - xScale(g.plotValueLeft))
+        .attr("transform", `translate(0, ${margin * 2})`)
+        .attr("stroke", "white")
         .attr("fill", "white")
+        .attr("fill-opacity", 0)
         .on("mouseenter", function (event, g) {
           tooltip
             .append("div")
@@ -321,7 +369,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -330,8 +378,49 @@ export default {
             .attr("class", "tt-value font-bold text-left");
           tooltip
             .style("opacity", 1)
-            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
-            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
+            .style("margin-top", margin * 2 + 20 + yScale.bandwidth() + "px")
+            .style("margin-left", xScale(g.plotValueLeft) + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
+
+      barGroups
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", g => xScale(g.plotValueLeft))
+        .attr("y", g => yScale(g.name))
+        .attr("height", yScale.bandwidth())
+        .attr("width", g => xScale(g.plotValueRight) - xScale(g.plotValueLeft))
+        .attr("transform", `translate(0, ${margin * 3})`)
+        .attr("fill", g => g.value > 0 ? colors[0] : colors[1])
+        .on("mouseenter", function (event, g) {
+          tooltip
+            .append("div")
+            .text(g.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              g.name + (": " + g.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              Math.round(Math.abs(g.value) * 10000) / 10000
+            )
+            .style(
+              "color",
+              g.value > 0 ? colors[0] : colors[1]
+            )
+            .attr("class", "tt-value font-bold text-left");
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + margin * 3 + "px")
+            .style("margin-left", xScale(g.plotValueLeft) + "px");
         })
         .on("mouseout", function () {
           tooltip.style("opacity", 0).selectAll("div").remove();
@@ -339,12 +428,12 @@ export default {
 
       barGroups
         .append("text")
-        .attr("x", (g) => g.value > 0 ? (w / 2) + 10 : (w / 2) - 10)
-        .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
+        .attr("x", g => xScale(g.plotValueRight) - 5)
+        .attr("y", g => yScale(g.name) + yScale.bandwidth() * .7)
+        .attr("transform", `translate(0, ${margin * 3})`)
         .attr("text-anchor", "end")
-        .attr("class", "non-selectable")
         .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > 146 && g.value < 0) {
+          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > g.name.length * 10 && g.value > 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
@@ -368,7 +457,7 @@ export default {
           tooltip
             .append("div")
             .text(
-              Math.round(Math.abs(g.value) * 100) / 100
+              Math.round(Math.abs(g.value) * 10000) / 10000
             )
             .style(
               "color",
@@ -377,8 +466,55 @@ export default {
             .attr("class", "tt-value font-bold text-left");
           tooltip
             .style("opacity", 1)
-            .style("margin-top", yScale(g.name) + yScale.bandwidth() + "px")
-            .style("margin-left", g.value > 0 ? ((w / 2) + xScale(g.value)) / 2 + "px" : xScale(g.value) + ((w / 2) - xScale(g.value)) / 2 + "px");
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + margin * 3 + "px")
+            .style("margin-left", xScale(g.plotValueLeft) + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
+
+      barGroups
+        .append("text")
+        .attr("x", g => xScale(g.plotValueLeft) + 5)
+        .attr("y", g => yScale(g.name) + yScale.bandwidth() * .7)
+        .attr("text-anchor", "start")
+        .attr("transform", `translate(0, ${margin * 3})`)
+        .text(function (g) {
+          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > g.name.length * 10 && g.value < 0) {
+            //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
+            return g.name.charAt(0).toUpperCase() + g.name.slice(1);
+          }
+        })
+        .attr("font-size", "15px")
+        .attr("font-weight", "600")
+        .attr("fill", "white")
+        .on("mouseenter", function (event, g) {
+          tooltip
+            .append("div")
+            .text(g.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              g.name + (": " + g.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+
+          tooltip
+            .append("div")
+            .text(
+              Math.round(Math.abs(g.value) * 10000) / 10000
+            )
+            .style(
+              "color",
+              g.value > 0 ? colors[0] : colors[1]
+            )
+            .attr("class", "tt-value font-bold text-left");
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", yScale(g.name) + yScale.bandwidth() + margin * 3 + "px")
+            .style("margin-left", xScale(g.plotValueLeft) + "px");
         })
         .on("mouseout", function () {
           tooltip.style("opacity", 0).selectAll("div").remove();
@@ -387,43 +523,74 @@ export default {
       svg
         .append('text')
         .attr('class', 'label')
-        .attr('x', w * 3 / 8)
-        .attr('y', margin / 2)
+        .attr('x', xScale(outProb))
+        .attr('y', margin)
         .attr('text-anchor', 'middle')
-        .text('Rejected')
-        .attr("font-size", "24px")
-        .attr("font-weight", "600")
-        .attr("fill", colors[1]);
+        .text(this.ExpData.outProb.name)
+        .attr("font-size", "18px")
+        .attr("font-weight", "600");
 
       svg
         .append('text')
         .attr('class', 'label')
-        .attr('x', w * 5 / 8)
-        .attr('y', margin / 2)
+        .attr('x', xScale(outProb))
+        .attr('y', margin * 2 - 20)
         .attr('text-anchor', 'middle')
-        .text('Approved')
-        .attr("font-size", "24px")
-        .attr("font-weight", "600")
-        .attr("fill", colors[0]);
+        .text((Math.round(this.ExpData.outProb.value * 100) / 100).toString())
+        .attr("font-size", "18px")
+        .attr("font-weight", "600");
+
+
+
+      svg
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", xScale(outProb) - 1.5)
+        .attr("y", 0 + margin * 2 - 10)
+        .attr("height", Math.abs(xScale(baseProb) - xScale(outProb)) > 150 ? h + margin + 20 : h - 20)
+        .attr("width", + 3)
+        .attr("fill", "black");
+
+      svg
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', xScale(baseProb))
+        .attr('y', Math.abs(xScale(baseProb) - xScale(outProb)) > 150 ? margin : h + margin * 2)
+        .attr('text-anchor', 'middle')
+        .text(this.ExpData.baseProb.name)
+        .attr("font-size", "18px")
+        .attr("font-weight", "600");
+
+      svg
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', xScale(baseProb))
+        .attr('y', Math.abs(xScale(baseProb) - xScale(outProb)) > 150 ? margin * 2 - 20 : h + margin * 3 - 15)
+        .attr('text-anchor', 'middle')
+        .text((Math.round(this.ExpData.baseProb.value * 100) / 100).toString())
+        .attr("font-size", "18px")
+        .attr("font-weight", "600");
+
+
+
+      svg
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", xScale(baseProb) - 1.5)
+        .attr("y", Math.abs(xScale(baseProb) - xScale(outProb)) > 150 ? margin * 2 - 10 : h + margin * 3 - 10)
+        .attr("height", 20)
+        .attr("width", + 3)
+        .attr("fill", "black");
 
       svg
         .append('text')
         .attr('class', 'label')
         .attr('x', w / 2)
-        .attr('y', h + margin * 1.5)
+        .attr('y', h + margin * 3 + 35)
         .attr('text-anchor', 'middle')
-        .text('Influence')
+        .text('Probability')
         .attr("font-size", "18px")
         .attr("font-weight", "600");
-
-      svg
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", (w / 2) - 1.5)
-        .attr("y", 0 + margin - 10)
-        .attr("height", h + 10)
-        .attr("width", + 3)
-        .attr("fill", "black");
 
       this.isLoading = false;
     },
@@ -442,13 +609,6 @@ export default {
   background: #fff;
   box-shadow: 0 1px 5px rgba(51, 51, 51, 0.5);
   padding: 1rem;
-}
-
-.non-selectable {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .tt-name {
