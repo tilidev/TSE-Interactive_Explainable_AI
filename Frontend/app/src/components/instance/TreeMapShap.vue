@@ -285,7 +285,7 @@ export default {
             .style(
               "color",
               colorScale(
-                d.parent.parent.data.name
+                d.parent.data.name
               )
             )
             .attr("class", "tt-value font-bold text-left");
