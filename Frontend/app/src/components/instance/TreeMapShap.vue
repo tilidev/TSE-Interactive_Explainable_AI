@@ -317,7 +317,46 @@ export default {
         })
         .attr("font-size", "15px")
         .attr("font-weight", "600")
-        .attr("fill", "white");
+        .attr("fill", "white")
+        .on("mouseenter", function (event, d) {
+
+          tooltip
+            .append("div")
+            .text(d.data.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+
+          tooltip
+            .append("div")
+            .text(
+              d.data.name + (": " + d.data.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+          // Modification 
+          // Remove negative symbol
+          tooltip
+            .append("div")
+            .text(
+              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
+              Math.round(d.data.value * 10000) / 100 +
+              "%"
+            )
+            .style(
+              "color",
+              colorScale(
+                d.parent.data.name
+              )
+            )
+            .attr("class", "tt-value font-bold text-left");
+
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", d.y0 + 8 + "px")
+            .style("margin-left", d.x0 + 8 + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
 
       svg
         .selectAll("vals")
@@ -339,7 +378,47 @@ export default {
         })
         .attr("font-size", "15px")
         .attr("margin-top", "16px")
-        .attr("fill", "white");
+        .attr("fill", "white")
+        .on("mouseenter", function (event, d) {
+
+          tooltip
+            .append("div")
+            .text(d.data.category)
+            .attr("class", "tt-category pb-1 text-left capitalize");
+
+
+          tooltip
+            .append("div")
+            .text(
+              d.data.name + (": " + d.data.attributeValue)
+            )
+            .attr("class", "tt-name text-left pb-2 font-bold capitalize");
+          // Modification 
+          // Remove negative symbol
+          tooltip
+            .append("div")
+            .text(
+              //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
+              Math.round(d.data.value * 10000) / 100 +
+              "%"
+            )
+            .style(
+              "color",
+              colorScale(
+                d.parent.data.name
+              )
+            )
+            .attr("class", "tt-value font-bold text-left");
+
+          tooltip
+            .style("opacity", 1)
+            .style("margin-top", d.y0 + 8 + "px")
+            .style("margin-left", d.x0 + 8 + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0).selectAll("div").remove();
+        });
+
       this.isLoading = false;
     },
   },

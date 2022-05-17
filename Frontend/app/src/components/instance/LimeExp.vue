@@ -289,7 +289,7 @@ export default {
         .attr("y", (g) => yScale(g.name) + margin + yScale.bandwidth() * .7)
         .attr("text-anchor", "start")
         .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > g.name.length * 10 && g.value > 0) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > 160 && g.value > 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
@@ -336,7 +336,7 @@ export default {
         .attr("text-anchor", "end")
         .attr("class", "non-selectable")
         .text(function (g) {
-          if (xScale(Math.abs(g.value)) - (w / 2) > g.name.length * 10 && g.value < 0) {
+          if (xScale(Math.abs(g.value)) - (w / 2) > 160 && g.value < 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }

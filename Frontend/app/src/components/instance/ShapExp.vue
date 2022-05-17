@@ -433,7 +433,7 @@ export default {
         .attr("transform", `translate(0, ${margin * 3})`)
         .attr("text-anchor", "end")
         .text(function (g) {
-          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > g.name.length * 10 && g.value > 0) {
+          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > 160 && g.value > 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
@@ -480,7 +480,7 @@ export default {
         .attr("text-anchor", "start")
         .attr("transform", `translate(0, ${margin * 3})`)
         .text(function (g) {
-          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > g.name.length * 10 && g.value < 0) {
+          if (xScale(g.plotValueRight) - xScale(g.plotValueLeft) > 160 && g.value < 0) {
             //return g.name.charAt(0).toUpperCase() + g.name.slice(1) + " : " + Math.round(Math.abs(g.value) );
             return g.name.charAt(0).toUpperCase() + g.name.slice(1);
           }
