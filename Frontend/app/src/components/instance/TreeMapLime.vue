@@ -87,11 +87,8 @@ export default {
       simpleExpData: {
         name: "Explanation",
         children: [
+          { name: "negative", children: [], },
           { name: "positive", children: [] },
-          {
-            name: "negative",
-            children: [],
-          },
         ],
       },
     };
@@ -122,10 +119,11 @@ export default {
       (this.simpleExpData = {
         name: "Explanation",
         children: [
-          { name: "positive", children: [] },
           { name: "negative", children: [], },
+          { name: "positive", children: [] },
         ],
       });
+
       for (let obj of result) {
         let childElement = {};
         childElement.name = this.attributeData.labels[obj.attribute];
@@ -134,9 +132,9 @@ export default {
         childElement.attributeValue = this.instance[obj.attribute];
 
         if (obj.influence < 0) {
-          this.simpleExpData.children[0].children.push(childElement);
-        } else {
           this.simpleExpData.children[1].children.push(childElement);
+        } else {
+          this.simpleExpData.children[0].children.push(childElement);
         }
       }
       // Modification
@@ -149,11 +147,16 @@ export default {
 
       if (this.instance.NN_recommendation == 'Approve') {
         childElement.value = Math.abs(1 - this.baseValue);
-        this.simpleExpData.children[0].children.push(childElement);
+        this.simpleExpData.children[1].children.push(childElement);
       } else {
         childElement.value = Math.abs(this.baseValue);
-        this.simpleExpData.children[1].children.push(childElement);
+        this.simpleExpData.children[0].children.push(childElement);
       }
+
+      //Sort values descending
+      this.simpleExpData.children[0].children.sort((a, b) => b.value - a.value);
+      this.simpleExpData.children[1].children.sort((a, b) => b.value - a.value);
+
 
       this.generateTreeMap();
     },
@@ -214,8 +217,11 @@ export default {
         // Pending Modification
         // Change to simpleExpdata
         .hierarchy(this.simpleExpData)
-        .sum((d) => d.value) //sums every child values
-        .sort((a, b) => b.value - a.value), // and sort them in descending order
+        .sum((d) => d.value), //sums every child values
+        //Modification
+        //Remove sorting of values to avoid having positive and negative areas being swap left and right
+        //.sort((a, b) => b.value - a.value), // and sort them in descending order
+
         // Modification
         // Change Padding
         treemap = d3
@@ -227,11 +233,11 @@ export default {
       // Modification
       // Change colors
       //var colors = ["#15803d", "#b91c1c"],
-      var colors = ["#1E88E5", "#FF0D57"];
+      var colors = ["#FF0D57", "#1E88E5"];
 
       var colorScale = d3
         .scaleOrdinal() // the scale function
-        .domain(["positive", "negative"]) // the data
+        .domain(["negative"], "positive") // the data
         .range(colors); // the way the data should be shown
 
       const tooltip = d3
