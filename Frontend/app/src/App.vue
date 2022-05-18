@@ -99,6 +99,22 @@ export default {
             );
           }
         }
+        //Modification
+        //Sort attributes alphabetically to show them in the info-card
+
+        for (var category in this.reducedCategories) {
+          let sortable = [];
+          for (var att in this.reducedCategories[category]) {
+            sortable.push(this.reducedCategories[category][att]);
+          }
+
+          sortable.sort();
+          this.reducedCategories[category] = [];
+
+          for (att of sortable) {
+            this.reducedCategories[category].push(att);
+          }
+        }
       });
     },
   },
@@ -115,6 +131,7 @@ export default {
 
 <style lang="scss">
 @import url("https://cdn.jsdelivr.net/npm/plusplusjakartasans@latest/plusjakartasans.css");
+
 #app {
   font-family: "Plus Jakarta Sans", Helvetica, Arial sans-serif;
   word-spacing: 0.08rem;
