@@ -7,3 +7,4 @@ API/database.db
 experiments/
 *.db
 API/database.db
+*.pyc

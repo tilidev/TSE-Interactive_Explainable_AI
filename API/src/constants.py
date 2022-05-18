@@ -119,7 +119,7 @@ attribute_constraints = [
         const_type : categorical,
         category : financial_cat,
         values : ['no account', 'no balance', 'below 200 EUR', 'above 200 EUR'], #List[str]
-        attr_description : "The current balance of the applicant's checking account (in Euro)"
+        attr_description : "The current balance of the applicant's checking account (in Euros)"
     },
     {
         attr_name : AttributeNames.duration,
@@ -141,7 +141,7 @@ attribute_constraints = [
         const_type : categorical,
         category : loan_cat,
         values : ['furniture', 'television', 'used car', 'domestic appliances', 'repair', 'retraining', 'business', 'new car', 'other', 'vacation'],
-        attr_description : "What the money from the loan will be used for"
+        attr_description : "The purpose for which the loan money will be used for"
     },
     {
         attr_name : AttributeNames.amount,
@@ -156,35 +156,35 @@ attribute_constraints = [
         const_type : categorical,
         category : financial_cat,
         values : ['no savings account at this bank', 'below 100 EUR', 'between 100 and 500 EUR', 'between 500 and 1000 EUR', 'above 1000 EUR'],
-        attr_description : "Amount of savings at that bank (in euros)"
+        attr_description : "Amount of savings at that bank (in Euros)"
     },
     {
         attr_name : AttributeNames.employment,
         const_type : categorical,
         category : personal_cat,
         values : ['unemployed', 'less than 1 year', 'between 1 and 4 years', 'between 4  and 7 years', 'more than 7 years'],
-        attr_description : "Duration of current applicant's current employment"
+        attr_description : "How long has the applicant been working in current employment"
     },
     {
         attr_name : AttributeNames.available_income,
         const_type : categorical,
         category : financial_cat,
         values : ['less than 20%', 'between 20 and 25%', 'between 25 and 35%', 'more than 35%'],
-        attr_description : "Percentage of income that the applicant could use for repaying the loan"
+        attr_description : "Percentage of income available after fixed costs that the applicant could use for repaying the loan"
     },
     {
         attr_name : AttributeNames.residence,
         const_type : categorical,
         category : personal_cat,
         values : ['less than 1 year', 'between 1 and 4 years', 'between 4 and 7 years', 'more than 7 years'],
-        attr_description : "How long the applicant has lived in current housing"
+        attr_description : "How long has the applicant lived in the current housing"
     },
     {
         attr_name : AttributeNames.assets,
         const_type : categorical,
         category : financial_cat,
         values : ['none', 'life insurance', 'car', 'real estate'],
-        attr_description : "Other resources the applicant might have"
+        attr_description : "Applicant's most valuable available asset to be used as a collateral payment"
     },
     {
         attr_name : AttributeNames.age,
@@ -199,7 +199,7 @@ attribute_constraints = [
         const_type : categorical,
         category : financial_cat,
         values : ['no additional loans', 'at department store', 'at other banks'],
-        attr_description : "Other installment plans"
+        attr_description : "Applicant's additional loans"
     },
     {
         attr_name : AttributeNames.housing,
@@ -227,14 +227,14 @@ attribute_constraints = [
         const_type : categorical,
         category : loan_cat,
         values : ['none', 'co-applicant', 'guarantor'],
-        attr_description : "Whether other people would also participate in the loan"
+        attr_description : "Whether there are additional people that act as a guarantee for the loan"
     },
     {
         attr_name : AttributeNames.people_liable,
         const_type : categorical,
-        category : loan_cat,
+        category : personal_cat,
         values : ['0 to 2', '3 and more'],
-        attr_description : "Amount of people who owe the applicant"
+        attr_description : "Number of people that depend financially on the applicant"
     },
     {
         attr_name : AttributeNames.NN_confidence,
