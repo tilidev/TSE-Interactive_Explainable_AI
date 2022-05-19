@@ -283,8 +283,8 @@ export default {
             .append("div")
             .text(
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 100) / 100
+              //+ "%"
             )
             .style(
               "color",
@@ -338,8 +338,8 @@ export default {
             .append("div")
             .text(
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 100) / 100
+              //+ "%"
             )
             .style(
               "color",
@@ -371,8 +371,8 @@ export default {
               // Modification 
               // Remove negative symbol
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 100) / 100
+              //+ "%"
             );
           }
         })
@@ -399,8 +399,8 @@ export default {
             .append("div")
             .text(
               //(d.parent.data.name == "negative" || d.parent.parent.data.name == "negative" ? "-" : "") +
-              Math.round(d.data.value * 10000) / 100 +
-              "%"
+              Math.round(d.data.value * 100) / 100
+              //+ "%"
             )
             .style(
               "color",

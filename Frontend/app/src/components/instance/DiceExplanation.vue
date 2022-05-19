@@ -4,16 +4,10 @@
       <div class="flex font-bold text-lg mb-4">
         Counterfactual Explanations
         <div>
-          <fa-icon
-            @click="hover = !hover"
-            @mouseover="hover = true"
-            @mouseleave="hover = false"
-            icon="info-circle"
-            class="ml-2"
-          />
+          <fa-icon @click="hover = !hover" @mouseover="hover = true" @mouseleave="hover = false" icon="info-circle"
+            class="ml-2" />
           <div v-if="hover" class="mt-4 text-sm absolute z-50">
-            <div
-              class="
+            <div class="
                 p-4
                 max-w-2xl
                 bg-white
@@ -21,8 +15,7 @@
                 text-primary-dark
                 shadow-blurred
                 rounded
-              "
-            >
+              ">
               {{ description }}
             </div>
           </div>
@@ -37,25 +30,14 @@
         <fa-icon icon="arrow-left" size="2x" />
       </div>
       <div class="shadow-md overflow-x-scroll">
-        <table
-          v-if="counterfactuals.length"
-          class="max-w-2xl table-auto text-primary text-left"
-        >
+        <table v-if="counterfactuals.length" class="max-w-2xl table-auto text-primary text-left">
           <thead class="bg-primary text-white">
-            <table-header
-              :labels="attributeData.labels"
-              :descriptions="attributeData.descriptions"
-              :attributes="Object.keys(counterfactuals[index])"
-            />
+            <table-header :labels="attributeData.labels" :descriptions="attributeData.descriptions"
+              :attributes="Object.keys(counterfactuals[index])" />
           </thead>
           <tbody class="divide-gray divide-y">
-            <table-row
-              :rowData="getBaseRow(counterfactuals[index])"
-            ></table-row>
-            <table-row
-              class="text-modified font-bold"
-              :rowData="counterfactuals[index]"
-            />
+            <table-row :rowData="getBaseRow(counterfactuals[index])"></table-row>
+            <table-row class="text-modified font-bold" :rowData="counterfactuals[index]" />
           </tbody>
         </table>
       </div>

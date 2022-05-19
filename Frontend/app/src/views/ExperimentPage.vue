@@ -19,7 +19,7 @@
       <div class="text-right flex justify-end mt-4">
         <span class="bg-white flex items-center space-x-4 p-4 shadow-md">
           <div class="text-lg font-bold mr-4">
-            Would you approve this loan application?
+            Which decision would you take for this loan application?
           </div>
           <default-button :color="'positive-chart'" :hoverColor="'positive-chart-dark'" @click="submitDecision(true)">
             Approve</default-button>
