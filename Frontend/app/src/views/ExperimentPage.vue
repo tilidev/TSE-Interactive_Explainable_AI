@@ -16,7 +16,7 @@
       -->
       <instance-view v-if="started" :instanceInfo="instanceInfo" :expType="expType" :allowMod="allowMod"
         :allowWhatIf="allowWhatIf" :resetInstance="resetInstance"></instance-view>
-      <div class="text-right flex justify-end">
+      <div class="text-right flex justify-end mt-4">
         <span class="bg-white flex items-center space-x-4 p-4 shadow-md">
           <div class="text-lg font-bold mr-4">
             Would you approve this loan application?

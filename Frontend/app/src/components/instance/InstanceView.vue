@@ -23,7 +23,7 @@
     </div>
     <dice-explanation v-if="instanceInfo.id != null && expType === 'dice'" :instanceInfo="instanceInfo"
       class="mb-4 mt-8"></dice-explanation>
-    <div class="bg-white px-8 py-4 my-8 shadow-md" v-else-if="Object.keys(instanceInfo).length">
+    <div class="bg-white px-8 py-4 my-8 shadow-md" v-else-if="Object.keys(instanceInfo).length && expType !== 'none'">
       <div class="flex justify-between mb-4">
         <div class="text-lg font-bold flex">
           Factors influencing AI Recommendation
