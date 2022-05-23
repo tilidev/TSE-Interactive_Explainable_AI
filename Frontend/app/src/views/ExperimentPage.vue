@@ -31,6 +31,8 @@
     <div v-if="done">
       <div class="text-3xl font-bold py-2">You completed the experiment</div>
       <div v-if="!surveyLink" class="text-lg">Thank you for participating!</div>
+      <div v-if="!surveyLink" class="text-lg">Your completion code is:</div>
+      <div v-if="!surveyLink" class="text-lg">p!$25=h$8kXAz_PL</div>
       <a v-else :href="surveyLink" class="text-primary-light underline text-lg">Please click here to continue to the
         survey</a>
     </div>
