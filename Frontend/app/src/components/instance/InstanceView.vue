@@ -184,6 +184,9 @@ export default {
     generateExplanation(modifiedInstance) {
       this.modifiedInstance = Object.assign({}, modifiedInstance);
       this.whatif = true;
+      //Modification
+      //Add emit event
+      this.$emit('generate-explanation2', this.modifiedInstance);
     },
     /** 
      * Modification
@@ -193,6 +196,9 @@ export default {
     passPrediction(newPrediction) {
       this.modifiedInstance.NN_confidence = newPrediction.NN_confidence;
       this.modifiedInstance.NN_recommendation = newPrediction.NN_recommendation;
+      //Modification
+      // Add emit event
+      this.$emit('new-prediction2', this.modifiedInstance);
     },
     /**
      * Returns styling classes for the explanation names in the menu

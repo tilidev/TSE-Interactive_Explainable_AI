@@ -15,7 +15,8 @@
       </div>
       -->
       <instance-view v-if="started" :instanceInfo="instanceInfo" :expType="expType" :allowMod="allowMod"
-        :allowWhatIf="allowWhatIf" :resetInstance="resetInstance"></instance-view>
+        :allowWhatIf="allowWhatIf" :resetInstance="resetInstance" @new-prediction2="passPrediction2"
+        @generate-explanation2="generateExplanation2"></instance-view>
       <div class="text-right flex justify-end mt-4">
         <span class="bg-white flex items-center space-x-4 p-4 shadow-md">
           <div class="text-lg font-bold mr-4">
@@ -101,6 +102,25 @@ export default {
        * Add prop to reset instance
       * */
       resetInstance: false,
+      /*
+       * Modification
+       * gather all modifications for logs
+      * */
+      modificationsCounter: 0,
+      /*
+       * Modification
+       * gather all generation of explanations for logs
+      * */
+      explanationsCounter: 0,/*
+       * Modification
+       * gather all modifications for logs
+      * */
+      modifications: [],
+      /*
+       * Modification
+       * gather all generation of explanations for logs
+      * */
+      explanations: [],
     };
   },
   components: { InstanceView, DefaultButton },
@@ -128,6 +148,27 @@ export default {
         .post(this.apiUrl + "experiment/results", reqBody)
         .then(() => (this.done = true));
     },
+    /** 
+     * Modification
+     * Provides modified instance to track modifications in what-if analysis
+     * @param {Object} modifiedInstance - Prediction of new object
+    */
+    passPrediction2(modifiedInstance) {
+      //Debug
+      this.modificationsCounter += 1;
+      this.modifications.push(JSON.stringify(modifiedInstance));
+    },
+    /** 
+     * Modification
+     * Provides modified instance to track generation of explanations in what-if analysis
+     * @param {Object} modifiedInstance - Prediction of new object
+    */
+    generateExplanation2(modifiedInstance) {
+      this.explanationsCounter += 1;
+      this.explanations.push(JSON.stringify(modifiedInstance));
+    },
+
+
     /**
      * Sends an API request to get the experiment information
      */
@@ -166,7 +207,15 @@ export default {
         loan_id: this.instanceIds[this.currentIndex],
         choice: decision ? "approve" : "reject",
         timestamp: timestamp,
+        modificationsCounter: this.modificationsCounter,
+        modifications: this.modifications,
+        explanationsCounter: this.explanationsCounter,
+        explanations: this.explanations,
       });
+      this.modificationsCounter = 0;
+      this.modifications = [];
+      this.explanationsCounter = 0;
+      this.explanations = [];
       this.currentIndex++;
       if (this.currentIndex < this.instanceIds.length) {
         this.sendInstanceRequest();

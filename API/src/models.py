@@ -233,6 +233,10 @@ class ExperimentResults(BaseModel):
         loan_id: int = Field(ge=0, lt=1000)
         choice: RecommendationType
         timestamp: str
+        modificationsCounter: int
+        modifications: List[str]
+        explanationsCounter: int
+        explanations: List[str]
 
     experiment_name: str
     client_id: int
