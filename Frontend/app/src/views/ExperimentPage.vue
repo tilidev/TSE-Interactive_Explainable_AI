@@ -157,9 +157,15 @@ export default {
      * @param {String} decision - Can be 'approve' or 'reject'
      */
     submitDecision(decision) {
+      const today = new Date();
+      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      const dateTime = date + ' ' + time;
+      const timestamp = dateTime;
       this.results.push({
         loan_id: this.instanceIds[this.currentIndex],
         choice: decision ? "approve" : "reject",
+        timestamp: timestamp,
       });
       this.currentIndex++;
       if (this.currentIndex < this.instanceIds.length) {
