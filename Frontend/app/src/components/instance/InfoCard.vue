@@ -1,6 +1,21 @@
 <template>
   <div class="bg-white shadow-md px-8 py-4 text-left">
+    <!--
     <h2 class="font-bold text-lg pb-4">Current Loan Application</h2>
+    -->
+    <div class="flex justify-between mb-4">
+      <div class="text-lg font-bold flex">
+        Current Loan Application
+        <fa-icon @click="hover = !hover" @mouseover="hover = true" @mouseleave="hover = false" icon="info-circle"
+          class="ml-2" />
+        <div v-if="hover" class="mt-4 text-sm absolute z-50">
+          <img src="../../assets/Attributes.png" alt="Attributes.png" />
+        </div>
+      </div>
+    </div>
+    <div>
+
+    </div>
     <div class="flex text-sm justify-between">
       <div class="grid grid-cols-auto grid-flow-col gap-x-6 grid-rows-8"
         v-for="category in Object.keys(reducedCategories)" :key="category">
@@ -84,6 +99,10 @@ import OutlineButton from "../buttons/OutlineButton.vue";
 export default {
   data() {
     return {
+      /**
+       * True while the user hovers over the info button. In that case the description overlay is shown.
+       */
+      hover: false,
       /**
        * The attribute for which a dropdown menu is displayed, if empty no menu is shown.
        */
