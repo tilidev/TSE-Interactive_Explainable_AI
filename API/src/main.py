@@ -60,7 +60,7 @@ num_processes = None
 process_ids = []
 task_queue = None  # tasks will be inputted here
 results: Dict[UUID, Any] = {}  # finished tasks will be inputted here
-os.chdir("c:/Users/D073188/Documents/GitHub/Interactive_xai/API/src")
+#os.chdir("c:/Users/D073188/Documents/GitHub/Interactive_xai/API/src")
 tf_model = load_model("./smote_ey.tf")
 
 # hash for admin password, not secure, idea is only to
