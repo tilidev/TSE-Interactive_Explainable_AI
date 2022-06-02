@@ -27,7 +27,7 @@
           {{ attributeData.labels[attribute] }}:
         </div>
         <div class="col-start-2 capitalize" v-for="attribute in reducedCategories[category]" :key="attribute">
-          <span :class="getValueStyling(attribute)">
+          <span :class="getValueStyling(attribute)" @click="dropDownAction(attribute)">
             {{ modifiedInstance[attribute] }}
           </span>
           <fa-icon v-if="modificationEnabled && dropdownAttribute != attribute" class="ml-2 cursor-pointer"
@@ -198,6 +198,16 @@ export default {
       this.dropdownAttribute = "";
       this.$emit("apply-modification", modification);
       this.sendPredictionRequest();
+    },
+    dropDownAction(attribute) {
+      if (this.modificationEnabled == true) {
+        if (this.dropdownAttribute == attribute) {
+          this.dropdownAttribute = "";
+        } else {
+          this.dropdownAttribute = attribute;
+        }
+
+      }
     },
   },
   watch: {

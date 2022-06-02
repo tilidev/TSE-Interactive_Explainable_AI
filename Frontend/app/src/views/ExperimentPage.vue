@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="absolute inset-0 bg-background" v-if="!started">
-      <default-button class="mt-8" @click="started = true">Start Experiment</default-button>
+      <default-button class="mt-8 button" vertical-align="middle" @click="started = true">Start Experiment
+      </default-button>
     </div>
     <div v-if="!done && started">
       <!--
@@ -32,8 +33,11 @@
     <div v-if="done">
       <div class="text-3xl font-bold py-2">You completed the experiment</div>
       <div v-if="!surveyLink" class="text-lg">Thank you for participating!</div>
-      <div v-if="!surveyLink" class="text-lg">Your completion code is:</div>
+      <div v-if="!surveyLink" class="text-lg">Your completion code is:<br /><br /></div>
       <div v-if="!surveyLink" class="text-lg">p!$25=h$8kXAz_PL</div>
+      <div v-if="!surveyLink" class="text-lg"><br />Please copy the code and then press the F11 key in the keyboard to
+        go back
+        to the survey tab.</div>
       <a v-else :href="surveyLink" class="text-primary-light underline text-lg">Please click here to continue to the
         survey</a>
     </div>
@@ -241,5 +245,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.wrapper {
+  text-align: center;
+}
+
+.button {
+  position: absolute;
+  top: 50%;
+  right: 45%;
+}
 </style>

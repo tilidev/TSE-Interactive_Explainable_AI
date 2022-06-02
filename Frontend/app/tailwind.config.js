@@ -36,9 +36,9 @@ module.exports = {
         //'cc-low': '#38bdf8',
         //'cc-medium': '#0284c7',
         //'cc-high': '#075985',
-        'cc-low': '#D0CECE',
-        'cc-medium': '#AEAAAA',
-        'cc-high': '#757171',
+        'cc-low': '#AFABAB',
+        'cc-medium': '#7F7F7F',
+        'cc-high': '#3B3838',
       }
     },
   },
