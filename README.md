@@ -1,11 +1,7 @@
 # Team Project Software Development - Development of an interactive explainable AI application
 
----
-
 **Authors**: Felix Hasse, Nicolas Kiefer, Isabelle Konrad, Tilio Schulze
 **Version**: 1.0
-
-[[_TOC_]]
 
 ## First Steps
 
