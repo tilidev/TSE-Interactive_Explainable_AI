@@ -45,7 +45,7 @@ The starting page is "/dataset". To access the admin panel, use "/admin".
 
 The application consists of a web-based frontend GUI and a backend API server. The frontend is built with the [Vue.js](https://vuejs.org) framework, the API with the [FastAPI](https://fastapi.tiangolo.com)-Python framework.
 
-![project structure](/uploads/47aa8caab144de1185aaf9e9fa3f06b5/image.png)
+![project structure](https://user-images.githubusercontent.com/100638618/186193994-b078bc06-9549-459f-8d42-90f6c494e559.png)
 
 ## Backend
 
@@ -124,7 +124,7 @@ An overview of the different tables and their strucutre is provided below. Below
 ___
 
 **Database Table Structure:**
-![Database Table Structure](/uploads/4ad0c44ad40601306c83409a1cda3c51/image.png) 
+![Database Table Structure](https://user-images.githubusercontent.com/100638618/186194265-c3e58249-200c-482c-93de-d0a90451feeb.png) 
 All cleaned applications from the GCD are stored in the applicants table. The attributes foreign_worker, status_sex_ and classification_ were dropped and NN_recommendation and NN_confidence added. These two attributes refer to the actual model prediction for this application and were determined using the `smote_ey.tf` model.\
 The dice table contains the pregenerated counterfactuals for the applications of the GCD. The counterfactuals column contains this information in json format. These jsons have the key 'counterfactuals' referring to a list of 5 counterfactuals in json format. This is necessary because SQLite cannot store lists.\
 The elements in the dice table have the primary key instance_id, which refers to the ids in the applicants table. Therefore when an element in the applicants table is deleted or changes its id, the according element in the dice table should be deleted or changed as well.\
@@ -134,7 +134,7 @@ The key experiment_name of the results table references the attribute name in th
 ___
 
 **Database Interaction:**
-![Database Interaction](/uploads/b58c7e493f24e5a1926cde76ecc5e64a/image.png)
+![Database Interaction](https://user-images.githubusercontent.com/100638618/186194504-69e6e908-8d46-48da-940a-6b7cfe35a7b9.png)
 
 
 ___
@@ -148,7 +148,7 @@ The requested explanation tasks are saved in a FIFO-queue to which all calculati
 
 Explanation Task flow: `rgb(133, 192, 255)`\
 Explanation Result flow: `rgb(217, 155, 255)`
-![Explanations compuation & data flow](/uploads/164a51e39b282a5dcd504bbb3997e6d4/Api_Explainer_Flow.jpg)
+![Explanations compuation & data flow](https://user-images.githubusercontent.com/100638618/186194686-45d958a6-b422-41a0-965c-20a9a44ae2f8.jpg)
 
 ## Front-End
 
